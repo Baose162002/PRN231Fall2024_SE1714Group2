@@ -1,0 +1,6 @@
+@WebApi_EventFlowerExchange_HostAddress = http://localhost:5077
+
+GET {{WebApi_EventFlowerExchange_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
