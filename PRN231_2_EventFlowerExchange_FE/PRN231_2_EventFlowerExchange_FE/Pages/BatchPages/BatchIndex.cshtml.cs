@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -15,7 +16,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             _baseApiUrl = configuration["ApiSettings:BaseUrl"];
         }
 
-        public List<Batch> Batches { get; set; }
+        public List<ListBatchDTO> Batches { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -23,7 +24,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
 
             if (response.IsSuccessStatusCode)
             {
-                Batches = await response.Content.ReadFromJsonAsync<List<Batch>>();
+                Batches = await response.Content.ReadFromJsonAsync<List<ListBatchDTO>>();
             }
             else
             {

@@ -1,0 +1,77 @@
+﻿@page
+@model PRN231_2_EventFlowerExchange_FE.Pages.BatchPages.DeleteBatchModel
+@{
+    ViewData["Title"] = "Delete Batch";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Delete Batch</h1>
+    <div id="batchDetails">
+        <!-- Batch details will be populated here -->
+    </div>
+    <p class="text-danger mt-3">Are you sure you want to delete this batch?</p>
+    <form id="deleteBatchForm">
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="/BatchPages/BatchIndex" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const batchId = urlParams.get('id');
+            const form = document.getElementById('deleteBatchForm');
+
+            if (batchId) {
+                fetch(`@Model.BaseApiUrl/Batch/${batchId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const detailsHtml = `
+                                    <dl class="row">
+                                        <dt class="col-sm-3">Flower Type</dt>
+                                        <dd class="col-sm-9">${data.flowerType}</dd>
+                                        <dt class="col-sm-3">Price Per Unit</dt>
+                                        <dd class="col-sm-9">${data.pricePerUnit}</dd>
+                                        <dt class="col-sm-3">Description</dt>
+                                        <dd class="col-sm-9">${data.description}</dd>
+                                        <dt class="col-sm-3">Quantity</dt>
+                                        <dd class="col-sm-9">${data.batchQuantity}</dd>
+                                        <dt class="col-sm-3">Condition</dt>
+                                        <dd class="col-sm-9">${data.condition}</dd>
+                                        <dt class="col-sm-3">Entry Date</dt>
+                                        <dd class="col-sm-9">${new Date(data.entryDate).toLocaleDateString()}</dd>
+                                        <dt class="col-sm-3">Expiration Date</dt>
+                                        <dd class="col-sm-9">${new Date(data.expirationDate).toLocaleDateString()}</dd>
+                                    </dl>
+                                `;
+                        document.getElementById('batchDetails').innerHTML = details
+
+                        Html;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('batchDetails').innerHTML = '<p class="text-danger">Error loading batch details.</p>';
+                    });
+            }
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (confirm('Are you sure you want to delete this batch?')) {
+                    fetch(`@Model.BaseApiUrl/Batch/${batchId}`, {
+                        method: 'DELETE',
+                    })
+                        .then(response => response.text())
+                        .then(data => {
+                            alert(data);
+                            window.location.href = '/BatchPages/BatchIndex';
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                            alert('Error deleting batch');
+                        });
+                }
+            });
+        });
+    </script>
+}

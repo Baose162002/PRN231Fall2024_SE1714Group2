@@ -1,0 +1,52 @@
+﻿@page
+@model PRN231_2_EventFlowerExchange_FE.Pages.BatchPages.BatchDetailsModel
+@{
+    ViewData["Title"] = "Batch Details";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Batch Details</h1>
+    <div id="batchDetails">
+        <!-- Batch details will be populated here -->
+    </div>
+    <a href="/BatchPages/BatchIndex" class="btn btn-secondary mt-3">Back to List</a>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const batchId = urlParams.get('id');
+
+            if (batchId) {
+                fetch(`@Model.BaseApiUrl/Batch/id/${batchId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const detailsHtml = `
+                            <dl class="row">
+                                <dt class="col-sm-3">Flower Type</dt>
+                                <dd class="col-sm-9">${data.flowerType}</dd>
+                                <dt class="col-sm-3">Price Per Unit</dt>
+                                <dd class="col-sm-9">${data.pricePerUnit}</dd>
+                                <dt class="col-sm-3">Description</dt>
+                                <dd class="col-sm-9">${data.description}</dd>
+                                <dt class="col-sm-3">Quantity</dt>
+                                <dd class="col-sm-9">${data.batchQuantity}</dd>
+                                <dt class="col-sm-3">Condition</dt>
+                                <dd class="col-sm-9">${data.condition}</dd>
+                                <dt class="col-sm-3">Entry Date</dt>
+                                <dd class="col-sm-9">${new Date(data.entryDate).toLocaleDateString()}</dd>
+                                <dt class="col-sm-3">Expiration Date</dt>
+                                <dd class="col-sm-9">${new Date(data.expirationDate).toLocaleDateString()}</dd>
+                            </dl>
+                        `;
+                        document.getElementById('batchDetails').innerHTML = detailsHtml;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('batchDetails').innerHTML = '<p class="text-danger">Error loading batch details.</p>';
+                    });
+            }
+        });
+    </script>
+}
