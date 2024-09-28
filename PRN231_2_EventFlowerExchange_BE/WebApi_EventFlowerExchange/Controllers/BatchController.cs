@@ -1,10 +1,12 @@
 ﻿using BusinessObject.DTO.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
 
 namespace WebApi_EventFlowerExchange.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class BatchController : ControllerBase
@@ -14,6 +16,7 @@ namespace WebApi_EventFlowerExchange.Controllers
         {
             _batchService = batchService;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllBatch()
         {

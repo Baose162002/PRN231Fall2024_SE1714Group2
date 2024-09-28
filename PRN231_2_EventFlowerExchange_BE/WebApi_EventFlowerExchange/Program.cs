@@ -1,5 +1,7 @@
 using BusinessObject;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
 using RBN_Api.Extensions;
 using Repository.IRepository;
@@ -9,7 +11,8 @@ using Service.IService;
 using Service.Service;
 using System.Diagnostics.Contracts;
 using System.Reflection.Emit;
-
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 public class Program
 {
@@ -18,7 +21,6 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Config OData
-
         var modelBuilder = new ODataConventionModelBuilder();
         modelBuilder.EntitySet<User>("User");
         modelBuilder.EntitySet<Flower>("Flower");
@@ -30,21 +32,67 @@ public class Program
         modelBuilder.EntitySet<Order>("Order");
         modelBuilder.EntitySet<OrderDetail>("OrderDetail");
 
+        // Configure JWT Authentication
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
         // Add services to the container.
         builder.Services.Register();
 
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+
+        // Configure Swagger
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
+
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        },
+                        Scheme = "oauth2",
+                        Name = "Bearer",
+                        In = ParameterLocation.Header,
+                    },
+                    new List<string>()
+                }
+            });
+        });
+
         builder.Services.AddAutoMapper(typeof(MapperEntities));
 
         builder.Services.AddControllers().AddOData(
             options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
                 "odata",
                 modelBuilder.GetEdmModel()));
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -53,9 +101,11 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
         app.UseODataBatching();
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();

@@ -12,6 +12,6 @@ namespace Service.IService
     public interface IAuthService
     {
         Task<bool> RegisterAsync(User user);
-        Task<UserResponseDto> LoginAsync(LoginUserRequest loginRequest);
+        Task<string> LoginAsync(LoginUserRequest loginRequest);
     }
 }
