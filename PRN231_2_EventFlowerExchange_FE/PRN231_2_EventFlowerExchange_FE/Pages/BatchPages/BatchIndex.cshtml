@@ -1,0 +1,24 @@
+﻿@page
+@model PRN231_2_EventFlowerExchange_FE.Pages.BatchPages.BatchIndexModel
+@{
+}
+<h2>List Batch</h2>
+
+@if (Model.Batches != null)
+{
+    <ul>
+        @foreach (var batch in Model.Batches)
+        {
+            <li>@batch.FlowerType - @batch.PricePerUnit</li>
+            <li>@batch.Description</li>
+            <li>@batch.BatchQuantity</li>
+            <li>@batch.Condition</li>
+            <li>@batch.EntryDate</li>
+            <li>@batch.ExpirationDate</li>
+        }
+    </ul>
+}
+else
+{
+    <p>Batch Empty</p>
+}

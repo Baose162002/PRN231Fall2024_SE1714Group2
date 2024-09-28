@@ -355,7 +355,7 @@ namespace BusinessObject.Migrations
                     b.HasOne("BusinessObject.Company", "Company")
                         .WithMany("Batches")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BusinessObject.Flower", "Flower")
