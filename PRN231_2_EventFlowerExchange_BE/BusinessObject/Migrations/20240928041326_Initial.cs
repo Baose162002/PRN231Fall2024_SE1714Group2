@@ -118,8 +118,7 @@ namespace BusinessObject.Migrations
                         name: "FK_Batch_Company_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Company",
-                        principalColumn: "CompanyId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CompanyId");
                     table.ForeignKey(
                         name: "FK_Batch_Flower_FlowerId",
                         column: x => x.FlowerId,
