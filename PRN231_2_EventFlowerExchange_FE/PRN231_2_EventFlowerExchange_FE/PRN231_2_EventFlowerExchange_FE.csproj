@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\PRN231_2_EventFlowerExchange_BE\BusinessObject\BusinessObject.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -113,7 +113,7 @@ namespace BusinessObject
             modelBuilder.Entity<Batch>()
                 .HasOne(b => b.Company)
                 .WithMany(c => c.Batches)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

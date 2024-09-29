@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(FlowerShopContext))]
-    [Migration("20240923030642_Initial")]
+    [Migration("20240928041326_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -358,7 +358,7 @@ namespace BusinessObject.Migrations
                     b.HasOne("BusinessObject.Company", "Company")
                         .WithMany("Batches")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BusinessObject.Flower", "Flower")
