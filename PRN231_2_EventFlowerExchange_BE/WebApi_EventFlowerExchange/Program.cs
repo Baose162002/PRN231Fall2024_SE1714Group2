@@ -1,10 +1,6 @@
 using BusinessObject;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OData.ModelBuilder;
-using Repository;
-using Repository.IRepository;
-using Repository.Repository;
 using Service.IService;
 using Service.Service;
 using System.Diagnostics.Contracts;
@@ -28,10 +24,10 @@ modelBuilder.EntitySet<OrderDetail>("OrderDetail");
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
 
 // Configure DbContext
 builder.Services.AddDbContext<FlowerShopContext>(options =>

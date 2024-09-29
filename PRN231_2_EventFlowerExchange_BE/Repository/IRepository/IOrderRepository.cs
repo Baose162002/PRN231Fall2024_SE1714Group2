@@ -9,10 +9,10 @@ namespace Repository.IRepository
 {
     public interface IOrderRepository
     {
-        Task<IEnumerable<Order>> GetOrdersAsync();
-        Task<Order> GetOrderByIdAsync(int orderId);
-        Task CreateOrderAsync(Order order);
-        Task UpdateOrderAsync(Order order);
-        Task DeleteOrderAsync(int orderId);
+        Task<List<Order>> GetAllOrders();
+        Task<Order> GetOrderById(int id);
+        Task Create(Order order);
+        Task Update(Order order, int id);
+        Task Delete(int id);
     }
 }

@@ -1,4 +1,6 @@
 ﻿using BusinessObject;
+using BusinessObject.DTO.Response;
+using BusinessObject.DTO.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +11,10 @@ namespace Service.IService
 {
     public interface IOrderService
     {
-        Task<IEnumerable<Order>> GetOrdersAsync();
-        Task<Order> GetOrderByIdAsync(int orderId);
-        Task CreateOrderAsync(Order order);
-        Task UpdateOrderAsync(Order order);
-        Task DeleteOrderAsync(int orderId);
+        Task<List<ListOrderDTO>> GetAllOrder();
+        Task<ListOrderDTO> GetOrderById(int id);
+        Task Create(CreateOrderDTO order);
+        Task Update(UpdateOrderDTO updateOrderDTO, int id);
+        Task Delete(int id);
     }
 }

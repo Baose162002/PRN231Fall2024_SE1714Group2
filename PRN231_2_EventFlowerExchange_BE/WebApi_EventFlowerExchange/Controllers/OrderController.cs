@@ -15,48 +15,76 @@ namespace WebApi_EventFlowerExchange.Controllers
             _orderService = orderService;
         }
 
+        // GET: api/Order
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public async Task<IActionResult> GetAllOrders()
         {
-            return Ok(await _orderService.GetOrdersAsync());
+            var orders = await _orderService.GetAllOrders();
+            if (orders == null || !orders.Any())
+            {
+                return NotFound("Order list is empty");
+            }
+            return Ok(orders);
         }
 
+        // GET: api/Order/id
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(int id)
+        public async Task<IActionResult> GetOrderById(int id)
         {
-            var order = await _orderService.GetOrderByIdAsync(id);
+            var order = await _orderService.GetOrderById(id);
             if (order == null)
             {
-                return NotFound();
+                return NotFound("Order does not exist");
             }
             return Ok(order);
         }
 
+        // POST: api/Order
         [HttpPost]
-        public async Task<ActionResult> CreateOrder(Order order)
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDTO createOrderDTO)
         {
-            await _orderService.CreateOrderAsync(order);
-            return CreatedAtAction(nameof(GetOrder), new { id = order.OrderId }, order);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateOrder(int id, Order order)
-        {
-            if (id != order.OrderId)
+            try
             {
-                return BadRequest();
+                await _orderService.Create(createOrderDTO);
+                return Ok("Order created successfully");
             }
-            await _orderService.UpdateOrderAsync(order);
-            return NoContent();
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteOrder(int id)
+        // PUT: api/Order/id
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateOrder([FromBody] UpdateOrderDTO updateOrderDTO, int id)
         {
-            await _orderService.DeleteOrderAsync(id);
-            return NoContent();
+            try
+            {
+                await _orderService.Update(updateOrderDTO, id);
+                return Ok("Order updated successfully");
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-    }
+        // DELETE: api/Order/id
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            try
+            {
+                await _orderService.Delete(id);
+                return Ok("Order deleted successfully");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
+
+
+        }
+    }
 }
