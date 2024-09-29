@@ -33,6 +33,10 @@ namespace Service.Configurations.Mapper
                 opt => opt.MapFrom(src => FormatDate(src.EntryDate)))
                 .ForMember(dest => dest.ExpirationDate, 
                 opt => opt.MapFrom(src => FormatDate(src.ExpirationDate)));
+
+            CreateMap<CreateFlowerDTO, Flower>();
+            CreateMap<UpdateFlowerDTO, Flower>();
+
             CreateMap<Company, ListCompanyDTO>();
             CreateMap<ListCompanyDTO, Company>();
             CreateMap<Flower, ListFlowerDTO>();
