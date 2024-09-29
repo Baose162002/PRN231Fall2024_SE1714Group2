@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessObject;
+using BusinessObject.Dto.Request;
 using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using BusinessObject.Enum;
@@ -32,10 +33,18 @@ namespace Service.Configurations.Mapper
                 opt => opt.MapFrom(src => FormatDate(src.EntryDate)))
                 .ForMember(dest => dest.ExpirationDate, 
                 opt => opt.MapFrom(src => FormatDate(src.ExpirationDate)));
+
+            CreateMap<CreateFlowerDTO, Flower>();
+            CreateMap<UpdateFlowerDTO, Flower>();
+
             CreateMap<Company, ListCompanyDTO>();
             CreateMap<ListCompanyDTO, Company>();
             CreateMap<Flower, ListFlowerDTO>();
             CreateMap<ListFlowerDTO, Flower>();
+            CreateMap<LoginUserRequest, User>()
+     .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+     .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password));
+
         }
         private string FormatDate(DateTime? date)
         {

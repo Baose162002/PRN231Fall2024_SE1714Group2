@@ -6,7 +6,7 @@ using Service.IService;
 
 namespace WebApi_EventFlowerExchange.Controllers
 {
-
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BatchController : ControllerBase
@@ -17,6 +17,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             _batchService = batchService;
         }
 
+       
         [HttpGet]
         public async Task<IActionResult> GetAllBatch()
         {
