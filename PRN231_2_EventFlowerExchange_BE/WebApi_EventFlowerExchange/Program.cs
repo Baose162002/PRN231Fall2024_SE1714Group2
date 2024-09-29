@@ -8,10 +8,6 @@ using Repository.IRepository;
 using Repository.Repository;
 using Service.Configurations.Mapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OData.ModelBuilder;
-using Repository;
-using Repository.IRepository;
-using Repository.Repository;
 using Service.IService;
 using Service.Service;
 using System.Diagnostics.Contracts;
@@ -76,7 +72,9 @@ builder.Logging.AddConsole();
 // Add services to the container.
 builder.Services.AddAutoMapper(typeof(MapperEntities).Assembly);
 
+
 builder.Services.Register();
+
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddControllers();

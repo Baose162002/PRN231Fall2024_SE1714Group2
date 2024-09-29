@@ -18,37 +18,68 @@ namespace Repository.Repository
             _context = context;
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersAsync()
+        public async Task<List<Order>> GetAllOrders()
         {
-            return await _context.Orders.ToListAsync();
+            var orders = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                //.ThenInclude(od => od.Flower) // Giả sử OrderDetail có liên kết với Flower
+                .ToListAsync();
+            return orders;
         }
 
-        public async Task<Order> GetOrderByIdAsync(int orderId)
+        public async Task<Order> GetOrderById(int id)
         {
-            return await _context.Orders.FindAsync(orderId);
+            var existing = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                //.ThenInclude(od => od.Flower) // Giả sử OrderDetail có liên kết với Flower
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+            return existing;
         }
 
-        public async Task CreateOrderAsync(Order order)
+        public async Task Create(Order order)
         {
-            await _context.Orders.AddAsync(order);
+            _context.Orders.Add(order);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateOrderAsync(Order order)
+        public async Task Update(Order order, int id)
         {
-            _context.Orders.Update(order);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteOrderAsync(int orderId)
-        {
-            var order = await _context.Orders.FindAsync(orderId);
-            if (order != null)
+            var existing = await GetOrderById(id);
+            if (existing != null)
             {
-                _context.Orders.Remove(order);
+                // Cập nhật các thuộc tính của đơn hàng từ đối tượng `order` mới
+                existing.OrderStatus = order.OrderStatus;
+                existing.TotalPrice = order.TotalPrice;
+                existing.OrderDate = order.OrderDate;
+                existing.DeliveryAddress = order.DeliveryAddress;
+                existing.DeliveryDate = order.DeliveryDate;
+                existing.CustomerId = order.CustomerId;
+
+                // Cập nhật chi tiết đơn hàng nếu cần
+                // existing.OrderDetails = order.OrderDetails; // Tùy chỉnh theo yêu cầu
+
+                _context.Orders.Update(existing);
                 await _context.SaveChangesAsync();
             }
+            else
+            {
+                throw new ArgumentException("Order is not existed");
+            }
         }
+
+        public async Task Delete(int id)
+        {
+            var existing = await GetOrderById(id);
+            if (existing == null)
+            {
+                throw new ArgumentException("Order is not existed");
+            }
+            _context.Orders.Remove(existing);
+            await _context.SaveChangesAsync();
+        }
+
 
 
 
