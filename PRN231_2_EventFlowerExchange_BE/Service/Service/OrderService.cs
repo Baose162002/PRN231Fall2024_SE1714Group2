@@ -4,6 +4,7 @@ using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 using Repository.IRepository;
+using Repository.Repository;
 using Service.IService;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace Service.Service
             _orderRepository = orderRepository;
         }
 
-        public async Task<IEnumerable<ListOrderDTO>> GetAllOrder()
+        public async Task<List<ListOrderDTO>> GetAllOrder()
         {
             var orders = await _orderRepository.GetAllOrders();
 
@@ -42,17 +43,20 @@ namespace Service.Service
             return orderList;
         }
 
-        public async Task<Order> GetOrderById(int orderId)
+        public async Task<ListOrderDTO> GetOrderById(int orderId)
         {
-            return await _orderRepository.GetOrderById(orderId);
+            var orders = await _orderRepository.GetOrderById(orderId);
+            ListOrderDTO orderDTO = _mapper.Map<ListOrderDTO>(orders);
+            return orderDTO;
         }
 
         public async Task Create(CreateOrderDTO order)
         {
-            await _orderRepository.Create(order);
+            var createOrder = _mapper.Map<Order>(order);
+            await _orderRepository.Create(createOrder);
         }
 
-        public async Task Update(Order order, int id)
+        public async Task Update(UpdateOrderDTO order, int id)
         {
             var existing = await _orderRepository.GetOrderById(id);
             if (existing != null)

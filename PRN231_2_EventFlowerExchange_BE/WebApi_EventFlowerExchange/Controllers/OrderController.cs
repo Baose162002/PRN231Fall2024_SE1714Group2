@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.DTO.Request;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
 
@@ -19,7 +20,7 @@ namespace WebApi_EventFlowerExchange.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllOrders()
         {
-            var orders = await _orderService.GetAllOrders();
+            var orders = await _orderService.GetAllOrder();
             if (orders == null || !orders.Any())
             {
                 return NotFound("Order list is empty");

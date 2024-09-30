@@ -13,9 +13,9 @@ namespace Repository.Repository
     {
         private readonly FlowerShopContext _context;
 
-        public OrderRepository(FlowerShopContext context)
+        public OrderRepository()
         {
-            _context = context;
+            _context ??= new FlowerShopContext();
         }
 
         public async Task<List<Order>> GetAllOrders()
