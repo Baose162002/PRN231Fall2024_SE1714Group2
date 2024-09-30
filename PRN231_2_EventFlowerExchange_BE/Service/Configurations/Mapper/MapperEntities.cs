@@ -34,7 +34,9 @@ namespace Service.Configurations.Mapper
 
             CreateMap<CreateFlowerDTO, Flower>();
             CreateMap<UpdateFlowerDTO, Flower>();
-
+            CreateMap<CreateUserDTO, User>();
+            CreateMap<UpdateUserDTO, User>();
+            CreateMap<User, ListUserDTO>();
             CreateMap<Company, ListCompanyDTO>();
             CreateMap<ListCompanyDTO, Company>();
             CreateMap<Flower, ListFlowerDTO>();

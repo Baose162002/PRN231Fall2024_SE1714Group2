@@ -15,7 +15,17 @@ namespace Repository.Repository
 
         public UserRepository()
         {
-            _context ??= new FlowerShopContext();
+            _context = new FlowerShopContext();
+        }
+
+        public async Task<List<User>> GetAllUsers()
+        {
+            return await _context.Users.ToListAsync();
+        }
+
+        public async Task<User> GetUserById(int id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
         }
 
         public async Task<bool> AddAsync(User user)
@@ -25,21 +35,25 @@ namespace Repository.Repository
             return result > 0;
         }
 
+        public async Task<bool> UpdateAsync(User user)
+        {
+            _context.Users.Update(user);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var user = await GetUserById(id);
+            if (user == null) return false;
+            _context.Users.Remove(user);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
+        }
+
         public async Task<User> GetByEmailAsync(string email)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        }
-
-        public async Task<User> GetUserByIdAsync(int id)
-        {
-            using (var _context = new FlowerShopContext())
-            {
-                // Tìm khách hàng theo CustomerId
-                var customer = await _context.Users.FirstOrDefaultAsync(c => c.UserId == id);
-
-                // Trả về khách hàng hoặc null nếu không tìm thấy
-                return customer;
-            }
         }
     }
 }

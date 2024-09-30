@@ -34,13 +34,14 @@ namespace RBN_Api.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IFlowerRepository, FlowerRepository>();
-
+            services.AddScoped<IUserRepository, UserRepository>();    
 
             // Register services here
             services.AddScoped<IBatchService, BatchService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IFlowerService, FlowerService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddAutoMapper(typeof(MapperEntities).Assembly);
 

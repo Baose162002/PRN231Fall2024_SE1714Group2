@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace WebApi_EventFlowerExchange.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FlowerController : ControllerBase
