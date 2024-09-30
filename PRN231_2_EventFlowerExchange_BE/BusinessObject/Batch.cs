@@ -20,7 +20,6 @@ namespace BusinessObject
         public decimal PricePerUnit { get; set; }
         public string Condition { get; set; }
         public DateTime EntryDate { get; set; }
-        public DateTime ExpirationDate { get; set; }
         public Enum.EnumList.BatchStatus BatchStatus { get; set; }
 
         public int CompanyId { get; set; }
