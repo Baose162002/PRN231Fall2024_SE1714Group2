@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(FlowerShopContext))]
-    [Migration("20240928041326_Initial")]
+    [Migration("20240930063951_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -51,9 +51,6 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EntryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("FlowerId")

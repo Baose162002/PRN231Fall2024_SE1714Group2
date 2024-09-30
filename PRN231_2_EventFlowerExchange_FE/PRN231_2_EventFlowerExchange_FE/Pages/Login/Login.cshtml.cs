@@ -61,7 +61,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Login
                     }
                     else
                     {
-                        HttpContext.Session.SetString("UserName", "User"); // Default value if FullName is null
+                        HttpContext.Session.SetString("UserName", "User"); 
                     }
 
                     return RedirectToPage("/BatchPages/BatchIndex");

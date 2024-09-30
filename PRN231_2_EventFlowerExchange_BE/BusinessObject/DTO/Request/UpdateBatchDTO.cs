@@ -16,7 +16,6 @@ namespace BusinessObject.DTO.Request
         public decimal PricePerUnit { get; set; }
         public string Condition { get; set; }
         public string EntryDate { get; set; }
-        public string ExpirationDate { get; set; }
         public string BatchStatus { get; set; }
 
         public int CompanyId { get; set; }

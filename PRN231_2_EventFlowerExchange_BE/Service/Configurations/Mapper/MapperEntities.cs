@@ -22,17 +22,15 @@ namespace Service.Configurations.Mapper
                 .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()));
             CreateMap<UpdateBatchDTO, Batch>()
                .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()))
-               .ForMember(dest => dest.EntryDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.EntryDate, "dd/MM/yyyy", CultureInfo.InvariantCulture)))
-               .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.ExpirationDate, "dd/MM/yyyy", CultureInfo.InvariantCulture))); ;
+               .ForMember(dest => dest.EntryDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.EntryDate, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
             CreateMap<ListBatchDTO, Batch>()
                 .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()));
-                 
+
             CreateMap<Batch, ListBatchDTO>()
                 .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()))
                 .ForMember(dest => dest.EntryDate,
-                opt => opt.MapFrom(src => FormatDate(src.EntryDate)))
-                .ForMember(dest => dest.ExpirationDate, 
-                opt => opt.MapFrom(src => FormatDate(src.ExpirationDate)));
+                opt => opt.MapFrom(src => FormatDate(src.EntryDate)));
+               
 
             CreateMap<CreateFlowerDTO, Flower>();
             CreateMap<UpdateFlowerDTO, Flower>();

@@ -106,7 +106,6 @@ namespace BusinessObject.Migrations
                     PricePerUnit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Condition = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EntryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BatchStatus = table.Column<int>(type: "int", nullable: false),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
                     FlowerId = table.Column<int>(type: "int", nullable: false)
