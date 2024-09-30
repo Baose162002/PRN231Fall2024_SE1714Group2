@@ -23,7 +23,7 @@ namespace Service.Service
         public async Task<bool> AddNew(CreateCompanyDTO company)
         {
             if (company == null) throw new ArgumentNullException(nameof(company));
-            if (_userRepository.GetUserByIdAsync(company.SellerId) == null)
+            if (_userRepository.GetUserById(company.SellerId) == null)
             {
             throw new ArgumentNullException(nameof(company.SellerId));
             }
@@ -73,7 +73,7 @@ namespace Service.Service
         public async Task Update(int id, CreateCompanyDTO company)
         {
             if (company == null) throw new ArgumentNullException(nameof(company));
-            if (_userRepository.GetUserByIdAsync(company.SellerId) == null)
+            if (_userRepository.GetUserById(company.SellerId) == null)
             {
                 throw new ArgumentNullException(nameof(company.SellerId));
             }
