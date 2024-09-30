@@ -11,5 +11,6 @@ namespace Repository.IRepository
     {
         Task<bool> AddAsync(User user);
         Task<User> GetByEmailAsync(string email);
+        Task<User> GetUserByIdAsync(int id);
     }
 }
