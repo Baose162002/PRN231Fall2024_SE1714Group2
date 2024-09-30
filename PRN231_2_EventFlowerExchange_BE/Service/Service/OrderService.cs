@@ -113,7 +113,6 @@ namespace Service.Service
             await _orderRepository.Create(_mapper.Map<Order>(newOrder));
         }
 
-
         public async Task Update(UpdateOrderDTO order, int id)
         {
             var existing = await _orderRepository.GetOrderById(id);
