@@ -11,18 +11,12 @@ namespace Repository.Repository
 {
     public class OrderRepository : IOrderRepository
     {
-        private readonly FlowerShopContext _context;
-
-        public OrderRepository(FlowerShopContext context)
-        {
-            _context = context;
-        }
-
         public async Task<List<Order>> GetAllOrders()
         {
+            var _context = new FlowerShopContext();
             var orders = await _context.Orders
                 .Include(o => o.Customer)
-                .Include(o => o.OrderDetails)
+                //.Include(o => o.OrderDetails)
                 //.ThenInclude(od => od.Flower) // Giả sử OrderDetail có liên kết với Flower
                 .ToListAsync();
             return orders;
@@ -30,6 +24,7 @@ namespace Repository.Repository
 
         public async Task<Order> GetOrderById(int id)
         {
+            var _context = new FlowerShopContext();
             var existing = await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.OrderDetails)
@@ -40,12 +35,14 @@ namespace Repository.Repository
 
         public async Task Create(Order order)
         {
+            var _context = new FlowerShopContext();
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
         }
 
         public async Task Update(Order order, int id)
         {
+            var _context = new FlowerShopContext();
             var existing = await GetOrderById(id);
             if (existing != null)
             {
@@ -71,6 +68,7 @@ namespace Repository.Repository
 
         public async Task Delete(int id)
         {
+            var _context = new FlowerShopContext();
             var existing = await GetOrderById(id);
             if (existing == null)
             {
