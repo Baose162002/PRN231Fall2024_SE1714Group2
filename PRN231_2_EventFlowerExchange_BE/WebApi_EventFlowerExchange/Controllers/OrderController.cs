@@ -1,10 +1,12 @@
 ﻿using BusinessObject;
 using BusinessObject.DTO.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
 
 namespace WebApi_EventFlowerExchange.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class OrderController : ControllerBase
@@ -42,7 +44,7 @@ namespace WebApi_EventFlowerExchange.Controllers
 
         // POST: api/Order
         [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDTO createOrderDTO)
+        public async Task<IActionResult> CreateOrder(CreateOrderDTO createOrderDTO)
         {
             try
             {

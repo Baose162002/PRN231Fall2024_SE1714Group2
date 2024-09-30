@@ -21,17 +21,17 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-        // Config OData
-        var modelBuilder = new ODataConventionModelBuilder();
-        modelBuilder.EntitySet<User>("User");
-        modelBuilder.EntitySet<Flower>("Flower");
-        modelBuilder.EntitySet<Batch>("Batch");
-        modelBuilder.EntitySet<Company>("Company");
-        modelBuilder.EntitySet<Review>("Review");
-        modelBuilder.EntitySet<Delivery>("Delivery");
-        modelBuilder.EntitySet<Payment>("Payment");
-        modelBuilder.EntitySet<Order>("Order");
-        modelBuilder.EntitySet<OrderDetail>("OrderDetail");
+// Config OData
+var modelBuilder = new ODataConventionModelBuilder();
+modelBuilder.EntitySet<User>("User");
+modelBuilder.EntitySet<Flower>("Flower");
+modelBuilder.EntitySet<Batch>("Batch");
+modelBuilder.EntitySet<Company>("Company");
+modelBuilder.EntitySet<Review>("Review");
+modelBuilder.EntitySet<Delivery>("Delivery");
+modelBuilder.EntitySet<Payment>("Payment");
+modelBuilder.EntitySet<Order>("Order");
+modelBuilder.EntitySet<OrderDetail>("OrderDetail");
 
 // Configure JWT Authentication
 builder.Services.AddAuthentication(options =>
@@ -75,28 +75,28 @@ builder.Services.AddAutoMapper(typeof(MapperEntities).Assembly);
 
 builder.Services.Register();
 
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IAuthService, AuthService>();
-        builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 
-        // Configure Swagger
-        builder.Services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+// Configure Swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
 
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                In = ParameterLocation.Header,
-                Description = "Please enter a valid token",
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
-                Scheme = "Bearer"
-            });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
 
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
                 {
                      new OpenApiSecurityScheme
             {
@@ -108,26 +108,26 @@ builder.Services.Register();
             },
             new string[]{}
                 }
-            });
-        });
+    });
+});
 
-        builder.Services.AddAutoMapper(typeof(MapperEntities));
+builder.Services.AddAutoMapper(typeof(MapperEntities));
 
-        builder.Services.AddControllers().AddOData(
-            options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
-                "odata",
-                modelBuilder.GetEdmModel()));
+builder.Services.AddControllers().AddOData(
+    options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
+        "odata",
+        modelBuilder.GetEdmModel()));
 
-        var app = builder.Build();
+var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-        app.UseODataBatching();
+app.UseODataBatching();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
