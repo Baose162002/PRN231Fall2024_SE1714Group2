@@ -29,6 +29,18 @@ namespace Repository.Repository
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        public async Task<User> GetUserByIdAsync(int id)
+        {
+            using (var _context = new FlowerShopContext())
+            {
+                // Tìm khách hàng theo CustomerId
+                var customer = await _context.Users.FirstOrDefaultAsync(c => c.UserId == id);
+
+                // Trả về khách hàng hoặc null nếu không tìm thấy
+                return customer;
+            }
+        }
     }
 }
     
