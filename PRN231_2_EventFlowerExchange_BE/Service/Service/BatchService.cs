@@ -63,10 +63,7 @@ namespace Service.Service
             {
                 throw new ArgumentException("Invalid create date format", nameof(batch.EntryDate));
             }
-            if (!DateTime.TryParseExact(batch.ExpirationDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out expirationDate))
-            {
-                throw new ArgumentException("Invalid update date format", nameof(batch.ExpirationDate));
-            }
+         
             var flowerexisting = await _batchRepository.GetFlowerById(batch.FlowerId);
             if(flowerexisting == null)
             {
@@ -82,7 +79,6 @@ namespace Service.Service
                 PricePerUnit = batch.PricePerUnit,
                 Condition = batch.Condition,
                 EntryDate = entryDate,
-                ExpirationDate = expirationDate,
                 BatchStatus = EnumList.BatchStatus.Available,
                 CompanyId = batch.CompanyId,
                 FlowerId = batch.FlowerId
@@ -118,10 +114,7 @@ namespace Service.Service
             {
                 throw new ArgumentException("Invalid create date format", nameof(updateBatchDTO.EntryDate));
             }
-            if (!DateTime.TryParseExact(updateBatchDTO.ExpirationDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out expirationDate))
-            {
-                throw new ArgumentException("Invalid update date format", nameof(updateBatchDTO.ExpirationDate));
-            }
+       
             Batch existing = await _batchRepository.GetBatchById(id);
             if(existing == null)
             {

@@ -54,7 +54,6 @@ namespace Repository.Repository
                 existing.PricePerUnit = batch.PricePerUnit;
                 existing.Condition = batch.Condition;
                 existing.EntryDate = batch.EntryDate;
-                existing.ExpirationDate = batch.ExpirationDate;
                 existing.BatchStatus = batch.BatchStatus;
                 existing.CompanyId = batch.CompanyId;
                 existing.FlowerId = batch.FlowerId;

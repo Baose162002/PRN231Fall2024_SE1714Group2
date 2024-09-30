@@ -17,7 +17,6 @@ namespace BusinessObject.DTO.Response
         public decimal PricePerUnit { get; set; }
         public string Condition { get; set; }
         public string EntryDate { get; set; }
-        public string ExpirationDate { get; set; }
         public string BatchStatus { get; set; }    
         public ListCompanyDTO Company { get; set; }        
         public ListFlowerDTO Flower { get; set; }

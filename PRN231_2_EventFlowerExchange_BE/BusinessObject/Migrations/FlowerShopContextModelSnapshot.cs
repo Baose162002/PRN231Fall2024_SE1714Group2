@@ -50,9 +50,6 @@ namespace BusinessObject.Migrations
                     b.Property<DateTime>("EntryDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("FlowerId")
                         .HasColumnType("int");
 
