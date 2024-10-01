@@ -33,7 +33,7 @@
                         <div class="full">
                             <div class="center-desk">
                                 <div class="logo">
-                                    <a href="index.html"><img src="~/images/logo.png" alt="#"></a>
+                                    <a href="/Index"><img src="~/images/logo.png" alt="LOGO"></a>
                                 </div>
                             </div>
                         </div>
@@ -45,10 +45,34 @@
                                     <ul class="menu-area-main">
                                         <li class="active"> <a href="#">Home</a> </li>
                                         <li> <a href="#about">About</a> </li>
-                                        <li><a href="#plant">Plant</a></li>
+                                        <li><a href="#plant">Flowers</a></li>
                                         <li><a href="#gallery">Gallery</a></li>
                                         <li><a href="#contact">Contact Us</a></li>
-                                        <li class="last"><a href="#"><img src="~/images/search_icon.png" alt="icon" /></a></li>
+                                        @if (Context.Session.GetString("UserRole") == "Admin")
+                                        {
+                                            <li class="nav-item">
+                                                <a class="nav-link text-dark" asp-area="" asp-page="/UserPages/UserIndex">User Management</a>
+                                            </li>
+                                        }
+                                        <li class="navbar-nav">
+                                            @if (Context.Session.GetString("JWTToken") != null)
+                                            {
+                                            <li class="nav-item">
+                                                <span class="nav-link text-dark">Welcome, @Context.Session.GetString("FullName")!</span>
+                                            </li>
+                                            <li class="nav-item">
+                                                <form method="post" asp-page="/Login/Logout">
+                                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
+                                                </form>
+                                            </li>
+                                            }
+                                            else
+                                            {
+                                            <li class="nav-item">
+                                                <a class="nav-link text-dark" asp-area="" asp-page="/Login/Login">Login</a>
+                                            </li>
+                                            }
+                                        </li>
                                     </ul>
                                 </nav>
                             </div>
@@ -87,26 +111,9 @@
                                     <li> <a href="#">Plant</a></li>
                                     <li> <a href="#">Gallery</a></li>
                                     <li> <a href="#">Contact us</a></li>
+                                    
                                 </ul>
-                                <ul class="navbar-nav">
-                                    @if (Context.Session.GetString("JWTToken") != null)
-                                    {
-                                        <li class="nav-item">
-                                            <span class="nav-link text-dark">Welcome, @Context.Session.GetString("FullName")!</span>
-                                        </li>
-                                        <li class="nav-item">
-                                            <form method="post" asp-page="/Login/Logout">
-                                                <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
-                                            </form>
-                                        </li>
-                                    }
-                                    else
-                                    {
-                                        <li class="nav-item">
-                                            <a class="nav-link text-dark" asp-area="" asp-page="/Login/Login">Login</a>
-                                        </li>
-                                    }
-                                </ul>
+                                
                             </div>
                         </div>
                     </div>
