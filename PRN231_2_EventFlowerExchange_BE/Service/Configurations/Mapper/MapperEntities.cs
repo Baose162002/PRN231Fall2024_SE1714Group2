@@ -37,8 +37,8 @@ namespace Service.Configurations.Mapper
             CreateMap<CreateUserDTO, User>();
             CreateMap<UpdateUserDTO, User>();
             CreateMap<User, ListUserDTO>();
-            CreateMap<Company, ListCompanyDTO>();
-            CreateMap<ListCompanyDTO, Company>();
+            CreateMap<Company, CompanyDTO>();
+            CreateMap<CompanyDTO, Company>();
             CreateMap<Flower, ListFlowerDTO>();
             CreateMap<ListFlowerDTO, Flower>();
             CreateMap<LoginUserRequest, User>()
