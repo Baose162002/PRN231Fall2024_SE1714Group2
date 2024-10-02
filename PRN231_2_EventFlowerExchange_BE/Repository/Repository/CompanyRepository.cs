@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Repository
 {
-    internal class CompanyRepository : ICompanyRepository
+    public class CompanyRepository : ICompanyRepository
     {
         private readonly FlowerShopContext flowerShopContext;
 
