@@ -47,19 +47,35 @@
                                         <li> <a href="#about">About</a> </li>
                                         <li><a href="#plant">Plant</a></li>
                                         <li><a href="#gallery">Gallery</a></li>
-                                        <li><a href="#contact">Contact Us</a></li>
-                                        <li class="last"><a href="#"><img src="~/images/search_icon.png" alt="icon" /></a></li>
+                                        @if (Context.Session.GetString("JWTToken") != null)
+                                        {
+                                            <li>
+                                                <span class="nav-link text-dark">Welcome, @Context.Session.GetString("FullName")!</span>
+                                            </li>
+                                            <li>
+                                                <form method="post" asp-page="/Login/Logout">
+                                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
+                                                </form>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="nav-item">
+                                                <a class="nav-link text-dark" asp-area="" asp-page="/Login/Login">Login</a>
+                                            </li>
+                                        }
                                     </ul>
                                 </nav>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <main style="margin-top: 200px;">
+    <main style="margin-top: 200px; padding-top: 110px;">
         @RenderBody()
     </main>
 
@@ -88,25 +104,7 @@
                                     <li> <a href="#">Gallery</a></li>
                                     <li> <a href="#">Contact us</a></li>
                                 </ul>
-                                <ul class="navbar-nav">
-                                    @if (Context.Session.GetString("JWTToken") != null)
-                                    {
-                                        <li class="nav-item">
-                                            <span class="nav-link text-dark">Welcome, @Context.Session.GetString("FullName")!</span>
-                                        </li>
-                                        <li class="nav-item">
-                                            <form method="post" asp-page="/Login/Logout">
-                                                <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
-                                            </form>
-                                        </li>
-                                    }
-                                    else
-                                    {
-                                        <li class="nav-item">
-                                            <a class="nav-link text-dark" asp-area="" asp-page="/Login/Login">Login</a>
-                                        </li>
-                                    }
-                                </ul>
+                             
                             </div>
                         </div>
                     </div>
