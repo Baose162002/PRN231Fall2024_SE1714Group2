@@ -30,15 +30,27 @@ namespace Service.Configurations.Mapper
                 .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()))
                 .ForMember(dest => dest.EntryDate,
                 opt => opt.MapFrom(src => FormatDate(src.EntryDate)));
-               
+
 
             CreateMap<CreateFlowerDTO, Flower>();
             CreateMap<UpdateFlowerDTO, Flower>();
+
+            CreateMap<CreateOrderDTO, Order>();
+            CreateMap<UpdateOrderDTO, Order>()
+                .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
+                .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.OrderDate, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
+            CreateMap<ListOrderDTO, Order>()
+                .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()));
+            CreateMap<Order, ListOrderDTO>()
+                .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
+                .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => FormatDate(src.OrderDate)));
+                
             CreateMap<CreateUserDTO, User>();
             CreateMap<UpdateUserDTO, User>();
             CreateMap<User, ListUserDTO>();
             CreateMap<Company, CompanyDTO>();
             CreateMap<CompanyDTO, Company>();
+
             CreateMap<Flower, ListFlowerDTO>();
             CreateMap<ListFlowerDTO, Flower>();
             CreateMap<LoginUserRequest, User>()

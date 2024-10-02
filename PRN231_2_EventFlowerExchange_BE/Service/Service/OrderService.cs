@@ -9,8 +9,10 @@ using Repository.Repository;
 using Service.IService;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Service.Service
@@ -21,27 +23,16 @@ namespace Service.Service
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository)
+        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IMapper mapper)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task<List<ListOrderDTO>> GetAllOrder()
         {
             var orders = await _orderRepository.GetAllOrders();
-
-            //// Mapping từ Order entity sang ListOrderDTO
-            //var orderList = orders.Select(order => new ListOrderDTO
-            //{
-            //    OrderId = order.OrderId,
-            //    OrderStatus = order.OrderStatus,
-            //    TotalPrice = order.TotalPrice,
-            //    OrderDate = order.OrderDate,
-            //    DeliveryAddress = order.DeliveryAddress,
-            //    DeliveryDate = order.DeliveryDate,
-            //    //CustomerName = order.Customer.Name // Giả sử có thuộc tính Name trong User/Customer entity
-            //}).ToList();
             var ordersDTO = _mapper.Map<List<ListOrderDTO>>(orders);
             return ordersDTO;
         }
@@ -113,30 +104,42 @@ namespace Service.Service
             await _orderRepository.Create(_mapper.Map<Order>(newOrder));
         }
 
-        public async Task Update(UpdateOrderDTO order, int id)
+        public async Task Update(UpdateOrderDTO updateOrderDTO, int id)
         {
-            var existing = await _orderRepository.GetOrderById(id);
-            if (existing != null)
+            if (updateOrderDTO == null || string.IsNullOrEmpty(updateOrderDTO.OrderStatus)
+             || string.IsNullOrEmpty(updateOrderDTO.DeliveryAddress)
+             || updateOrderDTO.TotalPrice <= 0 || updateOrderDTO.CustomerId == 0 || updateOrderDTO.OrderDetails == 0)
             {
-                // Cập nhật các thuộc tính của đơn hàng từ đối tượng `order` mới
-                existing.OrderStatus = order.OrderStatus;
-                existing.TotalPrice = order.TotalPrice;
-                existing.OrderDate = order.OrderDate;
-                existing.DeliveryAddress = order.DeliveryAddress;
-                existing.DeliveryDate = order.DeliveryDate;
-                existing.CustomerId = order.CustomerId;
-
-                // Cập nhật chi tiết đơn hàng nếu cần
-                // existing.OrderDetails = order.OrderDetails; // Tùy chỉnh theo yêu cầu
-
-                var updateOrder = _mapper.Map<Order>(order);
-                await _orderRepository.Update(updateOrder, id);
+                throw new ArgumentException("All fields must be filled with valid values");
             }
-            else
+
+            Regex statusRegex = new Regex(@"^(Pending|Shipped|Delivered|Cancelled)$");
+            if (!statusRegex.IsMatch(updateOrderDTO.OrderStatus.ToString()))
             {
-                throw new ArgumentException("Order is not existed");
+                throw new ArgumentException("Order status must be either Pending, Shipped, Delivered, or Cancelled!");
             }
+
+            string[] dateFormats = { "dd/MM/yyyy", "dd/M/yyyy", "d/MM/yyyy", "d/M/yyyy" };
+            DateTime orderDate, deliveryDate;
+            if (!DateTime.TryParseExact(updateOrderDTO.OrderDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out orderDate))
+            {
+                throw new ArgumentException("Invalid order date format", nameof(updateOrderDTO.OrderDate));
+            }
+            if (!DateTime.TryParseExact(updateOrderDTO.DeliveryDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out deliveryDate))
+            {
+                throw new ArgumentException("Invalid delivery date format", nameof(updateOrderDTO.DeliveryDate));
+            }
+
+            Order existing = await _orderRepository.GetOrderById(id);
+            if (existing == null)
+            {
+                throw new ArgumentException("Order does not exist");
+            }
+
+            var updateOrder = _mapper.Map<Order>(updateOrderDTO);
+            await _orderRepository.Update(updateOrder, id);
         }
+
 
 
         public async Task Delete(int orderId)

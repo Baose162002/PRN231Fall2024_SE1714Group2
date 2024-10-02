@@ -9,12 +9,12 @@ namespace BusinessObject.DTO.Request
 {
     public class UpdateOrderDTO
     {
-        public Enum.EnumList.OrderStatus OrderStatus { get; set; }
+        public string OrderStatus { get; set; }
         public decimal TotalPrice { get; set; }
-        public DateTime OrderDate { get; set; }
+        public string OrderDate { get; set; }
         public string DeliveryAddress { get; set; }
-        public DateTime DeliveryDate { get; set; }
+        public string DeliveryDate { get; set; }
         public int CustomerId { get; set; }
-        public ICollection<OrderDetailDTO> OrderDetails { get; set; }
+        public int OrderDetails { get; set; }
     }
 }
