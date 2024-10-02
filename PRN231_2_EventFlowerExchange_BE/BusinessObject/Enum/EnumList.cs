@@ -26,8 +26,8 @@ namespace BusinessObject.Enum
         public enum BatchStatus
         {
             Available,
-            SoldOut,
-            Expired
+            SoldOut
+            
         }
 
         public enum UserRole

@@ -18,7 +18,5 @@ namespace BusinessObject.DTO.Request
         public string EntryDate { get; set; }
         public string BatchStatus { get; set; }
 
-        public int CompanyId { get; set; }
-        public int FlowerId { get; set; }
     }
 }
