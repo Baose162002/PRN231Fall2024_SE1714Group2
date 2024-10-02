@@ -55,7 +55,6 @@ namespace Repository.Repository
                 existing.Condition = batch.Condition;
                 existing.EntryDate = batch.EntryDate;
                 existing.BatchStatus = batch.BatchStatus;
-                existing.CompanyId = batch.CompanyId;
                 existing.FlowerId = batch.FlowerId;
             }
             _context.Batches.Update(existing);

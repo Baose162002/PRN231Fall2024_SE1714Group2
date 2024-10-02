@@ -22,6 +22,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
         {
             // Lấy token từ session
             var token = HttpContext.Session.GetString("JWTToken");
+            Console.WriteLine(token);
 
             if (string.IsNullOrEmpty(token))
             {
@@ -33,7 +34,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Gọi API lấy chi tiết batch
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/batch/id?id={id}");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/batch/{id}");
 
             if (response.IsSuccessStatusCode)
             {

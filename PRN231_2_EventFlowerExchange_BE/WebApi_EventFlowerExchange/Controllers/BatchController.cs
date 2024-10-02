@@ -28,7 +28,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             }
             return Ok(batches);
         }
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetBatchById(int id)
         {
             var batches = await _batchService.GetBatchById(id);
@@ -52,7 +52,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             }
         }
 
-        [HttpPut("id")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBatch([FromBody]UpdateBatchDTO updateBatchDTO, int id)
         {
             try
@@ -65,7 +65,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             }
         }
 
-        [HttpDelete("id")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBatch(int id)
         {
             try

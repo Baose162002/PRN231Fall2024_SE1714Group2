@@ -1,0 +1,40 @@
+﻿@page "{id:int}"
+@model PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages.FlowerDetailsModel
+@{
+    ViewData["Title"] = "Flower Details";
+}
+
+<div class="container mt-5 pt-4" style="margin-top: 100px;">
+    @if (Model.Flower != null)
+    {
+        <h1 class="mb-4">@Model.Flower.Name</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <img src="~/images/@Model.Flower.Image" alt="@Model.Flower.Name" class="img-fluid" />
+            </div>
+            <div class="col-md-6">
+                <dl class="row">
+                    <dt class="col-sm-3">Type</dt>
+                    <dd class="col-sm-9">@Model.Flower.Type</dd>
+
+                    <dt class="col-sm-3">Price</dt>
+                    <dd class="col-sm-9">$@Model.Flower.PricePerUnit</dd>
+
+                    <dt class="col-sm-3">Origin</dt>
+                    <dd class="col-sm-9">@Model.Flower.Origin</dd>
+
+                    <dt class="col-sm-3">Color</dt>
+                    <dd class="col-sm-9">@Model.Flower.Color</dd>
+
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">@Model.Flower.Description</dd>
+                </dl>
+                <a href="/Index" class="btn btn-secondary mt-3">Back to List</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p class="text-danger">Unable to load flower details.</p>
+    }
+</div>
