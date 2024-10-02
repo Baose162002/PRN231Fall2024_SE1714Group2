@@ -1,0 +1,49 @@
+﻿@page
+@model PRN231_2_EventFlowerExchange_FE.Pages.UserPages.UserIndexModel
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<h2>User Management</h2>
+
+<p>
+    <a asp-page="Create" class="btn btn-primary">Create New User</a>
+</p>
+
+@if (!Model.Users.Any())
+{
+    <p>No users found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.Users)
+            {
+                <tr>
+                    <td>@user.UserId</td>
+                    <td>@user.FullName</td>
+                    <td>@user.Email</td>
+                    <td>@user.Phone</td>
+                    <td>@user.Address</td>
+                    <td>@user.Role</td>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@user.UserId" class="btn btn-primary btn-sm">Edit</a>
+                        <a asp-page="./Delete" asp-route-id="@user.UserId" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
