@@ -35,6 +35,7 @@ namespace RBN_Api.Extensions
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IFlowerRepository, FlowerRepository>();
             services.AddScoped<IUserRepository, UserRepository>();    
+            services.AddScoped<IReviewRepository, ReviewRepository>();    
 
             // Register services here
             services.AddScoped<IBatchService, BatchService>();
@@ -42,6 +43,7 @@ namespace RBN_Api.Extensions
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IFlowerService, FlowerService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IReviewService, ReviewService>();
 
             services.AddAutoMapper(typeof(MapperEntities).Assembly);
 

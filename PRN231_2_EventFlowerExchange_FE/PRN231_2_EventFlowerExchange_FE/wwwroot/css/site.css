@@ -20,3 +20,12 @@ html {
 body {
   margin-bottom: 60px;
 }
+.content-wrapper {
+    padding-top: 60px; /* Adjust this value based on your header height */
+}
+
+@media (max-width: 768px) {
+    .content-wrapper {
+        padding-top: 80px; /* Increase padding for mobile views if needed */
+    }
+}
