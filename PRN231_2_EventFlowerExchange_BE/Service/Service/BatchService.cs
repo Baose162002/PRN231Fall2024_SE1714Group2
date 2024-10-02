@@ -91,14 +91,14 @@ namespace Service.Service
             if (updateBatchDTO == null || string.IsNullOrEmpty(updateBatchDTO.FlowerType)
              || string.IsNullOrEmpty(updateBatchDTO.Description)
              || string.IsNullOrEmpty(updateBatchDTO.Condition)
-           || updateBatchDTO.PricePerUnit == null || updateBatchDTO.BatchQuantity == null || updateBatchDTO.CompanyId == null)
+           || updateBatchDTO.PricePerUnit == null || updateBatchDTO.BatchQuantity == null)
             {
                 throw new ArgumentException("All fieds must be filled");
             }
-            Regex statusRegex = new Regex(@"^(Available|SoldOut|Expired)$");
+            Regex statusRegex = new Regex(@"^(Available|SoldOut)$");
             if (!statusRegex.IsMatch(updateBatchDTO.BatchStatus.ToString()))
             {
-                throw new ArgumentException("Status must be either Available, SoldOut, Expired!");
+                throw new ArgumentException("Status must be either Available, SoldOut!");
             }
             if (updateBatchDTO.PricePerUnit < 0)
             {
@@ -120,11 +120,7 @@ namespace Service.Service
             {
                 throw new ArgumentException("Batch is not existed");
             }
-            var flowerexisting = await _batchRepository.GetFlowerById(updateBatchDTO.FlowerId);
-            if (flowerexisting == null)
-            {
-                throw new ArgumentException("Flower is not existed");
-            }
+           
 
             var updatebatch = _mapper.Map<Batch>(updateBatchDTO);
             await _batchRepository.Update(updatebatch, id);

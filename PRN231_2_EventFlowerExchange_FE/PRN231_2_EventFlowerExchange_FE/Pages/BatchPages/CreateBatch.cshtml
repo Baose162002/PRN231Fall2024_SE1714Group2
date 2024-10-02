@@ -1,71 +1,77 @@
 ﻿@page
 @model PRN231_2_EventFlowerExchange_FE.Pages.BatchPages.CreateBatchModel
 @{
-    ViewData["Title"] = "Create Batch";
+    ViewData["Title"] = "Create New Batch";
 }
-
-<div class="container mt-4">
-    <h1 class="mb-4">Create Batch</h1>
-    <form id="createBatchForm">
+<div class="container mt-5 pt-4">
+    <h1 class="mb-4">Create New Batch</h1>
+    @if (!string.IsNullOrEmpty(TempData["SuccessMessage"] as string))
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var modelState in ViewData.ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+    <form method="post">
         <div class="form-group">
-            <label for="flowerType">Flower Type</label>
-            <input type="text" class="form-control" id="flowerType" name="flowerType" required>
+            <label asp-for="Input.FlowerType">Flower Type</label>
+            <input asp-for="Input.FlowerType" class="form-control" />
+            <span asp-validation-for="Input.FlowerType" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label for="pricePerUnit">Price Per Unit</label>
-            <input type="number" class="form-control" id="pricePerUnit" name="pricePerUnit" step="0.01" required>
+            <label asp-for="Input.ImgFlower">Flower Img</label>
+            <input asp-for="Input.ImgFlower" class="form-control" />
+            <span asp-validation-for="Input.ImgFlower" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label for="description">Description</label>
-            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            <label asp-for="Input.PricePerUnit">Price Per Unit</label>
+            <input asp-for="Input.PricePerUnit" class="form-control" />
+            <span asp-validation-for="Input.PricePerUnit" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label for="batchQuantity">Quantity</label>
-            <input type="number" class="form-control" id="batchQuantity" name="batchQuantity" required>
+            <label asp-for="Input.Description">Description</label>
+            <textarea asp-for="Input.Description" class="form-control"></textarea>
+            <span asp-validation-for="Input.Description" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label for="condition">Condition</label>
-            <input type="text" class="form-control" id="condition" name="condition" required>
+            <label asp-for="Input.BatchQuantity">Quantity</label>
+            <input asp-for="Input.BatchQuantity" class="form-control" />
+            <span asp-validation-for="Input.BatchQuantity" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label for="entryDate">Entry Date</label>
-            <input type="date" class="form-control" id="entryDate" name="entryDate" required>
+            <label asp-for="Input.Condition">Condition</label>
+            <input asp-for="Input.Condition" class="form-control" />
+            <span asp-validation-for="Input.Condition" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label for="expirationDate">Expiration Date</label>
-            <input type="date" class="form-control" id="expirationDate" name="expirationDate" required>
+            <label asp-for="Input.EntryDate">Entry Date</label>
+            <input asp-for="Input.EntryDate" class="form-control" type="date" />
+            <span asp-validation-for="Input.EntryDate" class="text-danger"></span>
         </div>
-        <button type="submit" class="btn btn-primary">Create Batch</button>
-        <a href="/BatchPages/BatchIndex" class="btn btn-secondary">Cancel</a>
+        <div class="form-group">
+            <label asp-for="Input.CompanyId">Company ID</label>
+            <input asp-for="Input.CompanyId" class="form-control" />
+            <span asp-validation-for="Input.CompanyId" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.FlowerId">Flower ID</label>
+            <input asp-for="Input.FlowerId" class="form-control" />
+            <span asp-validation-for="Input.FlowerId" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a href="/BatchIndex" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
-
-@section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('createBatchForm');
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const batchData = Object.fromEntries(formData.entries());
-
-                fetch('@Model.BaseApiUrl/Batch', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(batchData),
-                })
-                    .then(response => response.text())
-                    .then(data => {
-                        alert(data);
-                        window.location.href = '/BatchPages/BatchIndex';
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                        alert('Error creating batch');
-                    });
-            });
-        });
-    </script>
-}

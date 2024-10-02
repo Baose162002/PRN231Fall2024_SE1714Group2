@@ -82,37 +82,40 @@
 <div id="plant" class="plants">
     <div class="container">
         <div class="row">
-            <div class="col-md-12 ">
+            <div class="col-md-12">
                 <div class="titlepage">
-                    <h2>Our Wonderful plants</h2>
-                    <span>looking at its layout. The point of using Lorem Ipsumletters, as opposed to usingl</span>
+                    <h2>Our Wonderful Plants</h2>
+                    <span>looking at its layout. The point of using Lorem Ipsum letters, as opposed to using</span>
                 </div>
             </div>
         </div>
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                <div class="plants-box">
-                    <figure><img src="~/images/plant1.jpg" alt="img" /></figure>
-                    <h3> Floral Vibrant</h3>
-                    <p>It is a long established fact that a reader will be distracted by the readable content of a page   when looking at its layout. The point of using Lorem Ipsumletters, as opposed to using</p>
-                </div>
-            </div>
-            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                <div class="plants-box">
-                    <figure><img src="~/images/plant2.jpg" alt="img" /></figure>
-                    <h3> Floral Vibrant</h3>
-                    <p>It is a long established fact that a reader will be distracted by the readable content of a page   when looking at its layout. The point of using Lorem Ipsumletters, as opposed to using</p>
-                </div>
-            </div>
-            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                <div class="plants-box">
-                    <figure><img src="~/images/plant3.jpg" alt="img" /></figure>
-                    <h3> Floral Vibrant</h3>
-                    <p>It is a long established fact that a reader will be distracted by the readable content of a page   when looking at its layout. The point of using Lorem Ipsumletters, as opposed to using</p>
-                </div>
-            </div>
+            @if (Model.Flowers != null && Model.Flowers.Count > 0)
+            {
+                foreach (var flower in Model.Flowers)
+                {
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                        <div class="plants-box">
+                            <a href="/FlowerPages/FlowerDetails/@flower.FlowerId">
+                                <figure>
+                                    <img src="~/images/@flower.Image" alt="@flower.Name" />
+                                </figure>
+                                <h3>@flower.Name</h3>
+                                <p>@flower.Description</p>
+                                <p><strong>Price:</strong> $@flower.PricePerUnit</p>
+                                <p><strong>Origin:</strong> @flower.Origin</p>
+                                <p><strong>Color:</strong> @flower.Color</p>
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No plants available.</p>
+            }
         </div>
     </div>
 </div>
@@ -213,56 +216,3 @@
     </div>
 </div>
 
-<div id="contact" class="contact">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="titlepage">
-                    <h2>Contact Us</h2>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 paddimg-right">
-                <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                        <form>
-                            <div class="row">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                    <input class="form-control" placeholder="Name" type="text" name="Name">
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                    <input class="form-control" placeholder="Email" type="text" name="Email">
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                    <input class="form-control" placeholder="Phone" type="text" name="Phone">
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                    <textarea class="textarea" placeholder="Message" type="text" name="Message"></textarea>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                    <a href="#">Submit</a>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                        <div class="map_section">
-                            <figure><img src="~/images/map.jpg"></figure>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 paddimg-left">
-                <div class="Nursery-img">
-                    <figure>
-                        <img src="~/images/contactimg.jpg" alt="img" />
-                        <div class="text-box">
-                            <h3>Best Green Nursery</h3>
-                        </div>
-                    </figure>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>

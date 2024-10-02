@@ -1,70 +1,58 @@
-﻿@page
+﻿@page "/BatchIndex"
 @model PRN231_2_EventFlowerExchange_FE.Pages.BatchPages.BatchIndexModel
 @{
     ViewData["Title"] = "Batch List";
 }
-
-<div class="container mt-4">
+<div class="container mt-5 pt-4">
     <h1 class="mb-4">Batch List</h1>
+    <a href="/BatchPages/CreateBatch" class="btn btn-primary mb-3">Create New Batch</a>
 
-    <div id="batchTable">
-        <!-- Table will be populated by JavaScript -->
-    </div>
+    @if (Model.Batches != null && Model.Batches.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Flower Type</th>
+                        <th>Price Per Unit</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Condition</th>
+                        <th>Entry Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var batch in Model.Batches)
+                    {
+                        <tr>
+                            <td>@batch.FlowerType</td>
+                            <td>@batch.PricePerUnit.ToString("C")</td>
+                            <td>@batch.Description</td>
+                            <td>@batch.BatchQuantity</td>
+                            <td>@batch.Condition</td>
+                            <td>@batch.EntryDate</td>
+                            <td>
+                                <a href="/BatchPages/BatchDetails?id=@batch.BatchId" class="btn btn-info btn-sm">Details</a>
+                                <a href="/BatchPages/EditBatch?id=@batch.BatchId" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="/BatchPages/DeleteBatch/@batch.BatchId" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            No batches available at the moment.
+        </div>
+    }
 </div>
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const batches = @Html.Raw(Json.Serialize(Model.Batches));
-            const batchTable = document.getElementById('batchTable');
-
-            if (batches && batches.length > 0) {
-                let tableHtml = `
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead class="thead-dark">
-                                        <tr>
-                                            <th>Flower Type</th>
-                                            <th>Price Per Unit</th>
-                                            <th>Description</th>
-                                            <th>Quantity</th>
-                                            <th>Condition</th>
-                                            <th>Entry Date</th>
-                                            <th>Expiration Date</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                        `;
-
-                batches.forEach(batch => {
-                    tableHtml += `
-                                <tr>
-                                    <td>${batch.flowerType}</td>
-                                    <td>${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(batch.pricePerUnit)}</td>
-                                    <td>${batch.description}</td>
-                                    <td>${batch.batchQuantity}</td>
-                                    <td>${batch.condition}</td>
-                                    <td>${new Date(batch.entryDate).toLocaleDateString()}</td>
-                                    <td>${new Date(batch.expirationDate).toLocaleDateString()}</td>
-                                    <td>
-                                         <a href="/BatchPages/BatchDetails?id=${batch.batchId}" class="btn btn-info btn-sm">Details</a>
-                                         <a href="/BatchPages/EditBatch?id=${batch.batchId}" class="btn btn-warning btn-sm">Edit</a>
-                                        <a href="/BatchPages/DeleteBatch?id=${batch.batchId}" class="btn btn-danger btn-sm">Delete</a>
-                                    </td>
-                                </tr>
-                            `;
-                });
-
-                tableHtml += `</tbody></table></div>`;
-                batchTable.innerHTML = tableHtml;
-            } else {
-                batchTable.innerHTML = `
-                            <div class="alert alert-info" role="alert">
-                                No batches available at the moment.
-                            </div>
-                        `;
-            }
-        });
+        // Add any additional JavaScript functionality here if needed
     </script>
 }

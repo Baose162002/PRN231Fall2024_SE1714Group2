@@ -23,6 +23,7 @@
      transition: ease all 0.5s;
 }
 
+
 html {
      scroll-behavior: smooth;
 }
@@ -234,7 +235,6 @@ button {
      display: flex;
      justify-content: center;
      position: relative;
-     margin-bottom: 50px;
 }
 
 .main_heading h2 {
@@ -1048,7 +1048,9 @@ ul.top_icon li a {
 }
 
 .main-menu {
-     text-align: center;
+    text-align: center;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .main-menu ul {
@@ -1142,6 +1144,7 @@ ul.top_icon li a {
      position: absolute;
      top: 100%;
 }
+
 .main-menu ul>li {
      position: inherit;
      display: inline-block;
@@ -1827,7 +1830,7 @@ img.zoom {
      margin: 10px auto;
      width: 283px;
      height: 6px;
-     background: #308409;
+     background: #ffffff;
 }
 .Gallery .Gallery-box:hover .hoverle {
      position: absolute;
@@ -1885,7 +1888,6 @@ img.zoom {
      margin: 0px;
 }
 form {
-     background: #308409;
      padding: 35px 30px;
 }
 .map_section figure img {
@@ -1950,8 +1952,9 @@ textarea {
      width: 100%;
 }
 .footer {
-     background-color: #212120;
-     text-align: center;
+    background-color: #212120;
+    margin-top: 50px;
+    text-align: center;
 }
 .footer .headinga h3 {
      font-size: 38px;
@@ -2015,7 +2018,6 @@ ul.location_icon span {
      font-weight: 400;
 }
 .copyright {
-     background: #308409;
      padding: 20px 0px 20px 0;
 }
 .copyright p {

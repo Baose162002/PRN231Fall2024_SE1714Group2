@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BusinessObject.DTO.Request
 {
-    public class CreateUserDTO
+    public class UpdateUserDTO
     {
         [Required(ErrorMessage = "Full name is required")]
         public string FullName { get; set; }
@@ -16,9 +16,6 @@ namespace BusinessObject.DTO.Request
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email format")]
         public string Email { get; set; }
-
-        [Required(ErrorMessage = "Password is required")]
-        public string Password { get; set; }
 
         [Phone(ErrorMessage = "Invalid phone number format")]
         public string Phone { get; set; }

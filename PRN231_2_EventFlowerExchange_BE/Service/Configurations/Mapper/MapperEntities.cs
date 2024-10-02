@@ -44,16 +44,22 @@ namespace Service.Configurations.Mapper
             CreateMap<Order, ListOrderDTO>()
                 .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
                 .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => FormatDate(src.OrderDate)));
+                
+            CreateMap<CreateUserDTO, User>();
+            CreateMap<UpdateUserDTO, User>();
+            CreateMap<User, ListUserDTO>();
+            CreateMap<Company, CompanyDTO>();
+            CreateMap<CompanyDTO, Company>();
 
-
-
-            CreateMap<Company, ListCompanyDTO>();
-            CreateMap<ListCompanyDTO, Company>();
             CreateMap<Flower, ListFlowerDTO>();
             CreateMap<ListFlowerDTO, Flower>();
             CreateMap<LoginUserRequest, User>()
-     .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-     .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password));
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password));
+            CreateMap<CreateReviewDTO, Review>();
+            CreateMap<UpdateReviewDTO, Review>();
+            CreateMap<Review, ListReviewDTO>()
+                .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.FullName));
 
         }
         private string FormatDate(DateTime? date)

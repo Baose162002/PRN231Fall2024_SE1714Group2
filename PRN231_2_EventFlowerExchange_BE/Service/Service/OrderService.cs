@@ -77,7 +77,7 @@ namespace Service.Service
             }
 
             // Kiểm tra xem khách hàng có tồn tại không
-            var customerExisting = await _userRepository.GetUserByIdAsync(orderDTO.CustomerId);
+            var customerExisting = await _userRepository.GetUserById(orderDTO.CustomerId);
             if (customerExisting == null)
             {
                 throw new ArgumentException("Customer is not existed");

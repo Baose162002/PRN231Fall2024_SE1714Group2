@@ -24,11 +24,12 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
         {
             // Lấy token từ session
             var token = HttpContext.Session.GetString("JWTToken");
+            
 
             if (string.IsNullOrEmpty(token))
             {
                 // Nếu không có token, redirect về trang đăng nhập
-                return RedirectToPage("/Login");
+                return RedirectToPage("/Login/Login");
             }
 
             // Thêm token vào header của HttpClient
