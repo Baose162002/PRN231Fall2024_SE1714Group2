@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Json;
 using BusinessObject.Dto.Request;
@@ -64,7 +64,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Login
                         HttpContext.Session.SetString("UserName", "User"); 
                     }
 
-                    return RedirectToPage("/BatchPages/BatchIndex");
+                    return RedirectToPage("/Index");
                 }
             }
 

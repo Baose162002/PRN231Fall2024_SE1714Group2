@@ -14,11 +14,25 @@
     <link rel="icon" href="~/images/fevicon.png" type="image/gif" />
     <link rel="stylesheet" href="~/css/jquery.mCustomScrollbar.min.css">
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen"> <!--[if lt IE 9]> <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script> <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script> <![endif]-->
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+            margin-top: 200px; /* Adjust this value as needed */
+        }
+
+    </style>
 </head>
 <body class="main-layout">
     <div class="loader_bg">
@@ -29,15 +43,7 @@
         <div class="header">
             <div class="container">
                 <div class="row">
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
-                        <div class="full">
-                            <div class="center-desk">
-                                <div class="logo">
-                                    <a href="/Index"><img src="~/images/logo.png" alt="LOGO"></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- ... other header content ... -->
                     <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
                         <div class="menu-area">
                             <div class="limit-box">
@@ -46,33 +52,31 @@
                                         <li class="active"> <a href="#">Home</a> </li>
                                         <li> <a href="#about">About</a> </li>
                                         <li><a href="#plant">Flowers</a></li>
-                                        <li><a href="#gallery">Gallery</a></li>
+                                        <li><a href="/BatchPages/BatchIndex">Batch</a></li>
                                         <li><a href="#contact">Contact Us</a></li>
-                                        @if (Context.Session.GetString("UserRole") == "Admin")
+                                   @*      @if (Context.Session.GetString("UserRole") == "Admin")
                                         {
                                             <li class="nav-item">
                                                 <a class="nav-link text-dark" asp-area="" asp-page="/UserPages/UserIndex">User Management</a>
                                             </li>
-                                        }
-                                        <li class="navbar-nav">
-                                            @if (Context.Session.GetString("JWTToken") != null)
-                                            {
+                                        } *@
+                                        @if (Context.Session.GetString("JWTToken") != null)
+                                        {
                                             <li class="nav-item">
-                                                <span class="nav-link text-dark">Welcome, @Context.Session.GetString("FullName")!</span>
+                                                <span class="nav-link text-dark">Welcome, @Context.Session.GetString("UserName")!</span>
                                             </li>
                                             <li class="nav-item">
                                                 <form method="post" asp-page="/Login/Logout">
                                                     <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
                                                 </form>
                                             </li>
-                                            }
-                                            else
-                                            {
+                                        }
+                                        else
+                                        {
                                             <li class="nav-item">
                                                 <a class="nav-link text-dark" asp-area="" asp-page="/Login/Login">Login</a>
                                             </li>
-                                            }
-                                        </li>
+                                        }
                                     </ul>
                                 </nav>
                             </div>
@@ -84,7 +88,7 @@
         </div>
     </header>
 
-    <main style="margin-top: 200px; padding-top: 110px;">
+    <main style="margin-top: 200px;">
         @RenderBody()
     </main>
 
@@ -112,9 +116,9 @@
                                     <li> <a href="#">Plant</a></li>
                                     <li> <a href="#">Gallery</a></li>
                                     <li> <a href="#">Contact us</a></li>
-                                    
+
                                 </ul>
-                             
+                                
                             </div>
                         </div>
                     </div>

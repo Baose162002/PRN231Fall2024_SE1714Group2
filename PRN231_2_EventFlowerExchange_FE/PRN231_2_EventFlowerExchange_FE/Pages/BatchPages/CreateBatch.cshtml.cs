@@ -70,7 +70,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["SuccessMessage"] = "Batch created successfully!";
-                    return RedirectToPage("./BatchIndex");
+                    return RedirectToPage("/BatchIndex");
                 }
                 else
                 {
