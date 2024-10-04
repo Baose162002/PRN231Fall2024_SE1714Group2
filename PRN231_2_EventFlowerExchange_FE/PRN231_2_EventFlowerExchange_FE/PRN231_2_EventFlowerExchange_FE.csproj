@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -10,4 +10,13 @@
     <ProjectReference Include="..\..\PRN231_2_EventFlowerExchange_BE\BusinessObject\BusinessObject.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<UpToDateCheckBuilt Include="wwwroot/css/site.css" Set="Css" />
+		<UpToDateCheckBuilt Include="tailwind.config.js" Set="Css" />
+	</ItemGroup>
+
+	<Target Name="Tailwind" BeforeTargets="Build">
+		<Exec Command="npm run css:build"/>
+	</Target>
+	
 </Project>

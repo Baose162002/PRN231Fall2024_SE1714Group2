@@ -1,0 +1,75 @@
+﻿<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<header x-data="{ isOpen: false }" class="bg-white shadow-md fixed w-full z-50">
+    <nav class="container mx-auto px-6 py-3">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="index.html" class="text-gray-800 text-xl font-bold md:text-2xl hover:text-gray-700">
+                    <img src="~/images/logo.png" alt="Logo" class="h-8 w-8 mr-2 inline-block">
+                    Greeno
+                </a>
+            </div>
+            <div class="hidden md:flex items-center space-x-8 justify-center flex-grow">
+                <a href="#" class="navbar-item text-gray-800 hover:text-indigo-600">Home</a>
+                <a href="#about" class="navbar-item text-gray-800 hover:text-indigo-600">About</a>
+                <a href="#plant" class="navbar-item text-gray-800 hover:text-indigo-600">Flowers</a>
+                <a href="/BatchPages/BatchIndex" class="navbar-item text-gray-800 hover:text-indigo-600">Batch</a>
+                <a href="#contact" class="navbar-item text-gray-800 hover:text-indigo-600">Contact Us</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-4">
+                @if (Context.Session.GetString("JWTToken") != null)
+                {
+                    <span class="navbar-item text-gray-800">Welcome, @Context.Session.GetString("UserName")!</span>
+                    <form method="post" asp-page="/Login/Logout">
+                        <button type="submit" class="btn-primary text-white px-4 py-2 rounded-md">Logout</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-area="" asp-page="/Login/Login" class="navbar-item text-gray-800 hover:text-indigo-600">Login</a>
+                    <a asp-area="" asp-page="/Login/Register" class="btn-primary text-white px-4 py-2 rounded-md">Register</a>
+                }
+            </div>
+            <div class="md:hidden flex items-center">
+                <button x-on:click="isOpen = !isOpen" class="outline-none mobile-menu-button">
+                    <svg class="w-6 h-6 text-gray-500 hover:text-indigo-600"
+                         x-show="!isOpen"
+                         fill="none"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         stroke-width="2"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <svg class="w-6 h-6 text-gray-500 hover:text-indigo-600"
+                         x-show="isOpen"
+                         fill="none"
+                         stroke="currentColor"
+                         viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div x-show="isOpen" class="md:hidden mt-3">
+            <a href="#" class="block py-2 px-4 text-sm hover:bg-indigo-600 hover:text-white rounded transition duration-200">Home</a>
+            <a href="#about" class="block py-2 px-4 text-sm hover:bg-indigo-600 hover:text-white rounded transition duration-200">About</a>
+            <a href="#plant" class="block py-2 px-4 text-sm hover:bg-indigo-600 hover:text-white rounded transition duration-200">Flowers</a>
+            <a href="/BatchPages/BatchIndex" class="block py-2 px-4 text-sm hover:bg-indigo-600 hover:text-white rounded transition duration-200">Batch</a>
+            <a href="#contact" class="block py-2 px-4 text-sm hover:bg-indigo-600 hover:text-white rounded transition duration-200">Contact Us</a>
+            @if (Context.Session.GetString("JWTToken") != null)
+            {
+                <span class="block py-2 px-4 text-sm">Welcome, @Context.Session.GetString("UserName")!</span>
+                <form method="post" asp-page="/Login/Logout">
+                    <button type="submit" class="block w-full text-left py-2 px-4 text-sm hover:bg-indigo-600 hover:text-white rounded transition duration-200">Logout</button>
+                </form>
+            }
+            else
+            {
+                <a asp-area="" asp-page="/Login/Login" class="block py-2 px-4 text-sm hover:bg-indigo-600 hover:text-white rounded transition duration-200">Login</a>
+                <a asp-area="" asp-page="/Login/Register" class="block py-2 px-4 text-sm bg-indigo-600 text-white rounded mt-2">Register</a>
+            }
+        </div>
+    </nav>
+</header>
