@@ -25,5 +25,7 @@ namespace BusinessObject
         public int DeliveryPersonnelId { get; set; }
         [ForeignKey("DeliveryPersonnelId")]
         public User DeliveryPersonnel { get; set; }
+        public Enum.EnumList.Status Status { get; set; }
+
     }
 }

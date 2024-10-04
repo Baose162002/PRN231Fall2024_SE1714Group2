@@ -23,7 +23,8 @@ namespace BusinessObject.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PricePerUnit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Origin = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -41,7 +42,8 @@ namespace BusinessObject.Migrations
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Role = table.Column<int>(type: "int", nullable: false)
+                    Role = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -57,14 +59,15 @@ namespace BusinessObject.Migrations
                     CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CompanyAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CompanyDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SellerId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Company", x => x.CompanyId);
                     table.ForeignKey(
-                        name: "FK_Company_User_SellerId",
-                        column: x => x.SellerId,
+                        name: "FK_Company_User_UserId",
+                        column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
@@ -108,7 +111,8 @@ namespace BusinessObject.Migrations
                     EntryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BatchStatus = table.Column<int>(type: "int", nullable: false),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
-                    FlowerId = table.Column<int>(type: "int", nullable: false)
+                    FlowerId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -137,7 +141,8 @@ namespace BusinessObject.Migrations
                     PickupTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeliveryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     OrderId = table.Column<int>(type: "int", nullable: false),
-                    DeliveryPersonnelId = table.Column<int>(type: "int", nullable: false)
+                    DeliveryPersonnelId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -212,7 +217,8 @@ namespace BusinessObject.Migrations
                     Feedback = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BatchId = table.Column<int>(type: "int", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false)
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -241,9 +247,9 @@ namespace BusinessObject.Migrations
                 column: "FlowerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Company_SellerId",
+                name: "IX_Company_UserId",
                 table: "Company",
-                column: "SellerId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Delivery_DeliveryPersonnelId",

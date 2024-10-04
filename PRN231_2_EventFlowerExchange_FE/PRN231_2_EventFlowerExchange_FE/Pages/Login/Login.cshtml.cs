@@ -4,6 +4,8 @@ using System.Net.Http.Json;
 using BusinessObject.Dto.Request;
 using BusinessObject.Dto.Response;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.Login
 {
@@ -45,10 +47,16 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Login
                 var loginResult = await response.Content.ReadFromJsonAsync<UserResponseDto>(options);
                 if (loginResult != null)
                 {
+                   
                     if (!string.IsNullOrEmpty(loginResult.Token))
                     {
                         HttpContext.Session.SetString("JWTToken", loginResult.Token);
                     }
+                    if (loginResult.UserId != 0) 
+                    {
+                        HttpContext.Session.SetString("UserId", loginResult.UserId.ToString());
+                    }
+
 
                     if (!string.IsNullOrEmpty(loginResult.Role))
                     {

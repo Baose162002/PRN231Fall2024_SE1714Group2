@@ -16,10 +16,10 @@ namespace BusinessObject
         public string CompanyName { get; set; }
         public string CompanyAddress { get; set; }
         public string CompanyDescription { get; set; }
-
-        public int SellerId { get; set; }
-        [ForeignKey("SellerId")]
+        public int UserId { get; set; }
+        [ForeignKey("UserId")]
         public User Seller { get; set; }
+        public Enum.EnumList.Status Status { get; set; }
 
         public ICollection<Batch> Batches { get; set; }
     }

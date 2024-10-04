@@ -19,7 +19,8 @@ namespace BusinessObject
         public string Phone { get; set; }
         public string Address { get; set; }
         public Enum.EnumList.UserRole Role { get; set; }
-
+        public Enum.EnumList.Status Status { get; set; }
+        
         public ICollection<Order> Orders { get; set; }
         public ICollection<Review> Reviews { get; set; }
         public ICollection<Delivery> Deliveries { get; set; }

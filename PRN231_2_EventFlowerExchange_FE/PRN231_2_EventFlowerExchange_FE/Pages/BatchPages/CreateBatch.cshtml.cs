@@ -11,6 +11,8 @@ using BusinessObject.DTO.Request;
 using System.Security.Claims;
 using BusinessObject.DTO.Response;
 using System.Net.Http.Headers;
+using BusinessObject;
+using PRN231_2_EventFlowerExchange_FE.Service;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
 {
@@ -28,15 +30,19 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
         }
 
         [BindProperty]
-        public CreateBatchDTO Input { get; set; }
+        public CreateBatchDTOUpdateImg Input { get; set; }
 
+        [BindProperty]
+        public IFormFile ImageFlower { get; set; }
         public void OnGet()
         {
-            Input = new CreateBatchDTO();
+            Input = new CreateBatchDTOUpdateImg();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("Input.ImgFlower");
+
             try
             {
                 if (!ModelState.IsValid)
@@ -51,18 +57,26 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                     ModelState.AddModelError(string.Empty, "You are not authenticated. Please log in.");
                     return Page();
                 }
+
                 // First, create the flower
                 var flowerInput = new CreateFlowerDTO
                 {
                     Name = Request.Form["FlowerName"],
                     Type = Input.FlowerType,
-                    Image = Request.Form["FlowerImage"],
                     Description = Input.Description,
                     PricePerUnit = Input.PricePerUnit,
                     Origin = Request.Form["Origin"],
                     Color = Request.Form["Color"]
                 };
+                if (ImageFlower != null && ImageFlower.Length > 0)
+                {
+                    var cloudinaryService = new CloudinaryService(_configuration);
+                    var imageUrl = await cloudinaryService.UploadImageAsync(ImageFlower);
 
+                    // Set the uploaded image URL to the flower DTO
+                    flowerInput.Image = imageUrl;
+                    Input.ImgFlower = imageUrl;
+                }
                 var flowerJson = JsonSerializer.Serialize(flowerInput);
                 var flowerContent = new StringContent(flowerJson, Encoding.UTF8, "application/json");
 
@@ -74,7 +88,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                 if (flowerResponse.IsSuccessStatusCode)
                 {
                     var responseContent = await flowerResponse.Content.ReadAsStringAsync();
-                    var createdFlower = JsonSerializer.Deserialize<ListFlowerDTO>(responseContent); // Define this class to match the response
+                    var createdFlower = JsonSerializer.Deserialize<ListFlowerDTO>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }); // Define this class to match the response
                     Input.FlowerId = createdFlower.FlowerId; // Set the FlowerId in the BatchInput
                 }
                 else
@@ -97,19 +111,31 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                     return Page();
                 }
 
-                // Get UserId from claims
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                // Fetch CompanyId using UserId
-                var company = await GetCompanyByUserIdAsync(userId);
-                if (company != null)
+                // Lấy UserId từ session
+                var userIdString = HttpContext.Session.GetString("UserId");
+                if (string.IsNullOrEmpty(userIdString))
                 {
-                    Input.CompanyId = company.CompanyId; // Assign CompanyId to Input
+                    ModelState.AddModelError(string.Empty, "User ID not found in session.");
+                    return Page();
                 }
-                else
+
+                // Chuyển đổi UserId sang kiểu int
+                if (!int.TryParse(userIdString, out int userId))
                 {
+                    ModelState.AddModelError(string.Empty, "Invalid User ID.");
+                    return Page();
+                }
+
+                // Fetch CompanyId using UserId
+                var company = await GetCompanyByUserIdAsync(userIdString);
+                if (company == null)
+                {
+                    // Lỗi cụ thể khi không tìm thấy công ty
                     ModelState.AddModelError(string.Empty, "Company not found for the user.");
                     return Page();
                 }
+                Input.CompanyId = company.CompanyId;
+
 
                 var json = JsonSerializer.Serialize(Input);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -121,7 +147,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["SuccessMessage"] = "Batch created successfully!";
-                    return RedirectToPage("/BatchIndex");
+                    return RedirectToPage("/BatchPages/BatchIndex");
                 }
                 else
                 {
@@ -130,6 +156,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                     return Page();
                 }
             }
+
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception occurred while creating batch");
@@ -149,14 +176,14 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
             // Tạo URL cho API để lấy thông tin công ty
-            var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/api/Company/{userId}";
+            var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/Company/user/{userId}";
 
             // Gọi API để lấy thông tin công ty
             var response = await _httpClient.GetAsync(apiUrl);
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var company = JsonSerializer.Deserialize<CompanyDTO>(content);
+                var company = JsonSerializer.Deserialize<CompanyDTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 return company;
             }
             else
@@ -164,6 +191,9 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                 var errorContent = await response.Content.ReadAsStringAsync();
                 _logger.LogError($"Error fetching company information. Status code: {response.StatusCode}, Content: {errorContent}");
                 throw new Exception($"Error fetching company information. Status code: {response.StatusCode}");
+
+
+
             }
         }
 

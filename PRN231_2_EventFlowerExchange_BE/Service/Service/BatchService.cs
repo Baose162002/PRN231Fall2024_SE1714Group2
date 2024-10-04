@@ -74,13 +74,15 @@ namespace Service.Service
             {
                 FlowerType = batch.FlowerType,
                 BatchQuantity = batch.BatchQuantity,
+                ImgFlower = batch.ImgFlower,
                 Description = batch.Description,
                 PricePerUnit = batch.PricePerUnit,
                 Condition = batch.Condition,
                 EntryDate = entryDate,
                 BatchStatus = EnumList.BatchStatus.Available,
                 CompanyId = batch.CompanyId,
-                FlowerId = batch.FlowerId
+                FlowerId = batch.FlowerId,
+                Status = EnumList.Status.Active
             };
             await _batchRepository.Create(_mapper.Map<Batch>(batches));
         }

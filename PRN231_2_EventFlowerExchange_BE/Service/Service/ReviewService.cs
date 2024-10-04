@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BusinessObject.Enum;
 
 namespace Service.Service
 {
@@ -51,6 +52,7 @@ namespace Service.Service
         {
             var review = _mapper.Map<Review>(createReviewDTO);
             review.ReviewDate = DateTime.Now;
+            review.Status = EnumList.Status.Active;
             await _reviewRepository.Create(review);
         }
 

@@ -37,8 +37,9 @@ namespace WebApi_EventFlowerExchange.Controllers
             return Ok(company);
         }
 
-        [HttpGet("id")]
-        public async Task<IActionResult> GetCompanyByIdUser(int id)
+
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetCompanyByUserId(int id)
         {
             var company = await _companyService.GetCompanyByIdUser(id);
             if (company == null)

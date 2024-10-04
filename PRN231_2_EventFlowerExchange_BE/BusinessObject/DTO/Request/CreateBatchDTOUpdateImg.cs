@@ -1,15 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BusinessObject.DTO.Request
 {
-    public class CreateBatchDTO
+    public class CreateBatchDTOUpdateImg
     {
-        
         public string FlowerType { get; set; }
         public int BatchQuantity { get; set; }
         public string ImgFlower { get; set; }
@@ -19,6 +18,6 @@ namespace BusinessObject.DTO.Request
         public string EntryDate { get; set; }
         public int CompanyId { get; set; }
         public int FlowerId { get; set; }
-     
+
     }
 }

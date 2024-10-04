@@ -63,7 +63,7 @@ namespace Repository.Repository
         
         public async Task<Company> GetCompanyByIdUser(int id)
         {
-            var user = await flowerShopContext.Companies.Include(x => x.Batches).FirstOrDefaultAsync(x => x.SellerId == id);
+            var user = await flowerShopContext.Companies.Include(x => x.Batches).FirstOrDefaultAsync(x => x.UserId == id);
             return user;
         } 
     }

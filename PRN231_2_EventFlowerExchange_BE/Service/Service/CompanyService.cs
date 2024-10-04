@@ -2,6 +2,7 @@
 using BusinessObject;
 using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
+using BusinessObject.Enum;
 using Repository.IRepository;
 using Service.IService;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -24,9 +25,9 @@ namespace Service.Service
         public async Task<bool> AddNew(CreateCompanyDTO company)
         {
             if (company == null) throw new ArgumentNullException(nameof(company));
-            if (_userRepository.GetUserById(company.SellerId) == null)
+            if (_userRepository.GetUserById(company.UserId) == null)
             {
-            throw new ArgumentNullException(nameof(company.SellerId));
+            throw new ArgumentNullException(nameof(company.UserId));
             }
             if (string.IsNullOrEmpty(company.CompanyName))
             {
@@ -45,8 +46,8 @@ namespace Service.Service
                 CompanyName = company.CompanyName,
                 CompanyDescription = company.CompanyDescription,
                 CompanyAddress = company.CompanyAddress,
-                CompanyId = company.CompanyId,
-                SellerId = company.SellerId
+                UserId = company.UserId,
+                Status = EnumList.Status.Active
             };
             await _companyRepository.AddNew(newCompany);
             return true;
@@ -70,18 +71,18 @@ namespace Service.Service
             var dtoCompany = _mapper.Map<CompanyDTO>(company);
             return dtoCompany;
         }
-        public async Task<Company> GetCompanyByIdUser(int id)
+        public async Task<CompanyDTO> GetCompanyByIdUser(int id)
         {
             var user = await _companyRepository.GetCompanyByIdUser(id);
             var dtoCompany = _mapper.Map<CompanyDTO>(user);
-            return user;
+            return dtoCompany;
         }
         public async Task Update(int id, CreateCompanyDTO company)
         {
             if (company == null) throw new ArgumentNullException(nameof(company));
-            if (_userRepository.GetUserById(company.SellerId) == null)
+            if (_userRepository.GetUserById(company.UserId) == null)
             {
-                throw new ArgumentNullException(nameof(company.SellerId));
+                throw new ArgumentNullException(nameof(company.UserId));
             }
             if (string.IsNullOrEmpty(company.CompanyName))
             {
