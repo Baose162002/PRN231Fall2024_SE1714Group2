@@ -35,7 +35,9 @@ namespace Service.Configurations.Mapper
             CreateMap<CreateFlowerDTO, Flower>();
             CreateMap<UpdateFlowerDTO, Flower>();
 
-            CreateMap<CreateOrderDTO, Order>();
+            CreateMap<Order, CreateOrderDTO>();
+            CreateMap<Order, UpdateOrderDTO>()
+                .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()));
             CreateMap<UpdateOrderDTO, Order>()
                 .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
                 .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.OrderDate, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
@@ -43,13 +45,24 @@ namespace Service.Configurations.Mapper
                 .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()));
             CreateMap<Order, ListOrderDTO>()
                 .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
-                .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => FormatDate(src.OrderDate)));
-                
+                .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => FormatDate(src.OrderDate)))
+                .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src.Customer)) // Assuming you map customer to ListUserDTO
+                .ForMember(dest => dest.OrderDetails, opt => opt.MapFrom(src => src.OrderDetails)); // Map OrderDetails to List<OrderDetailDTO>
+
             CreateMap<CreateUserDTO, User>();
             CreateMap<UpdateUserDTO, User>();
             CreateMap<User, ListUserDTO>();
             CreateMap<Company, CompanyDTO>();
             CreateMap<CompanyDTO, Company>();
+
+            CreateMap<OrderDetail, OrderDetailDTO>();
+            CreateMap<OrderDetailDTO, OrderDetail>();
+            //CreateMap<UpdateOrderDetailDTO, Order>()
+            //    .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
+            //    .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.OrderDate, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
+            CreateMap<ListOrderDetailDTO, Order>();
+            CreateMap<Order, ListOrderDetailDTO>();
+
 
             CreateMap<Flower, ListFlowerDTO>();
             CreateMap<ListFlowerDTO, Flower>();

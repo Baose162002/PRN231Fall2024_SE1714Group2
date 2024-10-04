@@ -2,8 +2,12 @@
 {
     public class OrderDetailDTO
     {
-        public int FlowerId { get; set; }
-        public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
+        public ListBatchDTO Batch { get; set; }
+        public int BatchId { get; set; } // Thêm thuộc tính BatchId
+
+        public int QuantityOrdered { get; set; }
+        public decimal Price { get; set; }
+        public decimal TotalPrice => QuantityOrdered * Price;
+        public int OrderId { get; set; }
     }
 }

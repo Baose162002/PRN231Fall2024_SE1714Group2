@@ -14,8 +14,8 @@ namespace RBN_Api.Extensions
 
     public static class ServiceCollectionExtensions
     {
-	
-		public static IServiceCollection Register(this IServiceCollection services)
+
+        public static IServiceCollection Register(this IServiceCollection services)
         {
             services.AddControllers();
             services.AddEndpointsApiExplorer();
@@ -23,24 +23,26 @@ namespace RBN_Api.Extensions
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
-		
 
-			// Configure AutoMapper
-			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            // Configure AutoMapper
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Register repositories here
 
             services.AddScoped<IBatchRepository, BatchRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
             services.AddScoped<IFlowerRepository, FlowerRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();    
-            services.AddScoped<IReviewRepository, ReviewRepository>();    
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             // Register services here
             services.AddScoped<IBatchService, BatchService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderDetailService, OrderDetailService>();
             services.AddScoped<IFlowerService, FlowerService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IReviewService, ReviewService>();
