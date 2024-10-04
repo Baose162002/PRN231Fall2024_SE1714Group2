@@ -29,11 +29,9 @@ namespace Service.Configurations.Mapper
                 .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()));
 
             CreateMap<Batch, ListBatchDTO>()
-                .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()))
-                .ForMember(dest => dest.EntryDate,
-                opt => opt.MapFrom(src => FormatDate(src.EntryDate)));
-
-                .ForMember(dest => dest.EntryDate, opt => opt.MapFrom(src => FormatDate(src.EntryDate)));
+                  .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()))
+                  .ForMember(dest => dest.EntryDate,
+                  opt => opt.MapFrom(src => FormatDate(src.EntryDate)));
 
             // Flower mappings
             CreateMap<CreateFlowerDTO, Flower>();
