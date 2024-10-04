@@ -1,5 +1,5 @@
-﻿// File: WebApi_EventFlowerExchange/Controllers/UserController.cs
-using BusinessObject.DTO.Request;
+﻿using BusinessObject.DTO.Request;
+using BusinessObject.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace WebApi_EventFlowerExchange.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -42,21 +41,18 @@ namespace WebApi_EventFlowerExchange.Controllers
             return Ok(user);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO createUserDTO)
+        [AllowAnonymous]
+        [HttpPost("register-buyer")]
+        public async Task<IActionResult> RegisterBuyer([FromBody] CreateUserDTO createUserDTO)
         {
             try
             {
                 var result = await _userService.CreateUser(createUserDTO);
-                if (result)
-                {
-                    return Ok("User created successfully");
-                }
-                return BadRequest("Failed to create user");
+                return Ok(new { message = "Buyer registered successfully", user = result });
             }
-            catch (ArgumentException e)
+            catch (Exception ex)
             {
-                return BadRequest(e.Message);
+                return StatusCode(500, new { message = $"An error occurred while registering the buyer: {ex.Message}" });
             }
         }
 

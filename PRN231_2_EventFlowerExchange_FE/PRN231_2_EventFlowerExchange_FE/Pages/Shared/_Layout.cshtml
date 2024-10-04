@@ -15,122 +15,19 @@
     <link rel="stylesheet" href="~/css/jquery.mCustomScrollbar.min.css">
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen"> <!--[if lt IE 9]> <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script> <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script> <![endif]-->
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-        }
-
-        main {
-            flex: 1 0 auto;
-            margin-top: 200px; /* Adjust this value as needed */
-        }
-
-    </style>
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
 </head>
 <body class="main-layout">
-    <div class="loader_bg">
-        <div class="loader"><img src="~/images/loading.gif" alt="#" /></div>
-    </div>
 
-    <header>
-        <div class="header">
-            <div class="container">
-                <div class="row">
-                    <!-- ... other header content ... -->
-                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
-                        <div class="menu-area">
-                            <div class="limit-box">
-                                <nav class="main-menu">
-                                    <ul class="menu-area-main">
-                                        <li class="active"> <a href="#">Home</a> </li>
-                                        <li> <a href="#about">About</a> </li>
-                                        <li><a href="#plant">Flowers</a></li>
-                                        <li><a href="/BatchPages/BatchIndex">Batch</a></li>
-                                        <li><a href="#contact">Contact Us</a></li>
-                                   @*      @if (Context.Session.GetString("UserRole") == "Admin")
-                                        {
-                                            <li class="nav-item">
-                                                <a class="nav-link text-dark" asp-area="" asp-page="/UserPages/UserIndex">User Management</a>
-                                            </li>
-                                        } *@
-                                        @if (Context.Session.GetString("JWTToken") != null)
-                                        {
-                                            <li class="nav-item">
-                                                <span class="nav-link text-dark">Welcome, @Context.Session.GetString("UserName")!</span>
-                                            </li>
-                                            <li class="nav-item">
-                                                <form method="post" asp-page="/Login/Logout">
-                                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
-                                                </form>
-                                            </li>
-                                        }
-                                        else
-                                        {
-                                            <li class="nav-item">
-                                                <a class="nav-link text-dark" asp-area="" asp-page="/Login/Login">Login</a>
-                                            </li>
-                                        }
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
+    <partial name="_Header" />
 
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
 
-    <main style="margin-top: 200px;">
+    <main >
         @RenderBody()
     </main>
 
-    <footer>
-        <div id="contact" class="footer">
-            <div class="container">
-                <div class="row pdn-top-30">
-                    <div class="col-md-12 ">
-                        <div class="footer-box">
-                            <div class="headinga">
-                                <h3>Address</h3>
-                                <span>Demo Store .New York  United States</span>
-                                <p>(+71 98765348)</p>
-                            </div>
-                            <ul class="location_icon">
-                                <li> <a href="#"><img src="~/icon/facebook.png"></a></li>
-                                <li> <a href="#"><img src="~/icon/Twitter.png"></a></li>
-                                <li> <a href="#"><img src="~/icon/linkedin.png"></a></li>
-                                <li> <a href="#"><img src="~/icon/instagram.png"></a></li>
-                            </ul>
-                            <div class="menu-bottom">
-                                <ul class="link">
-                                    <li> <a href="#">Home</a></li>
-                                    <li> <a href="#">About</a></li>
-                                    <li> <a href="#">Plant</a></li>
-                                    <li> <a href="#">Gallery</a></li>
-                                    <li> <a href="#">Contact us</a></li>
+    <partial name="_Footer" />
 
-                                </ul>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="copyright">
-                <div class="container">
-                    <p>Copyright 2019 All Rights Reserved Design By  <a href="https://html.design/">Free Html Templates</a></p>
-                </div>
-            </div>
-        </div>
-    </footer>
 
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/popper.min.js"></script>

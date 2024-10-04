@@ -26,7 +26,5 @@ namespace BusinessObject.DTO.Request
         [Required(ErrorMessage = "Address is required")]
         public string Address { get; set; }
 
-        [Required(ErrorMessage = "Role is required")]
-        public EnumList.UserRole Role { get; set; }
     }
 }

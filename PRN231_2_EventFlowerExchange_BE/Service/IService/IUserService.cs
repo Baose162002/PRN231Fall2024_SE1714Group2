@@ -1,4 +1,5 @@
-﻿using BusinessObject.DTO.Request;
+﻿using BusinessObject.Dto.Response;
+using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace Service.IService
     {
         Task<List<ListUserDTO>> GetAllUsers();
         Task<ListUserDTO> GetUserById(int id);
-        Task<bool> CreateUser(CreateUserDTO createUserDTO);
+        Task<UserResponseDto> CreateUser(CreateUserDTO createUserDTO);
         Task<bool> UpdateUser(int id, UpdateUserDTO updateUserDTO);
         Task<bool> DeleteUser(int id);
     }
