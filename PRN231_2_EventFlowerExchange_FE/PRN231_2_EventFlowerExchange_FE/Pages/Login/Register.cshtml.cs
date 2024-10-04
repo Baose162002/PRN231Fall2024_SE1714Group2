@@ -49,16 +49,26 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                 }
                 else
                 {
+                    // Đọc thông báo lỗi từ phản hồi
                     var errorMessage = await response.Content.ReadAsStringAsync();
-                    ModelState.AddModelError(string.Empty, $"Error: {errorMessage}");
+                    var apiError = JsonSerializer.Deserialize<Dictionary<string, string>>(errorMessage);
+
+                    // Kiểm tra xem có thông báo lỗi cụ thể không
+                    if (apiError != null && apiError.TryGetValue("message", out var message))
+                    {
+                        // Thêm thông báo lỗi cụ thể vào ModelState
+                        ModelState.AddModelError(string.Empty, message);
+                    }
+                    
                     return Page();
                 }
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+              
                 return Page();
             }
         }
+
     }
 }
