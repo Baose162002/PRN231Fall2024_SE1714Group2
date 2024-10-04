@@ -59,7 +59,6 @@ namespace Service.Service
             });
         }
 
-        // Phương thức private để tạo JWT token
         private JwtSecurityToken GenerateToken(IEnumerable<Claim> authClaims)
         {
             // Tạo khóa bảo mật từ chuỗi secret trong cấu hình
@@ -71,7 +70,7 @@ namespace Service.Service
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddDays(3), // Token có hiệu lực trong 3 ngày
+                expires: DateTime.Now.AddDays(3), 
                 claims: authClaims,
                 signingCredentials: signIn);
 

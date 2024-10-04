@@ -1,0 +1,38 @@
+﻿
+<header x-data="{ isOpen: false }" class="bg-white shadow-md fixed w-full z-50">
+    <nav class="container mx-auto px-6 py-3">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="/Index" class="text-gray-800 text-xl md:text-2xl hover:text-gray-700">
+                    <img src="/images/hoalogo.png" alt="Logo" class="h-8 w-8 mr-2 inline-block font-thin">
+                    EventFlower Exchange
+                </a>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="/Index" class="text-gray-800 hover:text-indigo-600">Home</a>
+                <a href="#about" class="text-gray-800 hover:text-indigo-600">About</a>
+                <a href="#plant" class="text-gray-800 hover:text-indigo-600">Flowers</a>
+                <a href="/BatchIndex" class="text-gray-800 hover:text-indigo-600">Batch</a>
+                <a href="#contact" class="text-gray-800 hover:text-indigo-600">Contact Us</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-4">
+                @if (Context.Session.GetString("JWTToken") != null)
+                {
+                    <span class="text-gray-800">Welcome, @Context.Session.GetString("UserName")!</span>
+                    <form method="post" asp-page="/Login/Logout">
+                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Logout</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-page="/Login" class="text-gray-800 hover:text-indigo-600">Login</a>
+                    <a asp-area="" asp-page="/Register" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Register</a>
+                }
+            </div>
+            <div class="md:hidden">
+              
+            </div>
+        </div>
+        
+    </nav>
+</header>
