@@ -10,14 +10,13 @@ namespace BusinessObject.DTO.Request
 {
     public class CreateOrderDTO
     {
-
-        public Enum.EnumList.OrderStatus OrderStatus { get; set; }
-        public decimal TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
         public string DeliveryAddress { get; set; }
         public DateTime DeliveryDate { get; set; }
         public int CustomerId { get; set; }
-        public ICollection<OrderDetailDTO> OrderDetails { get; set; }
 
+        public int FlowerId { get; set; }  // Chỉ cần truyền ID của loại hoa
+        public int QuantityOrdered { get; set; }  // Số lượng tổng cần đặt
+        //public List<OrderDetailDTO> OrderDetails { get; set; }
     }
 }

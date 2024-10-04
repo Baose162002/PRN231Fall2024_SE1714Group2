@@ -2,7 +2,9 @@
 using BusinessObject.DTO.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Service.IService;
+using static BusinessObject.Enum.EnumList;
 
 namespace WebApi_EventFlowerExchange.Controllers
 {
@@ -12,6 +14,8 @@ namespace WebApi_EventFlowerExchange.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly string[] _orderStatusValues = { "Pending", "Confirmed", "Dispatched", "Delivered" };
+
 
         public OrderController(IOrderService orderService)
         {
@@ -79,15 +83,31 @@ namespace WebApi_EventFlowerExchange.Controllers
             try
             {
                 await _orderService.Delete(id);
-                return Ok("Order deleted successfully");
+                return NoContent(); // Trả về mã 204 No Content
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message); // Trả về mã 404 Not Found
             }
-
-
-
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message); // Trả về mã 400 Bad Request
+            }
         }
+
+
+        [HttpPut("update-status")]
+        public IActionResult UpdateOrderStatus([FromBody] UpdateOrderStatusDTO request)
+        {
+            var result = _orderService.UpdateOrderStatus(request.OrderId);
+            if (result == null)
+            {
+                return NotFound("Order not found or already at the last status.");
+            }
+            return Ok(result);
+        }
+
+
+
     }
 }

@@ -2,6 +2,7 @@
 using BusinessObject;
 using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
+using BusinessObject.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Repository.IRepository;
@@ -20,14 +21,22 @@ namespace Service.Service
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IOrderDetailRepository _orderDetailRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IBatchRepository _batchRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IMapper mapper)
+        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IMapper mapper, IBatchRepository batchRepository, IOrderDetailRepository orderDetailRepository)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
             _mapper = mapper;
+            _batchRepository = batchRepository;
+            _orderDetailRepository = orderDetailRepository;
+        }
+
+        public OrderService()
+        {
         }
 
         public async Task<List<ListOrderDTO>> GetAllOrder()
@@ -47,61 +56,72 @@ namespace Service.Service
         public async Task Create(CreateOrderDTO orderDTO)
         {
             // Kiểm tra các trường bắt buộc
-            if (orderDTO == null || string.IsNullOrEmpty(orderDTO.DeliveryAddress) || orderDTO.TotalPrice == 0 || orderDTO.CustomerId == 0)
+            if (orderDTO == null || string.IsNullOrEmpty(orderDTO.DeliveryAddress) || orderDTO.CustomerId == 0 || orderDTO.QuantityOrdered <= 0)
             {
                 throw new ArgumentException("All required fields must be filled");
             }
 
-            // Kiểm tra giá tiền phải là số dương
-            if (orderDTO.TotalPrice <= 0)
+            List<OrderDetail> orderDetails = new List<OrderDetail>();
+            decimal totalPrice = 0;
+
+            // Lấy danh sách các Batch có chứa FlowerId tương ứng
+            var flowerBatches = await _batchRepository.GetAvailableBatchesByFlowerId(orderDTO.FlowerId);
+
+            if (flowerBatches == null || !flowerBatches.Any())
             {
-                throw new ArgumentException("Total price must be a positive number");
+                throw new ArgumentException("No batches available for this flower.");
             }
 
-            // Kiểm tra chi tiết đơn hàng
-            if (orderDTO.OrderDetails == null || !orderDTO.OrderDetails.Any())
+            int remainingQuantity = orderDTO.QuantityOrdered; // Số lượng cần đặt
+
+            foreach (var batch in flowerBatches)
             {
-                throw new ArgumentException("Order must have at least one detail");
+                if (remainingQuantity <= 0) break; // Nếu đã đủ số lượng thì thoát
+
+                int batchQuantityToUse = Math.Min(batch.BatchQuantity, remainingQuantity); // Lấy số lượng ít hơn giữa lô và còn lại
+
+                // Tạo đối tượng OrderDetail
+                var orderDetail = new OrderDetail
+                {
+                    BatchId = batch.BatchId,
+                    QuantityOrdered = batchQuantityToUse,
+                    Price = batch.PricePerUnit,
+                    TotalPrice = batchQuantityToUse * batch.PricePerUnit // Gán giá trị TotalPrice trước khi lưu
+                };
+
+                // Tính tổng giá của OrderDetail và cập nhật tổng giá của Order
+                totalPrice += orderDetail.TotalPrice;
+
+                // Thêm OrderDetail vào danh sách
+                orderDetails.Add(orderDetail);
+
+                // Cập nhật số lượng còn lại trong Batch
+                batch.BatchQuantity -= batchQuantityToUse;
+                await _batchRepository.UpdateBatch(batch);
+
+                // Giảm số lượng còn lại cần đặt
+                remainingQuantity -= batchQuantityToUse;
             }
 
-            // Kiểm tra ngày tạo đơn hàng
-            if (orderDTO.OrderDate == DateTime.MinValue)
+            if (remainingQuantity > 0)
             {
-                throw new ArgumentException("Invalid order date");
+                throw new ArgumentException("Not enough stock to fulfill the order.");
             }
 
-            // Kiểm tra ngày giao hàng
-            if (orderDTO.DeliveryDate == DateTime.MinValue)
+            // Tạo đối tượng Order
+            var newOrder = new Order
             {
-                throw new ArgumentException("Invalid delivery date");
-            }
-
-            // Kiểm tra xem khách hàng có tồn tại không
-            var customerExisting = await _userRepository.GetUserById(orderDTO.CustomerId);
-            if (customerExisting == null)
-            {
-                throw new ArgumentException("Customer is not existed");
-            }
-
-            // Tạo đối tượng Order từ DTO
-            Order newOrder = new Order
-            {
-                OrderStatus = orderDTO.OrderStatus,
-                TotalPrice = orderDTO.TotalPrice,
+                OrderStatus = EnumList.OrderStatus.Pending,
                 OrderDate = orderDTO.OrderDate,
                 DeliveryAddress = orderDTO.DeliveryAddress,
                 DeliveryDate = orderDTO.DeliveryDate,
                 CustomerId = orderDTO.CustomerId,
-                OrderDetails = orderDTO.OrderDetails.Select(detail => new OrderDetail
-                {
-                    OrderDetailId = detail.FlowerId,
-                    QuantityOrdered = detail.Quantity,
-                    TotalPrice = detail.UnitPrice
-                }).ToList()
+                TotalPrice = totalPrice,
+                OrderDetails = orderDetails
             };
 
-            // Gọi repository để tạo đơn hàng mới
-            await _orderRepository.Create(_mapper.Map<Order>(newOrder));
+            // Tạo đơn hàng mới
+            await _orderRepository.Create(newOrder);
         }
 
         public async Task Update(UpdateOrderDTO updateOrderDTO, int id)
@@ -113,10 +133,10 @@ namespace Service.Service
                 throw new ArgumentException("All fields must be filled with valid values");
             }
 
-            Regex statusRegex = new Regex(@"^(Pending|Shipped|Delivered|Cancelled)$");
+            Regex statusRegex = new Regex(@"^(Pending|Confirmed|Dispatched|Delivered)$");
             if (!statusRegex.IsMatch(updateOrderDTO.OrderStatus.ToString()))
             {
-                throw new ArgumentException("Order status must be either Pending, Shipped, Delivered, or Cancelled!");
+                throw new ArgumentException("Order status must be either Pending, Confirmed, Dispatched, or Delivered!");
             }
 
             string[] dateFormats = { "dd/MM/yyyy", "dd/M/yyyy", "d/MM/yyyy", "d/M/yyyy" };
@@ -147,6 +167,9 @@ namespace Service.Service
             await _orderRepository.Delete(orderId);
         }
 
-
+        public async Task<Order> UpdateOrderStatus(int updatedOrder)
+        {
+            return _orderRepository.UpdateOrderStatusAsync(updatedOrder);
+        }
     }
 }
