@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(FlowerShopContext))]
-    [Migration("20240930063951_Initial")]
+    [Migration("20241004162914_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -67,6 +67,9 @@ namespace BusinessObject.Migrations
                     b.Property<decimal>("PricePerUnit")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("BatchId");
 
                     b.HasIndex("CompanyId");
@@ -96,12 +99,15 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SellerId")
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("CompanyId");
 
-                    b.HasIndex("SellerId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Company");
                 });
@@ -132,6 +138,9 @@ namespace BusinessObject.Migrations
                     b.Property<string>("ReasonNote")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("DeliveryId");
 
@@ -173,6 +182,9 @@ namespace BusinessObject.Migrations
 
                     b.Property<decimal>("PricePerUnit")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -297,6 +309,9 @@ namespace BusinessObject.Migrations
                     b.Property<DateTime>("ReviewDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("ReviewId");
 
                     b.HasIndex("BatchId");
@@ -342,6 +357,9 @@ namespace BusinessObject.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId");
 
                     b.HasIndex("Email")
@@ -373,7 +391,7 @@ namespace BusinessObject.Migrations
                 {
                     b.HasOne("BusinessObject.User", "Seller")
                         .WithMany()
-                        .HasForeignKey("SellerId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

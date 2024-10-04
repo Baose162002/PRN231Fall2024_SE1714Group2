@@ -1,4 +1,5 @@
 ﻿using BusinessObject.DTO.Request;
+using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
@@ -43,21 +44,25 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return NotFound(e.Message);
             }
         }
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateFlower(CreateFlowerDTO createFlowerDTO)
         {
             try
             {
-                await _flowerService.Create(createFlowerDTO);
-                return Ok("Flower created successfully.");
+                var flowerId = await _flowerService.CreateFlower(createFlowerDTO);
+                var result = new CreateFlowerResponse
+                {
+                    Status = "success",
+                    Message = "Create Flower successfully",
+                    FlowerId = flowerId
+                };
+                return Ok(result);
             }
             catch (ArgumentException e)
             {
                 return BadRequest(e.Message);
             }
         }
-        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateFlower([FromBody] UpdateFlowerDTO updateFlowerDTO, int id)
         {
@@ -71,7 +76,6 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return BadRequest(e.Message);
             }
         }
-        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFlower(int id)
         {

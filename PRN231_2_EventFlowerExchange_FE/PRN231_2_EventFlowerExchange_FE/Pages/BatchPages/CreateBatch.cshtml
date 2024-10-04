@@ -25,16 +25,11 @@
             </ul>
         </div>
     }
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label asp-for="Input.FlowerType">Flower Type</label>
             <input asp-for="Input.FlowerType" class="form-control" />
             <span asp-validation-for="Input.FlowerType" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Input.ImgFlower">Flower Img</label>
-            <input asp-for="Input.ImgFlower" class="form-control" />
-            <span asp-validation-for="Input.ImgFlower" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="Input.PricePerUnit">Price Per Unit</label>
@@ -52,6 +47,16 @@
             <span asp-validation-for="Input.BatchQuantity" class="text-danger"></span>
         </div>
         <div class="form-group">
+            <label asp-for="ImageFlower">Image Flower</label>
+            <input type="file" asp-for="ImageFlower" accept="image/*" onchange="previewImage(event)" /> <!-- Add onchange here -->
+            <span asp-validation-for="ImageFlower" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <img id="imagePreview" style="display:none; max-width: 300px; max-height: 300px;" />
+        </div>
+
+
+        <div class="form-group">
             <label asp-for="Input.Condition">Condition</label>
             <input asp-for="Input.Condition" class="form-control" />
             <span asp-validation-for="Input.Condition" class="text-danger"></span>
@@ -61,17 +66,40 @@
             <input asp-for="Input.EntryDate" class="form-control" type="date" />
             <span asp-validation-for="Input.EntryDate" class="text-danger"></span>
         </div>
+    
+    
+        <!-- Flower Information Section -->
+        <h3>Flower Information</h3>
         <div class="form-group">
-            <label asp-for="Input.CompanyId">Company ID</label>
-            <input asp-for="Input.CompanyId" class="form-control" />
-            <span asp-validation-for="Input.CompanyId" class="text-danger"></span>
+            <label for="FlowerName">Flower Name</label>
+            <input type="text" class="form-control" id="FlowerName" name="FlowerName" required />
+        </div>
+  
+    
+   
+        <div class="form-group">
+            <label for="Origin">Origin</label>
+            <input type="text" class="form-control" id="Origin" name="Origin" required />
         </div>
         <div class="form-group">
-            <label asp-for="Input.FlowerId">Flower ID</label>
-            <input asp-for="Input.FlowerId" class="form-control" />
-            <span asp-validation-for="Input.FlowerId" class="text-danger"></span>
+            <label for="Color">Color</label>
+            <input type="text" class="form-control" id="Color" name="Color" required />
         </div>
         <button type="submit" class="btn btn-primary">Create</button>
         <a href="/BatchIndex" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+<script>
+    function previewImage(event) {
+        var input = event.target;
+        var reader = new FileReader();
+        reader.onload = function() {
+            var img = document.getElementById('imagePreview');
+            img.src = reader.result;
+            img.style.display = 'block'; // Show the image preview
+        }
+        if (input.files && input.files[0]) {
+            reader.readAsDataURL(input.files[0]); // Convert image to base64 string
+        }
+    }
+</script>

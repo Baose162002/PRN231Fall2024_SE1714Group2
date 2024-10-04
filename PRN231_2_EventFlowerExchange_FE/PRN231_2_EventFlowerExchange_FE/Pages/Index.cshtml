@@ -4,215 +4,111 @@
     ViewData["Title"] = "Home page";
 }
 
-<section>
-    <div id="main_slider" class="carousel slide banner-main" data-ride="carousel">
-        <ol class="carousel-indicators">
-            <li data-target="#main_slider" data-slide-to="0" class="active"></li>
-            <li data-target="#main_slider" data-slide-to="1"></li>
-            <li data-target="#main_slider" data-slide-to="2"></li>
-        </ol>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="container">
-                    <div class="row marginii">
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                            <div class="carousel-caption ">
-                                <h1>Welcome To The <strong class="color">Nutrients Plants</strong></h1>
-                                <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using</p>
-                                <a class="btn btn-lg btn-primary" href="#" role="button">About</a>
-                                <a class="btn btn-lg btn-primary" href="#" role="button">Contact US</a>
-                            </div>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                            <div class="img-box">
-                                <figure><img src="~/images/gyufyufyu.png" alt="img" /></figure>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="container">
-                    <div class="row marginii">
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                            <div class="carousel-caption ">
-                                <h1>Welcome To The <strong class="color">Nutrients Plants</strong></h1>
-                                <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using</p>
-                                <a class="btn btn-lg btn-primary" href="#" role="button">About</a>
-                                <a class="btn btn-lg btn-primary" href="#" role="button">Contact US</a>
-                            </div>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                            <div class="img-box ">
-                                <figure><img src="~/images/gyufyufyu.png" alt="img" /></figure>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="container">
-                    <div class="row marginii">
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                            <div class="carousel-caption ">
-                                <h1>Welcome To The <strong class="color">Nutrients Plants</strong></h1>
-                                <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using</p>
-                                <a class="btn btn-lg btn-primary" href="#" role="button">About</a>
-                                <a class="btn btn-lg btn-primary" href="#" role="button">Contact US</a>
-                            </div>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                            <div class="img-box">
-                                <figure><img src="~/images/gyufyufyu.png" alt="img" /></figure>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <a class="carousel-control-prev" href="#main_slider" role="button" data-slide="prev">
-            <i class='fa fa-angle-left'></i>
-        </a>
-        <a class="carousel-control-next" href="#main_slider" role="button" data-slide="next">
-            <i class='fa fa-angle-right'></i>
-        </a>
-    </div>
-</section>
+<!-- hero seciton -->
+<div class="relative w-full h-[320px]" id="home">
+    <div class="absolute inset-0 opacity-70">
+        <img src="~/images/hoabanner.jpg" alt="Background Image" class="object-cover object-center w-full h-full" />
 
-<div id="plant" class="plants">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="titlepage">
-                    <h2>Our Wonderful Plants</h2>
-                    <span>looking at its layout. The point of using Lorem Ipsum letters, as opposed to using</span>
-                </div>
-            </div>
+    </div>
+    <div class="absolute inset-9 flex flex-col md:flex-row items-center justify-between">
+        <div class="md:w-1/2 mb-4 md:mb-0">
+            <h1 class="text-grey-700 font-medium text-4xl md:text-5xl leading-tight mb-2">EventFlowerExchange</h1>
+            <p class="font-regular text-xl mb-8 mt-4">New flowers everyday</p>
+            <a href="#contactUs"
+               class="px-6 py-3 bg-[#c8a876] text-white font-medium rounded-full hover:bg-[#c09858]  transition duration-200">
+                Contact
+                Us
+            </a>
         </div>
     </div>
-    <div class="container">
-        <div class="row">
+</div>
+<!-- main seciton -->
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-black mb-8">Featured Flowers</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             @if (Model.Flowers != null && Model.Flowers.Count > 0)
             {
                 foreach (var flower in Model.Flowers)
                 {
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                        <div class="plants-box">
-                            <a href="/FlowerPages/FlowerDetails/@flower.FlowerId">
-                                <figure>
-                                    <img src="~/images/@flower.Image" alt="@flower.Name" />
-                                </figure>
-                                <h3>@flower.Name</h3>
-                                <p>@flower.Description</p>
-                                <p><strong>Price:</strong> $@flower.PricePerUnit</p>
-                                <p><strong>Origin:</strong> @flower.Origin</p>
-                                <p><strong>Color:</strong> @flower.Color</p>
-                            </a>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="~/images/2.jpg" alt="@flower.Name" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-black mb-2">@flower.Name</h3>
+                            <p class="text-gray-700 text-base">@flower.Description</p>
+                            <div class="mt-4 flex items-center justify-between">
+                                <span class="text-gray-700 font-medium">$@flower.PricePerUnit</span>
+                                <button class="px-4 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-200">
+                                    Add to cart
+                                </button>
+                            </div>
+                            <p><strong>Origin:</strong> @flower.Origin</p>
+                            <p><strong>Color:</strong> @flower.Color</p>
                         </div>
                     </div>
                 }
             }
             else
             {
-                <p>No plants available.</p>
+                <p>No flowers available.</p>
             }
         </div>
     </div>
-</div>
+</section>
 
-<div id="about" class="about">
-    <div class="container">
-        <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                    <div class="about-box">
-                        <h2>50</h2>
-                        <div class="white-bg">
-                            <span>Satisfaction</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                    <div class="about-box">
-                        <h2>50</h2>
-                        <div class="white-bg">
-                            <span>Free Delivery</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                    <div class="about-box">
-                        <h2>50</h2>
-                        <div class="white-bg">
-                            <span>Store Locators</span>
-                        </div>
-                    </div>
-                </div>
+<div class="bg-white  h-screen h-full py-6 sm:py-8 lg:py-12">
+    <div class="mx-auto max-w-screen-2xl px-4 md:px-8">
+        <div class="mb-4 flex items-center justify-between gap-8 sm:mb-8 md:mb-12">
+            <div class="flex items-center gap-12">
+                <h2 class="text-2xl font-bold text-black lg:text-3xl ">Gallery</h2>
             </div>
-            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div class="about-box">
-                    <div class="titlepage">
-                        <h2>About US</h2>
-                        <span>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English....</span>
-                        <div class="read-more">
-                            <a href="#">Read More</a>
-                        </div>
-                    </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-6 xl:gap-8">
+            <!-- image - start -->
+            <a href="#"
+               class="group relative flex h-48 items-end overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-80">
+                <img src="~/images/3.jpg" loading="lazy" alt="Photo by Minh Pham" class="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
+
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 via-transparent to-transparent opacity-50">
                 </div>
-            </div>
+
+                <span class="relative ml-4 mb-3 inline-block text-sm text-white md:ml-5 md:text-lg">VR</span>
+            </a>
+            <!-- image - end -->
+            <!-- image - start -->
+            <a href="#"
+               class="group relative flex h-48 items-end overflow-hidden rounded-lg bg-gray-100 shadow-lg md:col-span-2 md:h-80">
+                <img src="~/images/6.jpg" loading="lazy" alt="Photo by Magicle" class="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
+
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 via-transparent to-transparent opacity-50">
+                </div>
+
+                <span class="relative ml-4 mb-3 inline-block text-sm text-white md:ml-5 md:text-lg">Tech</span>
+            </a>
+            <!-- image - end -->
+            <!-- image - start -->
+            <a href="#"
+               class="group relative flex h-48 items-end overflow-hidden rounded-lg bg-gray-100 shadow-lg md:col-span-2 md:h-80">
+                <img src="~/images/about-bg.jpg" loading="lazy" alt="Photo by Martin Sanchez" class="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
+
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 via-transparent to-transparent opacity-50">
+                </div>
+
+                <span class="relative ml-4 mb-3 inline-block text-sm text-white md:ml-5 md:text-lg">Dev</span>
+            </a>
+            <!-- image - end -->
+            <!-- image - start -->
+            <a href="#"
+               class="group relative flex h-48 items-end overflow-hidden rounded-lg bg-gray-100 shadow-lg md:h-80">
+                <img src="~/images/plant2.jpg" loading="lazy" alt="Photo by Lorenzo Herrera" class="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110" />
+
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-800 via-transparent to-transparent opacity-50">
+                </div>
+
+                <span class="relative ml-4 mb-3 inline-block text-sm text-white md:ml-5 md:text-lg">Retro</span>
+            </a>
+            <!-- image - end -->
         </div>
     </div>
 </div>
-
-<div id="gallery" class="Gallery">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="titlepage">
-                    <h2>Our Gallery </h2>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid margin-r-l">
-        <div class="row">
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 thumb">
-                <div class="Gallery-box">
-                    <figure>
-                        <a href="~/images/1.jpg" class="fancybox" rel="ligthbox">
-                            <img src="~/images/1.jpg" class="zoom img-fluid" alt="">
-                        </a>
-                        <span class="hoverle">
-                            <a href="~/images/1.jpg" class="fancybox" rel="ligthbox">View</a>
-                        </span>
-                    </figure>
-                </div>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 thumb">
-                <div class="Gallery-box">
-                    <figure>
-                        <a href="~/images/2.jpg" class="fancybox" rel="ligthbox">
-                            <img src="~/images/2.jpg" class="zoom img-fluid" alt="">
-                        </a>
-                        <span class="hoverle">
-                            <a href="~/images/2.jpg" class="fancybox" rel="ligthbox">View</a>
-                        </span>
-                    </figure>
-                </div>
-            </div>
-            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 thumb">
-                <div class="Gallery-box">
-                    <figure>
-                        <a href="~/images/3.jpg" class="fancybox" rel="ligthbox">
-                            <img src="~/images/3.jpg" class="zoom img-fluid" alt="">
-                        </a>
-                        <span class="hoverle">
-                            <a href="~/images/3.jpg" class="fancybox" rel="ligthbox">View</a>
-                        </span>
-                    </figure>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
