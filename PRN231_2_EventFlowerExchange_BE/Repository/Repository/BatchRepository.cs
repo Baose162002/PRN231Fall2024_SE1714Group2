@@ -49,7 +49,6 @@ namespace Repository.Repository
             {
                 existing.FlowerType = batch.FlowerType;
                 existing.BatchQuantity = batch.BatchQuantity;
-                existing.ImgFlower = batch.ImgFlower;
                 existing.Description = batch.Description;
                 existing.PricePerUnit = batch.PricePerUnit;
                 existing.Condition = batch.Condition;

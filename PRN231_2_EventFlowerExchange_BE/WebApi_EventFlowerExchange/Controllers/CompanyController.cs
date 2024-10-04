@@ -26,10 +26,22 @@ namespace WebApi_EventFlowerExchange.Controllers
             return Ok(companies);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetCompanyById(int id)
         {
             var company = await _companyService.GetCompanyByID(id);
+            if (company == null)
+            {
+                return NotFound();
+            }
+            return Ok(company);
+        }
+
+
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetCompanyByUserId(int id)
+        {
+            var company = await _companyService.GetCompanyByIdUser(id);
             if (company == null)
             {
                 return NotFound();
@@ -51,7 +63,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             }
         }
 
-        [HttpPut("id")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCompany([FromBody]CreateCompanyDTO createCompanyDTO, int id)
         {
             try
@@ -65,7 +77,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             }
         }
 
-        [HttpDelete("id")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCompany(int id)
         {
             try

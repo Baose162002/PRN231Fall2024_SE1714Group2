@@ -6,7 +6,6 @@ using Service.IService;
 
 namespace WebApi_EventFlowerExchange.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BatchController : ControllerBase

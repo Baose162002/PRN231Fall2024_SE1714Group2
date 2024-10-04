@@ -81,7 +81,8 @@ namespace Service.Service
                 EntryDate = entryDate,
                 BatchStatus = EnumList.BatchStatus.Available,
                 CompanyId = batch.CompanyId,
-                FlowerId = batch.FlowerId
+                FlowerId = batch.FlowerId,
+                Status = EnumList.Status.Active
             };
             await _batchRepository.Create(_mapper.Map<Batch>(batches));
         }

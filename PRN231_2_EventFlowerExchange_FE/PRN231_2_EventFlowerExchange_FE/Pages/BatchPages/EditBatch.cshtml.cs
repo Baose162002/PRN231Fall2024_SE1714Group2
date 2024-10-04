@@ -47,6 +47,10 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             {
                 var jsonContent = await response.Content.ReadAsStringAsync();
                 Input = JsonSerializer.Deserialize<UpdateBatchDTO>(jsonContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (DateTime.TryParseExact(Input.EntryDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var entryDate))
+                {
+                    Input.EntryDate = entryDate.ToString("yyyy-MM-dd");
+                }
                 _logger.LogInformation("Batch data loaded successfully");
                 return Page();
             }

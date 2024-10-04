@@ -21,7 +21,6 @@ namespace BusinessObject
         public string Condition { get; set; }
         public DateTime EntryDate { get; set; }
         public Enum.EnumList.BatchStatus BatchStatus { get; set; }
-
         public int CompanyId { get; set; }
         [ForeignKey("CompanyId")]
         public Company Company { get; set; }
@@ -29,6 +28,7 @@ namespace BusinessObject
         public int FlowerId { get; set; }
         [ForeignKey("FlowerId")]
         public Flower Flower { get; set; }
+        public Enum.EnumList.Status Status { get; set; }
 
         public ICollection<OrderDetail> OrderDetails { get; set; }
         public ICollection<Review> Reviews { get; set; }

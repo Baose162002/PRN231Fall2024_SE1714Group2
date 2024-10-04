@@ -54,7 +54,8 @@ namespace Service.Service
                 token = new JwtSecurityTokenHandler().WriteToken(token),
                 role = user.Role,
                 expiration = token.ValidTo,
-                fullName = user.FullName
+                fullName = user.FullName,
+                userId = user.UserId
             });
         }
 

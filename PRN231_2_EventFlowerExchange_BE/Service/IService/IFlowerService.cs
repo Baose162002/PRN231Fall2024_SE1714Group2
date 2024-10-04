@@ -15,5 +15,6 @@ namespace Service.IService
         Task Create(CreateFlowerDTO flowerDTO);
         Task Update(UpdateFlowerDTO flowerDTO, int id);
         Task Delete(int id);
+        Task<int> CreateFlower(CreateFlowerDTO flowerDTO);
     }
 }

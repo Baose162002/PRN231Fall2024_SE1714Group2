@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BusinessObject.Enum.EnumList;
+using BusinessObject.Enum;
 
 namespace Service.Service
 {
@@ -51,6 +53,19 @@ namespace Service.Service
 
             var flower = _mapper.Map<Flower>(flowerDTO);
             await _flowerRepository.Create(flower);
+        }
+        public async Task<int> CreateFlower(CreateFlowerDTO flowerDTO)
+        {
+            if (flowerDTO == null || string.IsNullOrEmpty(flowerDTO.Name))
+            {
+                throw new ArgumentException("Invalid input data.");
+            }
+
+            var flower = _mapper.Map<Flower>(flowerDTO);
+            flower.Status = Status.Active;
+            await _flowerRepository.Create(flower);
+
+            return flower.FlowerId; // Return the ID of the created flower
         }
 
         public async Task Update(UpdateFlowerDTO flowerDTO, int id)

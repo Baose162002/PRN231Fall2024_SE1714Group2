@@ -16,6 +16,7 @@ namespace BusinessObject
         public string Origin { get; set; }
         public string Color { get; set; }
 
+        public Enum.EnumList.Status Status { get; set; }
         public ICollection<Batch> Batches { get; set; }
     }
 }

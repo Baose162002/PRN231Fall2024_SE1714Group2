@@ -32,9 +32,9 @@ namespace BusinessObject.Enum
 
         public enum UserRole
         {
+            Admin,
             Seller,
             Buyer,
-            Admin,
             DeliveryPersonnel
         }
 
@@ -43,6 +43,12 @@ namespace BusinessObject.Enum
             Pending,
             OnRoute,
             Delivered
+        }
+
+        public enum Status
+        {
+            Active,
+            Inactive
         }
     }
 }

@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PRN231_2_EventFlowerExchange_FE.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<CloudinaryService>();
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 builder.Services.AddSession(options =>
