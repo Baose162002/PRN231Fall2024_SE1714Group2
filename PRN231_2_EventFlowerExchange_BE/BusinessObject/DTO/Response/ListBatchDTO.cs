@@ -12,7 +12,6 @@ namespace BusinessObject.DTO.Response
         public int BatchId { get; set; }
         public string FlowerType { get; set; }
         public int BatchQuantity { get; set; }
-        public string ImgFlower { get; set; }
         public string Description { get; set; }
         public decimal PricePerUnit { get; set; }
         public string Condition { get; set; }

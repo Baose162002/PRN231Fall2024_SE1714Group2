@@ -52,6 +52,18 @@ namespace Service.Service
             var flower = _mapper.Map<Flower>(flowerDTO);
             await _flowerRepository.Create(flower);
         }
+        public async Task<int> CreateFlower(CreateFlowerDTO flowerDTO)
+        {
+            if (flowerDTO == null || string.IsNullOrEmpty(flowerDTO.Name))
+            {
+                throw new ArgumentException("Invalid input data.");
+            }
+
+            var flower = _mapper.Map<Flower>(flowerDTO);
+            await _flowerRepository.Create(flower);
+
+            return flower.FlowerId; // Return the ID of the created flower
+        }
 
         public async Task Update(UpdateFlowerDTO flowerDTO, int id)
         {

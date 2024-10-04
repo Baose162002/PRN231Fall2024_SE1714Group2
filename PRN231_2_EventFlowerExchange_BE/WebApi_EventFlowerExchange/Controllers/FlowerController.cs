@@ -1,4 +1,5 @@
 ﻿using BusinessObject.DTO.Request;
+using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
@@ -49,8 +50,14 @@ namespace WebApi_EventFlowerExchange.Controllers
         {
             try
             {
-                await _flowerService.Create(createFlowerDTO);
-                return Ok("Flower created successfully.");
+                var flowerId = await _flowerService.CreateFlower(createFlowerDTO);
+                var result = new CreateFlowerResponse
+                {
+                    Status = "success",
+                    Message = "Create Flower successfully",
+                    FlowerId = flowerId
+                };
+                return Ok(result);
             }
             catch (ArgumentException e)
             {

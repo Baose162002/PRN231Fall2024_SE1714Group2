@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 using Repository.IRepository;
 using System;
@@ -59,5 +60,11 @@ namespace Repository.Repository
                 await flowerShopContext.SaveChangesAsync();
             }
         }
+        
+        public async Task<Company> GetCompanyByIdUser(int id)
+        {
+            var user = await flowerShopContext.Companies.Include(x => x.Batches).FirstOrDefaultAsync(x => x.SellerId == id);
+            return user;
+        } 
     }
 }

@@ -4,6 +4,7 @@ using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using Repository.IRepository;
 using Service.IService;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Service.Service
 {
@@ -69,7 +70,12 @@ namespace Service.Service
             var dtoCompany = _mapper.Map<CompanyDTO>(company);
             return dtoCompany;
         }
-
+        public async Task<Company> GetCompanyByIdUser(int id)
+        {
+            var user = await _companyRepository.GetCompanyByIdUser(id);
+            var dtoCompany = _mapper.Map<CompanyDTO>(user);
+            return user;
+        }
         public async Task Update(int id, CreateCompanyDTO company)
         {
             if (company == null) throw new ArgumentNullException(nameof(company));

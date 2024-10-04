@@ -11,5 +11,6 @@ namespace Service.IService
         Task<List<CompanyDTO>> GetCompanies();
         Task Update(int id, CreateCompanyDTO updateCompany);
         Task Delete(int id);
+        Task<Company> GetCompanyByIdUser(int id);
     }
 }
