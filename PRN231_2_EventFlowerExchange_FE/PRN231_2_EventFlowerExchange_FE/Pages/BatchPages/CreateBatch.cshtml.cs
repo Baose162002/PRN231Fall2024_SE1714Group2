@@ -89,7 +89,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
 
                     // Set the uploaded image URL to the flower DTO
                     flowerInput.Image = imageUrl;
-                    Input.ImgFlower = imageUrl;
                 }
                 var flowerJson = JsonSerializer.Serialize(flowerInput);
                 var flowerContent = new StringContent(flowerJson, Encoding.UTF8, "application/json");
