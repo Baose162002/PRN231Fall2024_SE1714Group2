@@ -4,74 +4,69 @@
     ViewData["Title"] = "Delete Batch";
 }
 
-<div class="container mt-4">
-    <h1 class="mb-4">Delete Batch</h1>
-    <div id="batchDetails">
-        <!-- Batch details will be populated here -->
+<div class="container mx-auto px-4 py-8 mt-16">
+    <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="px-6 py-4">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-4 mt-8">Delete Batch</h2>
+
+
+            @if (Model.Batch != null)
+            {
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <p class="font-medium text-gray-700">Batch Type:</p>
+                    <p>@Model.Batch.FlowerType</p>
+                    <p class="font-medium text-gray-700">Batch Date:</p>
+                    <p>@Model.Batch.EntryDate</p>
+                    <p class="font-medium text-gray-700">Batch Quantity:</p>
+                    <p>@Model.Batch.BatchQuantity</p>
+                    <p class="font-medium text-gray-700">Batch Description:</p>
+                    <p>@Model.Batch.Description</p>
+                    <p class="font-medium text-gray-700">Batch Condition:</p>
+                    <p>@Model.Batch.Condition</p>
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <a asp-page="./BatchIndex" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition duration-300">Back</a>
+                    <button type="button" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300" onclick="showDeleteConfirmation()">
+                        Delete
+                    </button>
+                </div>
+
+                <div id="deleteConfirmationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+                    <div class="bg-white p-6 rounded-lg shadow-xl">
+                        <h3 class="text-lg font-bold mb-4">Confirm Delete</h3>
+                        <p class="mb-4">Are you sure you want to delete this batch?</p>
+                        <div class="flex justify-end space-x-4">
+                            <button type="button" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition duration-300" onclick="hideDeleteConfirmation()">Cancel</button>
+                            <form method="post" asp-page-handler="Delete">
+                                <input type="hidden" name="id" value="@Model.Batch.BatchId" />
+                                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300">Yes, Delete</button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p class="text-red-500 text-center">Batch not found.</p>
+            }
+        </div>
     </div>
-    <p class="text-danger mt-3">Are you sure you want to delete this batch?</p>
-    <form id="deleteBatchForm">
-        <button type="submit" class="btn btn-danger">Delete</button>
-        <a href="/BatchIndex" class="btn btn-secondary">Cancel</a>
-    </form>
 </div>
+
+
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const batchId = urlParams.get('id');
-            const form = document.getElementById('deleteBatchForm');
+        function showDeleteConfirmation() {
+            document.getElementById('deleteConfirmationModal').classList.remove('hidden');
+            document.getElementById('deleteConfirmationModal').classList.add('flex');
+        }
 
-            if (batchId) {
-                fetch(`@Model.BaseApiUrl/Batch/${batchId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const detailsHtml = `
-                                    <dl class="row">
-                                        <dt class="col-sm-3">Flower Type</dt>
-                                        <dd class="col-sm-9">${data.flowerType}</dd>
-                                        <dt class="col-sm-3">Price Per Unit</dt>
-                                        <dd class="col-sm-9">${data.pricePerUnit}</dd>
-                                        <dt class="col-sm-3">Description</dt>
-                                        <dd class="col-sm-9">${data.description}</dd>
-                                        <dt class="col-sm-3">Quantity</dt>
-                                        <dd class="col-sm-9">${data.batchQuantity}</dd>
-                                        <dt class="col-sm-3">Condition</dt>
-                                        <dd class="col-sm-9">${data.condition}</dd>
-                                        <dt class="col-sm-3">Entry Date</dt>
-                                        <dd class="col-sm-9">${new Date(data.entryDate).toLocaleDateString()}</dd>
-                                        <dt class="col-sm-3">Expiration Date</dt>
-                                        <dd class="col-sm-9">${new Date(data.expirationDate).toLocaleDateString()}</dd>
-                                    </dl>
-                                `;
-                        document.getElementById('batchDetails').innerHTML = details
-
-                        Html;
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        document.getElementById('batchDetails').innerHTML = '<p class="text-danger">Error loading batch details.</p>';
-                    });
-            }
-
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                if (confirm('Are you sure you want to delete this batch?')) {
-                    fetch(`@Model.BaseApiUrl/Batch/${batchId}`, {
-                        method: 'DELETE',
-                    })
-                        .then(response => response.text())
-                        .then(data => {
-                            alert(data);
-                            window.location.href = '/BatchPages/BatchIndex';
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                            alert('Error deleting batch');
-                        });
-                }
-            });
-        });
+        function hideDeleteConfirmation() {
+            document.getElementById('deleteConfirmationModal').classList.add('hidden');
+            document.getElementById('deleteConfirmationModal').classList.remove('flex');
+        }
     </script>
 }

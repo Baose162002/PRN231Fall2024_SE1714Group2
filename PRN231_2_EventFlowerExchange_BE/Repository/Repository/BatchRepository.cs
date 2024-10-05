@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.Enum;
 using Microsoft.EntityFrameworkCore;
 using Repository.IRepository;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BusinessObject.Enum.EnumList;
 
 namespace Repository.Repository
 {
@@ -16,7 +18,8 @@ namespace Repository.Repository
             var _context = new FlowerShopContext();
             var batches = await _context.Batches
                .Include(e => e.Company)   
-               .Include(e => e.Flower) 
+               .Include(e => e.Flower)
+               .Where(e => e.Status == 0)
                .ToListAsync();
             return batches;
         }
@@ -68,7 +71,24 @@ namespace Repository.Repository
             {
                 throw new ArgumentException("Batch is not existed");
             }
-            _context.Batches.Remove(existing);
+            existing.Status = Status.Inactive;
+            _context.Batches.Update(existing);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Batch>> GetAvailableBatchesByFlowerId(int flowerId)
+        {
+            var _context = new FlowerShopContext();
+            return await _context.Batches
+                .Where(b => b.FlowerId == flowerId && b.BatchQuantity > 0 && b.BatchStatus == EnumList.BatchStatus.Available)
+                .OrderBy(b => b.EntryDate) // Sắp xếp theo ngày nhập kho
+                .ToListAsync();
+        }
+
+        public async Task UpdateBatch(Batch batch)
+        {
+            var _context = new FlowerShopContext();
+            _context.Batches.Update(batch);
             await _context.SaveChangesAsync();
         }
     }

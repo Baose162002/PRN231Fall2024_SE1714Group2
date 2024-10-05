@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 using Repository.IRepository;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BusinessObject.Enum.EnumList;
 
 namespace Repository.Repository
 {
@@ -15,9 +17,10 @@ namespace Repository.Repository
         {
             var _context = new FlowerShopContext();
             var orders = await _context.Orders
-                .Include(o => o.Customer)
-                //.Include(o => o.OrderDetails)
-                //.ThenInclude(od => od.Flower) // Giả sử OrderDetail có liên kết với Flower
+                .Include(o => o.Customer) // Include related Customer entity
+                .Include(o => o.OrderDetails) // Include OrderDetails
+                .ThenInclude(od => od.Batch) // Include Batch within OrderDetails
+                .ThenInclude(b => b.Flower) // Include Flower within Batch
                 .ToListAsync();
             return orders;
         }
@@ -28,7 +31,8 @@ namespace Repository.Repository
             var existing = await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.OrderDetails)
-                //.ThenInclude(od => od.Flower) // Giả sử OrderDetail có liên kết với Flower
+                .ThenInclude(od => od.Batch) // Include Batch within OrderDetails
+                .ThenInclude(b => b.Flower) // Include Flower within Batch
                 .FirstOrDefaultAsync(o => o.OrderId == id);
             return existing;
         }
@@ -54,9 +58,6 @@ namespace Repository.Repository
                 existing.DeliveryDate = order.DeliveryDate;
                 existing.CustomerId = order.CustomerId;
 
-                // Cập nhật chi tiết đơn hàng nếu cần
-                // existing.OrderDetails = order.OrderDetails; // Tùy chỉnh theo yêu cầu
-
                 _context.Orders.Update(existing);
                 await _context.SaveChangesAsync();
             }
@@ -74,12 +75,36 @@ namespace Repository.Repository
             {
                 throw new ArgumentException("Order is not existed");
             }
+            // Kiểm tra trạng thái đơn hàng
+        if (existing.OrderStatus != OrderStatus.Pending)
+        {
+            throw new InvalidOperationException("Cannot delete order that is not pending.");
+        }
+
+        // Kiểm tra xem đơn hàng có chứa OrderDetail hay không
+        if (existing.OrderDetails != null && existing.OrderDetails.Any())
+        {
+            throw new InvalidOperationException("Cannot delete order that contains order details.");
+        }
             _context.Orders.Remove(existing);
             await _context.SaveChangesAsync();
         }
 
+        public Order UpdateOrderStatusAsync(int orderId)
+        {
+            var _context = new FlowerShopContext();
+            var order = _context.Orders.Find(orderId);
+            if (order == null || order.OrderStatus == OrderStatus.Delivered)
+            {
+                return null; // Trả về null nếu không tìm thấy hoặc đã đến trạng thái cuối cùng
+            }
 
+            // Tăng giá trị OrderStatus
+            order.OrderStatus += 1; // Chuyển sang trạng thái tiếp theo
 
+            _context.SaveChanges(); // Lưu thay đổi vào cơ sở dữ liệu
 
+            return order; // Trả về đơn hàng đã cập nhật
+        }
     }
 }
