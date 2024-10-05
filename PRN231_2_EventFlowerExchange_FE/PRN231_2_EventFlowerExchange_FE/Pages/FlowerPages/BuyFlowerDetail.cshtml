@@ -1,0 +1,46 @@
+﻿@page "/BuyFLowerDetail"
+@model PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages.BuyFlowerDetailModel
+@{
+    ViewData["Title"] = "Flower Details";
+}
+
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-black mb-8">Flower Details</h2>
+
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden max-w-4xl mx-auto">
+            <div class="md:flex">
+                <!-- Flower Image -->
+                <img src="@Model.Flower.Image" alt="@Model.Flower.Name" class="w-full h-96 object-cover md:w-1/2">
+
+                <!-- Flower Details -->
+                <div class="p-6 md:w-1/2">
+                    <h3 class="text-2xl font-bold text-black mb-4">@Model.Flower.Name</h3>
+                    <p class="text-gray-700 mb-4">@Model.Flower.Description</p>
+
+                    <p><strong>Price per unit:</strong> $@Model.Flower.PricePerUnit</p>
+                    <p><strong>Origin:</strong> @Model.Flower.Origin</p>
+                    <p><strong>Color:</strong> @Model.Flower.Color</p>
+
+                    <!-- Add to Cart Button -->
+                    <div class="mt-6">
+                        <button class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
+                            Buy
+                        </button>
+                        <button class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Custom scripts can go here if needed.
+    </script>
+}

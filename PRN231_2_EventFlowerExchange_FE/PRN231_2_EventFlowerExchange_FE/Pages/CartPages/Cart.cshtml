@@ -1,0 +1,88 @@
+﻿@page "/Cart"
+@model PRN231_2_EventFlowerExchange_FE.Pages.CartPages.CartModel
+@{
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+</head>
+<body>
+    <section class="container mx-auto px-4 py-6">
+        <h2 class="text-3xl font-bold text-black mb-8">Your Cart</h2>
+
+        @if (Model.CartItems != null && Model.CartItems.Count > 0)
+        {
+            <table class="w-full table-auto">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Product</th>
+                        <th class="px-4 py-2">Quantity</th>
+                        <th class="px-4 py-2">Price</th>
+                        <th class="px-4 py-2">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <tr>
+                            <td class="border px-4 py-2">@item.Name</td>
+                            <td class="border px-4 py-2">
+                                <form method="post" asp-page-handler="UpdateQuantity">
+                                    <input type="hidden" name="flowerId" value="@item.FlowerId" />
+                                    <input type="number" name="quantity" value="@item.Quantity" class="w-12 text-center" />
+                                    <button type="submit" class="bg-indigo-600 text-white px-2 py-1 rounded-md hover:bg-indigo-700">Update</button>
+                                </form>
+                            </td>
+                            <td class="border px-4 py-2">$@item.PricePerUnit</td>
+                            <td class="border px-4 py-2">$@(item.PricePerUnit * item.Quantity)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="mt-6">
+                <form method="post" asp-page-handler="Order">
+                    <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700">
+                        Order
+                    </button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <p>Your cart is empty.</p>
+        }
+    </section>
+</body>
+</html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    function addToCart(flowerId) {
+        $.post("/Index?handler=AddToCart", { flowerId: flowerId }, function () {
+            // Update the cart count after successful addition
+            updateCartCount();
+        });
+    }
+
+    function updateCartCount() {
+        const cartItems = document.cookie.split('; ').find(row => row.startsWith('cartItems='));
+
+        if (cartItems) {
+            const cartItemsValue = JSON.parse(decodeURIComponent(cartItems.split('=')[1]));
+            const totalCount = cartItemsValue.reduce((total, item) => total + item.Quantity, 0);
+
+            document.getElementById('cart-count').textContent = totalCount;
+        } else {
+            document.getElementById('cart-count').textContent = 0;
+        }
+    }
+
+    // Call this function when the page loads to update the cart count
+    window.onload = updateCartCount;
+</script>
+
