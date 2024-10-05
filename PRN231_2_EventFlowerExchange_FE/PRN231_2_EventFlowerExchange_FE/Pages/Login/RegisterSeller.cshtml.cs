@@ -9,18 +9,18 @@ using Microsoft.Extensions.Configuration;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
 {
-    public class RegisterModel : PageModel
+    public class RegisterSellerModel : PageModel
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseApiUrl;
 
         [BindProperty]
-        public CreateUserDTO RegisterRequest { get; set; }
+        public RegisterSellerDTO RegisterRequest { get; set; }
 
         [TempData]
         public string SuccessMessage { get; set; }
 
-        public RegisterModel(HttpClient httpClient, IConfiguration configuration)
+        public RegisterSellerModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _baseApiUrl = configuration["ApiSettings:BaseUrl"];
@@ -40,11 +40,11 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
             try
             {
                 var jsonContent = new StringContent(JsonSerializer.Serialize(RegisterRequest), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"{_baseApiUrl}/user/register-buyer", jsonContent);
+                var response = await _httpClient.PostAsync($"{_baseApiUrl}/user/register-seller", jsonContent);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    SuccessMessage = "Registration successful! You can now log in.";
+                    SuccessMessage = "Seller registration successful! You can now log in.";
                     return Page();
                 }
                 else

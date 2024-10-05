@@ -74,7 +74,6 @@ namespace Service.Service
             {
                 FlowerType = batch.FlowerType,
                 BatchQuantity = batch.BatchQuantity,
-                ImgFlower = batch.ImgFlower,
                 Description = batch.Description,
                 PricePerUnit = batch.PricePerUnit,
                 Condition = batch.Condition,

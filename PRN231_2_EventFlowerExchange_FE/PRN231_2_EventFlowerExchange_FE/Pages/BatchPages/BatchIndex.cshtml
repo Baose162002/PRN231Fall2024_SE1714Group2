@@ -3,39 +3,39 @@
 @{
     ViewData["Title"] = "Batch List";
 }
-<div class="container mt-5 pt-4">
+<div class="container mt-5 pt-4 text-center">
     <h1 class="mb-4">Batch List</h1>
     <a href="/BatchPages/CreateBatch" class="btn btn-primary mb-3">Create New Batch</a>
 
     @if (Model.Batches != null && Model.Batches.Any())
     {
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead class="thead-dark">
+        <div class="table-responsive d-flex justify-content-center">
+            <table class="min-w-full divide-y divide-gray-200 table table-striped table-hover">
+                <thead>
                     <tr>
-                        <th>Flower Type</th>
-                        <th>Price Per Unit</th>
-                        <th>Description</th>
-                        <th>Quantity</th>
-                        <th>Condition</th>
-                        <th>Entry Date</th>
-                        <th>Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Flower Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price Per Unit</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entry Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="bg-white divide-y divide-gray-200">
                     @foreach (var batch in Model.Batches)
                     {
                         <tr>
-                            <td>@batch.FlowerType</td>
-                            <td>@batch.PricePerUnit.ToString("C")</td>
-                            <td>@batch.Description</td>
-                            <td>@batch.BatchQuantity</td>
-                            <td>@batch.Condition</td>
-                            <td>@batch.EntryDate</td>
-                            <td>
-                                <a href="/BatchPages/BatchDetails?id=@batch.BatchId" class="btn btn-info btn-sm">Details</a>
-                                <a href="/BatchPages/EditBatch?id=@batch.BatchId" class="btn btn-warning btn-sm">Edit</a>
-                                <a href="/BatchPages/DeleteBatch/@batch.BatchId" class="btn btn-danger btn-sm">Delete</a>
+                            <td class="px-6 py-4 whitespace-nowrap">@batch.FlowerType</td>
+                            <td class="px-6 py-4 whitespace-nowrap">@batch.PricePerUnit.ToString("C")</td>
+                            <td class="px-6 py-4 whitespace-nowrap">@batch.Description</td>
+                            <td class="px-6 py-4 whitespace-nowrap">@batch.BatchQuantity</td>
+                            <td class="px-6 py-4 whitespace-nowrap">@batch.Condition</td>
+                            <td class="px-6 py-4 whitespace-nowrap">@batch.EntryDate</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="/BatchPages/BatchDetails?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out">Details</a>
+                                <a href="/BatchPages/EditBatch?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-500 focus:outline-none focus:shadow-outline-yellow active:bg-yellow-600 transition duration-150 ease-in-out">Edit</a>
+                                <a href="/BatchPages/DeleteBatch?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-red-600 rounded-md hover:bg-red-500 focus:outline-none focus:shadow-outline-red active:bg-red-600 transition duration-150 ease-in-out">Delete</a>
                             </td>
                         </tr>
                     }

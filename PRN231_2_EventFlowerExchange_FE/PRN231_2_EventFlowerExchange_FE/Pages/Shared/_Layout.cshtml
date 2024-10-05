@@ -17,6 +17,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen"> <!--[if lt IE 9]> <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script> <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script> <![endif]-->
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
 </head>
+
+<style>
+    /* CSS bổ sung để footer luôn ở dưới cùng */
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh; /* Đảm bảo chiều cao tối thiểu là 100% viewport */
+    }
+
+    main {
+        flex: 1; /* Cho phép main mở rộng để chiếm không gian còn lại */
+    }
+
+    footer {
+        background-color: white; /* Đặt màu nền cho footer */
+    }
+</style>
 <partial name="_Header" />
 <body>
 
