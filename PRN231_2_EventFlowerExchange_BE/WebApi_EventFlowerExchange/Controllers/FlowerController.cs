@@ -19,7 +19,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             _flowerService = flowerService;
         }
 
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllFlowers()
         {
             var flowers = await _flowerService.GetAllFlowers();
@@ -31,7 +31,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             return Ok(flowers);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetBy/{id}")]
         public async Task<IActionResult> GetFlowerById(int id)
         {
             try
@@ -44,7 +44,7 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return NotFound(e.Message);
             }
         }
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task<IActionResult> CreateFlower(CreateFlowerDTO createFlowerDTO)
         {
             try
@@ -63,7 +63,7 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return BadRequest(e.Message);
             }
         }
-        [HttpPut("{id}")]
+        [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateFlower([FromBody] UpdateFlowerDTO updateFlowerDTO, int id)
         {
             try
@@ -76,7 +76,7 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return BadRequest(e.Message);
             }
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteFlower(int id)
         {
             try
