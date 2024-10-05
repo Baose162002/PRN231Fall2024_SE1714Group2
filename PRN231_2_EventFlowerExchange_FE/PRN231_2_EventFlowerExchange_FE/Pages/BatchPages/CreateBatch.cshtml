@@ -3,17 +3,21 @@
 @{
     ViewData["Title"] = "Create New Batch";
 }
-<div class="container mt-5 pt-4">
-    <h1 class="mb-4">Create New Batch</h1>
+<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
+    <h1 class="text-2xl font-bold mb-6">Create New Batch</h1>
+
+    <!-- Success Message -->
     @if (!string.IsNullOrEmpty(TempData["SuccessMessage"] as string))
     {
-        <div class="alert alert-success">
-            @TempData["SuccessMessage"]
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">@TempData["SuccessMessage"]</span>
         </div>
     }
+
+    <!-- Error Messages -->
     @if (!ViewData.ModelState.IsValid)
     {
-        <div class="alert alert-danger">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
             <ul>
                 @foreach (var modelState in ViewData.ModelState.Values)
                 {
@@ -25,66 +29,105 @@
             </ul>
         </div>
     }
+
     <form method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label asp-for="Input.FlowerType">Flower Type</label>
-            <input asp-for="Input.FlowerType" class="form-control" />
-            <span asp-validation-for="Input.FlowerType" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Input.PricePerUnit">Price Per Unit</label>
-            <input asp-for="Input.PricePerUnit" class="form-control" />
-            <span asp-validation-for="Input.PricePerUnit" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Input.Description">Description</label>
-            <textarea asp-for="Input.Description" class="form-control"></textarea>
-            <span asp-validation-for="Input.Description" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Input.BatchQuantity">Quantity</label>
-            <input asp-for="Input.BatchQuantity" class="form-control" />
-            <span asp-validation-for="Input.BatchQuantity" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="ImageFlower">Image Flower</label>
-            <input type="file" asp-for="ImageFlower" accept="image/*" onchange="previewImage(event)" /> <!-- Add onchange here -->
-            <span asp-validation-for="ImageFlower" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <img id="imagePreview" style="display:none; max-width: 300px; max-height: 300px;" />
+        <div class="-mx-3 md:flex mb-6">
+            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+                <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" asp-for="Input.FlowerType">
+                    Flower Type
+                </label>
+                <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" asp-for="Input.FlowerType" type="text" placeholder="Rose">
+                <span asp-validation-for="Input.FlowerType" class="text-red text-xs italic"></span>
+            </div>
+            <div class="md:w-1/2 px-3">
+                <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" asp-for="Input.PricePerUnit">
+                    Price Per Unit
+                </label>
+                <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" asp-for="Input.PricePerUnit" type="number" step="0.01" placeholder="10.00">
+                <span asp-validation-for="Input.PricePerUnit" class="text-red text-xs italic"></span>
+            </div>
         </div>
 
+        <div class="-mx-3 md:flex mb-6">
+            <div class="md:w-full px-3">
+                <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" asp-for="Input.Description">
+                    Description
+                </label>
+                <textarea class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3" asp-for="Input.Description" placeholder="Describe the flower batch"></textarea>
+                <span asp-validation-for="Input.Description" class="text-red text-xs italic"></span>
+            </div>
+        </div>
 
-        <div class="form-group">
-            <label asp-for="Input.Condition">Condition</label>
-            <input asp-for="Input.Condition" class="form-control" />
-            <span asp-validation-for="Input.Condition" class="text-danger"></span>
+        <div class="-mx-3 md:flex mb-6">
+            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+                <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" asp-for="Input.BatchQuantity">
+                    Quantity
+                </label>
+                <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" asp-for="Input.BatchQuantity" type="number" placeholder="100">
+                <span asp-validation-for="Input.BatchQuantity" class="text-red text-xs italic"></span>
+            </div>
+            <div class="md:w-1/2 px-3">
+                <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" asp-for="ImageFlower">
+                    Image Flower
+                </label>
+                <input type="file" asp-for="ImageFlower" accept="image/*" onchange="previewImage(event)" class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4">
+                <span asp-validation-for="ImageFlower" class="text-red text-xs italic"></span>
+            </div>
         </div>
-        <div class="form-group">
-            <label asp-for="Input.EntryDate">Entry Date</label>
-            <input asp-for="Input.EntryDate" class="form-control" type="date" />
-            <span asp-validation-for="Input.EntryDate" class="text-danger"></span>
+
+        <div class="mb-6">
+            <img id="imagePreview" class="hidden max-w-sm max-h-sm" />
         </div>
-    
-    
-        <!-- Flower Information Section -->
-        <h3>Flower Information</h3>
-        <div class="form-group">
-            <label for="FlowerName">Flower Name</label>
-            <input type="text" class="form-control" id="FlowerName" name="FlowerName" required />
+
+        <div class="-mx-3 md:flex mb-6">
+            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+                <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" asp-for="Input.Condition">
+                    Condition
+                </label>
+                <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" asp-for="Input.Condition" type="text" placeholder="Fresh">
+                <span asp-validation-for="Input.Condition" class="text-red text-xs italic"></span>
+            </div>
+            <div class="md:w-1/2 px-3">
+                <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" asp-for="Input.EntryDate">
+                    Entry Date
+                </label>
+                <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" asp-for="Input.EntryDate" type="date">
+                <span asp-validation-for="Input.EntryDate" class="text-red text-xs italic"></span>
+            </div>
         </div>
-  
-    
-   
-        <div class="form-group">
-            <label for="Origin">Origin</label>
-            <input type="text" class="form-control" id="Origin" name="Origin" required />
+
+        <h3 class="text-xl font-bold mb-4">Flower Information</h3>
+
+        <div class="-mx-3 md:flex mb-6">
+            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+                <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" for="FlowerName">
+                    Flower Name
+                </label>
+                <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" id="FlowerName" name="FlowerName" type="text" placeholder="Rose" required>
+            </div>
+            <div class="md:w-1/3 px-3">
+                <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" for="Origin">
+                    Origin
+                </label>
+                <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" id="Origin" name="Origin" type="text" placeholder="Netherlands" required>
+            </div>
+            <div class="md:w-1/3 px-3">
+                <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" for="Color">
+                    Color
+                </label>
+                <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4" id="Color" name="Color" type="text" placeholder="Red" required>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="Color">Color</label>
-            <input type="text" class="form-control" id="Color" name="Color" required />
+
+        <div class="flex items-center justify-between mt-6">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Create
+            </button>
+            <a href="/BatchIndex" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Cancel
+            </a>
         </div>
+<<<<<<< Updated upstream
         @if (Model.Companies != null && Model.Companies.Count > 0)
         {
             <div>
@@ -100,19 +143,22 @@
         }
         <button type="submit" class="btn btn-primary">Create</button>
         <a href="/BatchIndex" class="btn btn-secondary">Cancel</a>
+=======
+>>>>>>> Stashed changes
     </form>
 </div>
+
 <script>
     function previewImage(event) {
         var input = event.target;
         var reader = new FileReader();
-        reader.onload = function() {
+        reader.onload = function () {
             var img = document.getElementById('imagePreview');
             img.src = reader.result;
-            img.style.display = 'block'; // Show the image preview
+            img.classList.remove('hidden');
         }
         if (input.files && input.files[0]) {
-            reader.readAsDataURL(input.files[0]); // Convert image to base64 string
+            reader.readAsDataURL(input.files[0]);
         }
     }
 </script>

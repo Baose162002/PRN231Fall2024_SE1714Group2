@@ -16,5 +16,6 @@ namespace Service.IService
         Task<UserResponseDto> CreateUser(CreateUserDTO createUserDTO);
         Task<bool> UpdateUser(int id, UpdateUserDTO updateUserDTO);
         Task<bool> DeleteUser(int id);
-    }
+        Task<UserResponseDto> CreateSeller(CreateSellerDTO createSellerDTO, CreateUserDTO createUserDTO);
+        }
 }
