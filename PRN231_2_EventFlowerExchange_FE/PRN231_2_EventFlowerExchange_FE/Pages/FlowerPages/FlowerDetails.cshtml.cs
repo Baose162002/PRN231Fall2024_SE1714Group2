@@ -29,7 +29,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
             }
 
             // Gọi API để lấy chi tiết hoa theo id
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/Flower/{id}");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/Company/{id}");
 
             if (response.IsSuccessStatusCode)
             {
