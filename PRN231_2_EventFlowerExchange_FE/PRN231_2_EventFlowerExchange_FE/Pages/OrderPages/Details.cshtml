@@ -1,5 +1,5 @@
 ﻿@page "{id:int}"
-@model PRN231_2_EventFlowerExchange_FE.Pages.OrderPage.DetailsModel
+@model PRN231_2_EventFlowerExchange_FE.Pages.OrderPages.DetailsModel
 
 @{
     ViewData["Title"] = "Details";
@@ -16,9 +16,6 @@ else
     <dl class="row">
         <dt class="col-sm-2">Order ID</dt>
         <dd class="col-sm-10">@Model.Order.OrderId</dd>
-
-        <dt class="col-sm-2">Customer Name</dt>
-        <dd class="col-sm-10">@Model.Order.CustomerName</dd>
 
         <dt class="col-sm-2">Total Price</dt>
         <dd class="col-sm-10">@Model.Order.TotalPrice</dd>

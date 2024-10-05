@@ -171,5 +171,10 @@ namespace Service.Service
         {
             return _orderRepository.UpdateOrderStatusAsync(updatedOrder);
         }
+
+        public Task<List<Order>> SearchOrders(OrderSearchDTO searchCriteria)
+        {
+            return _orderRepository.SearchOrders(searchCriteria);
+        }
     }
 }

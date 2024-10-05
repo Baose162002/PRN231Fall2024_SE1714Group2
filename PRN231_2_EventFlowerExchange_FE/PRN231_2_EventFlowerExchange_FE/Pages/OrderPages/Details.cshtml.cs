@@ -9,7 +9,7 @@ using BusinessObject;
 using Newtonsoft.Json;
 using BusinessObject.DTO.Response;
 
-namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPage
+namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
 {
     public class DetailsModel : PageModel
     {

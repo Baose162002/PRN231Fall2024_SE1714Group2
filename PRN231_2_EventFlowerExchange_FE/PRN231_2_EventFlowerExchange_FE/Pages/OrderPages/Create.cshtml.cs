@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BusinessObject;
 
-namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPage
+namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
 {
     public class CreateModel : PageModel
     {

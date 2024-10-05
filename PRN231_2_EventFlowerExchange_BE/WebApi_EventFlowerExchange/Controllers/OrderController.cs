@@ -107,7 +107,12 @@ namespace WebApi_EventFlowerExchange.Controllers
             return Ok(result);
         }
 
-
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchOrders([FromQuery] OrderSearchDTO searchCriteria)
+        {
+            var orders = await _orderService.SearchOrders(searchCriteria);
+            return Ok(orders);
+        }
 
     }
 }
