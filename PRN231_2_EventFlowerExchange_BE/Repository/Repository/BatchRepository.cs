@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.Enum;
 using Microsoft.EntityFrameworkCore;
 using Repository.IRepository;
 using System;
@@ -72,6 +73,22 @@ namespace Repository.Repository
             }
             existing.Status = Status.Inactive;
             _context.Batches.Update(existing);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Batch>> GetAvailableBatchesByFlowerId(int flowerId)
+        {
+            var _context = new FlowerShopContext();
+            return await _context.Batches
+                .Where(b => b.FlowerId == flowerId && b.BatchQuantity > 0 && b.BatchStatus == EnumList.BatchStatus.Available)
+                .OrderBy(b => b.EntryDate) // Sắp xếp theo ngày nhập kho
+                .ToListAsync();
+        }
+
+        public async Task UpdateBatch(Batch batch)
+        {
+            var _context = new FlowerShopContext();
+            _context.Batches.Update(batch);
             await _context.SaveChangesAsync();
         }
     }
