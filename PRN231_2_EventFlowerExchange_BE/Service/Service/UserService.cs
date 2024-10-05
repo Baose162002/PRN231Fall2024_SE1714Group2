@@ -1,15 +1,15 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using AutoMapper;
 using BusinessObject;
 using BusinessObject.Dto.Response;
 using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using BusinessObject.Enum;
 using Repository.IRepository;
-using Repository.Repository;
 using Service.IService;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Service.Service
 {
@@ -42,6 +42,9 @@ namespace Service.Service
         {
             try
             {
+                ValidatePhoneNumber(createUserDTO.Phone);
+                ValidateEmail(createUserDTO.Email);
+
                 if (await CheckEmailExist(createUserDTO.Email))
                 {
                     throw new Exception("Email đã tồn tại.");
@@ -57,8 +60,8 @@ namespace Service.Service
                     Email = createUserDTO.Email,
                     Phone = createUserDTO.Phone,
                     Address = createUserDTO.Address,
-                    Role = EnumList.UserRole.Buyer, // Đảm bảo role là Buyer
-                    Password = createUserDTO.Password // Lưu ý: Nên hash mật khẩu trước khi lưu
+                    Role = EnumList.UserRole.Buyer,
+                    Password = createUserDTO.Password // Note: You should hash the password before saving
                 };
 
                 var success = await _userRepository.AddAsync(user);
@@ -67,12 +70,11 @@ namespace Service.Service
                     throw new Exception("Không thể tạo người dùng.");
                 }
 
-
                 return _mapper.Map<UserResponseDto>(user);
             }
             catch (Exception ex)
             {
-                throw new Exception($"Lỗi khi tạo người dùng: {ex.Message}");
+                throw new Exception(ex.Message);
             }
         }
 
@@ -80,7 +82,9 @@ namespace Service.Service
         {
             try
             {
-                // Kiểm tra email và số điện thoại tồn tại
+                ValidatePhoneNumber(createUserDTO.Phone);
+                ValidateEmail(createUserDTO.Email);
+
                 if (await CheckEmailExist(createUserDTO.Email))
                 {
                     throw new Exception("Email đã tồn tại.");
@@ -89,17 +93,20 @@ namespace Service.Service
                 {
                     throw new Exception("Số điện thoại đã tồn tại.");
                 }
+                if (await CheckCompanyNameExist(createSellerDTO.CompanyName))
+                {
+                    throw new Exception("Tên công ty đã tồn tại.");
+                }
 
-                // Tạo User
                 var user = new User
                 {
                     FullName = createUserDTO.FullName,
                     Email = createUserDTO.Email,
                     Phone = createUserDTO.Phone,
                     Address = createUserDTO.Address,
-                    Role = EnumList.UserRole.Seller, // Đảm bảo role là Seller
-                    Password = createUserDTO.Password, // Nên hash mật khẩu trước khi lưu
-                    Status = EnumList.Status.Active // Đặt trạng thái người dùng là Active
+                    Role = EnumList.UserRole.Seller,
+                    Password = createUserDTO.Password, // Note: You should hash the password before saving
+                    Status = EnumList.Status.Active
                 };
 
                 var success = await _userRepository.AddAsync(user);
@@ -108,14 +115,13 @@ namespace Service.Service
                     throw new Exception("Không thể tạo người dùng.");
                 }
 
-                // Tạo Company
                 var company = new Company
                 {
                     CompanyName = createSellerDTO.CompanyName,
                     CompanyAddress = createSellerDTO.CompanyAddress,
                     CompanyDescription = createSellerDTO.CompanyDescription,
-                    UserId = user.UserId, // Sử dụng UserId của user đã tạo
-                    Status = EnumList.Status.Active // Đặt trạng thái công ty là Active
+                    UserId = user.UserId,
+                    Status = EnumList.Status.Active
                 };
                 var companySuccess = await _companyRepository.AddNew(company);
                 if (!companySuccess)
@@ -127,7 +133,7 @@ namespace Service.Service
             }
             catch (Exception ex)
             {
-                throw new Exception($"Lỗi khi tạo người bán: {ex.Message}");
+                throw new Exception(ex.Message);
             }
         }
 
@@ -159,6 +165,28 @@ namespace Service.Service
         {
             var users = await _userRepository.GetAllUsers();
             return users.Any(u => u.Phone == phone);
+        }
+
+        private async Task<bool> CheckCompanyNameExist(string companyName)
+        {
+            var companies = await _companyRepository.GetCompanies();
+            return companies.Any(c => c.CompanyName == companyName);
+        }
+
+        private void ValidatePhoneNumber(string phone)
+        {
+            if (!Regex.IsMatch(phone, @"^\d{10}$"))
+            {
+                throw new Exception("Số điện thoại phải có đúng 10 chữ số.");
+            }
+        }
+
+        private void ValidateEmail(string email)
+        {
+            if (!email.EndsWith("@gmail.com", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("Email phải có đuôi @gmail.com.");
+            }
         }
     }
 }

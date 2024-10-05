@@ -17,10 +17,13 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
         [BindProperty]
         public RegisterSellerDTO RegisterRequest { get; set; }
 
+        [TempData]
+        public string SuccessMessage { get; set; }
+
         public RegisterSellerModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _baseApiUrl = configuration["ApiSettings:BaseUrl"];  // Lấy BaseUrl từ appsettings.json
+            _baseApiUrl = configuration["ApiSettings:BaseUrl"];
         }
 
         public void OnGet()
@@ -36,27 +39,21 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
 
             try
             {
-                // Tạo nội dung JSON từ RegisterRequest
                 var jsonContent = new StringContent(JsonSerializer.Serialize(RegisterRequest), Encoding.UTF8, "application/json");
-
-                // Gọi API Backend để đăng ký người bán
                 var response = await _httpClient.PostAsync($"{_baseApiUrl}/user/register-seller", jsonContent);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // Chuyển hướng đến trang login sau khi đăng ký thành công
-                    return RedirectToPage("/Login/Login");
+                    SuccessMessage = "Seller registration successful! You can now log in.";
+                    return Page();
                 }
                 else
                 {
-                    // Đọc thông báo lỗi từ phản hồi
                     var errorMessage = await response.Content.ReadAsStringAsync();
                     var apiError = JsonSerializer.Deserialize<Dictionary<string, string>>(errorMessage);
 
-                    // Kiểm tra xem có thông báo lỗi cụ thể không
                     if (apiError != null && apiError.TryGetValue("message", out var message))
                     {
-                        // Thêm thông báo lỗi cụ thể vào ModelState
                         ModelState.AddModelError(string.Empty, message);
                     }
 
@@ -65,7 +62,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
             }
             catch (Exception ex)
             {
-                // Xử lý ngoại lệ nếu cần
+                ModelState.AddModelError(string.Empty, "An error occurred while processing your request.");
                 return Page();
             }
         }
