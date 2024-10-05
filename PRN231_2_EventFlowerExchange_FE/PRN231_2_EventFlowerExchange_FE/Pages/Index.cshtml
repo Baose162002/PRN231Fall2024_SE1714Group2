@@ -32,15 +32,25 @@
                 foreach (var flower in Model.Flowers)
                 {
                     <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                        <img src="@flower.Image" alt="@flower.Name" class="w-full h-64 object-cover">
+                        <!-- Link to BuyFlowerDetail page with flower ID -->
+                        <a href="/BuyFlowerDetail?id=@flower.FlowerId">
+                            <img src="@flower.Image" alt="@flower.Name" class="w-full h-64 object-cover">
+                        </a>
                         <div class="p-6">
-                            <h3 class="text-xl font-bold text-black mb-2">@flower.Name</h3>
+                            <!-- Flower Name Link -->
+                            <a href="/BuyFlowerDetail?id=@flower.FlowerId">
+                                <h3 class="text-xl font-bold text-black mb-2">@flower.Name</h3>
+                            </a>
                             <p class="text-gray-700 text-base">@flower.Description</p>
                             <div class="mt-4 flex items-center justify-between">
                                 <span class="text-gray-700 font-medium">$@flower.PricePerUnit</span>
-                                <button class="px-4 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-200">
-                                    Add to cart
-                                </button>
+                                <!-- Form to add flower to cart -->
+                                <form method="post" asp-page-handler="AddToCart">
+                                    <input type="hidden" name="flowerId" value="@flower.FlowerId" />
+                                    <button onclick="addToCart('@flower.FlowerId')" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-200">
+                                        Add to cart
+                                    </button>
+                                </form>
                             </div>
                             <p><strong>Origin:</strong> @flower.Origin</p>
                             <p><strong>Color:</strong> @flower.Color</p>
@@ -55,6 +65,7 @@
         </div>
     </div>
 </section>
+
 
 <div class="bg-white  h-screen h-full py-6 sm:py-8 lg:py-12">
     <div class="mx-auto max-w-screen-2xl px-4 md:px-8">
@@ -112,3 +123,29 @@
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    function addToCart(flowerId) {
+        $.post("/Index?handler=AddToCart", { flowerId: flowerId }, function () {
+            // Update the cart count after successful addition
+            updateCartCount();
+        });
+    }
+
+    function updateCartCount() {
+        const cartItems = document.cookie.split('; ').find(row => row.startsWith('cartItems='));
+
+        if (cartItems) {
+            const cartItemsValue = JSON.parse(decodeURIComponent(cartItems.split('=')[1]));
+            const totalCount = cartItemsValue.reduce((total, item) => total + item.Quantity, 0);
+
+            document.getElementById('cart-count').textContent = totalCount;
+        } else {
+            document.getElementById('cart-count').textContent = 0;
+        }
+    }
+
+    // Call this function when the page loads to update the cart count
+    window.onload = updateCartCount;
+</script>
