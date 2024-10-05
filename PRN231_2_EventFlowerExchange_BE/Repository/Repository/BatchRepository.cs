@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BusinessObject.Enum.EnumList;
 
 namespace Repository.Repository
 {
@@ -16,7 +17,8 @@ namespace Repository.Repository
             var _context = new FlowerShopContext();
             var batches = await _context.Batches
                .Include(e => e.Company)   
-               .Include(e => e.Flower) 
+               .Include(e => e.Flower)
+               .Where(e => e.Status == 0)
                .ToListAsync();
             return batches;
         }
@@ -68,7 +70,8 @@ namespace Repository.Repository
             {
                 throw new ArgumentException("Batch is not existed");
             }
-            _context.Batches.Remove(existing);
+            existing.Status = Status.Inactive;
+            _context.Batches.Update(existing);
             await _context.SaveChangesAsync();
         }
     }

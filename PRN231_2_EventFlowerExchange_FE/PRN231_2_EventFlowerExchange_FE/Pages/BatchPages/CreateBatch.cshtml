@@ -85,6 +85,19 @@
             <label for="Color">Color</label>
             <input type="text" class="form-control" id="Color" name="Color" required />
         </div>
+        @if (Model.Companies != null && Model.Companies.Count > 0)
+        {
+            <div>
+                <label for="companyId">Chọn công ty:</label>
+                <select id="companyId" name="Input.CompanyId" asp-for="Input.CompanyId" class="form-select">
+                    <option value="">-- Chọn công ty --</option>
+                    @foreach (var company in Model.Companies)
+                    {
+                        <option value="@company.CompanyId">@company.CompanyName</option>
+                    }
+                </select>
+            </div>
+        }
         <button type="submit" class="btn btn-primary">Create</button>
         <a href="/BatchIndex" class="btn btn-secondary">Cancel</a>
     </form>

@@ -34,9 +34,23 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
 
         [BindProperty]
         public IFormFile ImageFlower { get; set; }
-        public void OnGet()
+        public List<CompanyDTO> Companies { get; set; } = new List<CompanyDTO>();
+
+        public async Task<IActionResult> OnGetAsync()
         {
             Input = new CreateBatchDTOUpdateImg();
+
+            var token = HttpContext.Session.GetString("JWTToken");
+            var role = HttpContext.Session.GetString("UserRole");
+
+
+            if (role == "Admin") // Assuming you store the role as a string
+            {
+                Companies = await GetCompaniesAsync(token); // Fetch companies
+            }
+
+            // Additional logic for loading the event details, if applicable
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -111,30 +125,47 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                     return Page();
                 }
 
-                // Lấy UserId từ session
-                var userIdString = HttpContext.Session.GetString("UserId");
-                if (string.IsNullOrEmpty(userIdString))
-                {
-                    ModelState.AddModelError(string.Empty, "User ID not found in session.");
-                    return Page();
-                }
+                var userRole = HttpContext.Session.GetString("UserRole");
 
-                // Chuyển đổi UserId sang kiểu int
-                if (!int.TryParse(userIdString, out int userId))
+                if (userRole == "Admin")
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid User ID.");
-                    return Page();
+                    // If the user is an admin, the CompanyId should be provided by the dropdown
+                    // Validate that the CompanyId was selected
+                    if (Input.CompanyId <= 0) // or check for null if nullable
+                    {
+                        ModelState.AddModelError(string.Empty, "Please select a valid company.");
+                        return Page();
+                    }
                 }
+                else if (userRole == "Seller")
+                {
+                    // Logic for fetching CompanyId for Company role remains unchanged
+                    var userIdString = HttpContext.Session.GetString("UserId");
+                    if (string.IsNullOrEmpty(userIdString))
+                    {
+                        ModelState.AddModelError(string.Empty, "User ID not found in session.");
+                        return Page();
+                    }
 
-                // Fetch CompanyId using UserId
-                var company = await GetCompanyByUserIdAsync(userIdString);
-                if (company == null)
+                    if (!int.TryParse(userIdString, out int userId))
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid User ID.");
+                        return Page();
+                    }
+
+                    var company = await GetCompanyByUserIdAsync(userIdString);
+                    if (company == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "Company not found for the user.");
+                        return Page();
+                    }
+                    Input.CompanyId = company.CompanyId; // Set the Company ID for Company role
+                }
+                else
                 {
-                    // Lỗi cụ thể khi không tìm thấy công ty
-                    ModelState.AddModelError(string.Empty, "Company not found for the user.");
+                    ModelState.AddModelError(string.Empty, "Invalid user role.");
                     return Page();
                 }
-                Input.CompanyId = company.CompanyId;
 
 
                 var json = JsonSerializer.Serialize(Input);
@@ -164,6 +195,22 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                 return Page();
             }
         }
+
+        private async Task<List<CompanyDTO>> GetCompaniesAsync(string token)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/company"; // Adjust API URL accordingly
+
+            var response = await _httpClient.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<CompanyDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+
+            return new List<CompanyDTO>(); // Return empty list on failure
+        }
+
         private async Task<CompanyDTO> GetCompanyByUserIdAsync(string userId)
         {
             var token = HttpContext.Session.GetString("JWTToken");
@@ -190,7 +237,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 _logger.LogError($"Error fetching company information. Status code: {response.StatusCode}, Content: {errorContent}");
-                throw new Exception($"Error fetching company information. Status code: {response.StatusCode}");
+                return null;
 
 
 
