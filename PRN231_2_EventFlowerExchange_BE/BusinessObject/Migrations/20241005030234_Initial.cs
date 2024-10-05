@@ -104,7 +104,6 @@ namespace BusinessObject.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FlowerType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BatchQuantity = table.Column<int>(type: "int", nullable: false),
-                    ImgFlower = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PricePerUnit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Condition = table.Column<string>(type: "nvarchar(max)", nullable: false),

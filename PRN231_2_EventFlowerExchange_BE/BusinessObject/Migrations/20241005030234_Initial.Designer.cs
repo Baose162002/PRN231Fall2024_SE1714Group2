@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(FlowerShopContext))]
-    [Migration("20241004162914_Initial")]
+    [Migration("20241005030234_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -57,10 +57,6 @@ namespace BusinessObject.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("FlowerType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImgFlower")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
