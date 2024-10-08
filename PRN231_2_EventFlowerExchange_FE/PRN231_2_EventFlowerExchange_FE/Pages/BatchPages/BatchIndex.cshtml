@@ -3,15 +3,14 @@
 @{
     ViewData["Title"] = "Batch List";
 }
-<div class="container mt-5 pt-4 text-center">
-    <h1 class="mb-4">Batch List</h1>
-    <a href="/BatchPages/CreateBatch" class="btn btn-primary mb-3">Create New Batch</a>
-
+<div class="container mx-auto px-4 mt-16 text-center">
+    <h1 class="text-3xl font-bold mb-8">Batch List</h1>
+    <a href="/BatchPages/CreateBatch" class="inline-block px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-300 mb-8">Create New Batch</a>
     @if (Model.Batches != null && Model.Batches.Any())
     {
-        <div class="table-responsive d-flex justify-content-center">
-            <table class="min-w-full divide-y divide-gray-200 table table-striped table-hover">
-                <thead>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Flower Type</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price Per Unit</th>
@@ -25,17 +24,17 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach (var batch in Model.Batches)
                     {
-                        <tr>
+                        <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">@batch.FlowerType</td>
                             <td class="px-6 py-4 whitespace-nowrap">@batch.PricePerUnit.ToString("C")</td>
                             <td class="px-6 py-4 whitespace-nowrap">@batch.Description</td>
                             <td class="px-6 py-4 whitespace-nowrap">@batch.BatchQuantity</td>
                             <td class="px-6 py-4 whitespace-nowrap">@batch.Condition</td>
                             <td class="px-6 py-4 whitespace-nowrap">@batch.EntryDate</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="/BatchPages/BatchDetails?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out">Details</a>
-                                <a href="/BatchPages/EditBatch?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-500 focus:outline-none focus:shadow-outline-yellow active:bg-yellow-600 transition duration-150 ease-in-out">Edit</a>
-                                <a href="/BatchPages/DeleteBatch?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-red-600 rounded-md hover:bg-red-500 focus:outline-none focus:shadow-outline-red active:bg-red-600 transition duration-150 ease-in-out">Delete</a>
+                            <td class="px-6 py-4 whitespace-nowrap space-x-2">
+                                <a href="/BatchPages/BatchDetails?id=@batch.BatchId" class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-300">Details</a>
+                                <a href="/BatchPages/EditBatch?id=@batch.BatchId" class="inline-block px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-700 transition duration-300">Edit</a>
+                                <a href="/BatchPages/DeleteBatch?id=@batch.BatchId" class="inline-block px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition duration-300">Delete</a>
                             </td>
                         </tr>
                     }
@@ -45,14 +44,8 @@
     }
     else
     {
-        <div class="alert alert-info" role="alert">
-            No batches available at the moment.
+        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-8" role="alert">
+            <p>No batches available at the moment.</p>
         </div>
     }
 </div>
-
-@section Scripts {
-    <script>
-        // Add any additional JavaScript functionality here if needed
-    </script>
-}
