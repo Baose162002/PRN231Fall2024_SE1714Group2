@@ -51,6 +51,11 @@ namespace Repository.Repository
                 existing.PricePerUnit = flower.PricePerUnit;    
                 existing.Origin = flower.Origin;
                 existing.Color = flower.Color;
+                existing.RemainingQuantity = flower.RemainingQuantity;
+                existing.Condition = flower.Condition;
+                existing.FlowerStatus = flower.FlowerStatus;
+                existing.BatchId = flower.BatchId;
+                
             }
             _context.Flowers.Update(existing);
             await _context.SaveChangesAsync();
@@ -65,6 +70,12 @@ namespace Repository.Repository
             }
             existing.Status = EnumList.Status.Inactive;
             _context.Flowers.Update(existing);
+            await _context.SaveChangesAsync();
+        }
+        public async Task UpdateFlower(Flower flower)
+        {
+            var _context = new FlowerShopContext();
+            _context.Flowers.Update(flower);
             await _context.SaveChangesAsync();
         }
     }

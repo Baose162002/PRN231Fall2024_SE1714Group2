@@ -23,7 +23,7 @@ namespace BusinessObject.Enum
             Failed
         }
 
-        public enum BatchStatus
+        public enum FlowerStatus
         {
             Available,
             SoldOut
@@ -38,6 +38,12 @@ namespace BusinessObject.Enum
             DeliveryPersonnel
         }
 
+        public enum FlowerCondition
+        {
+            Fresh,              // Còn tốt
+            PartiallyFresh,     // Còn tốt 1 nửa
+            Damaged             // Hư hại
+        }
         public enum DeliveryStatus
         {
             Pending,
