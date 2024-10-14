@@ -20,16 +20,12 @@ namespace Service.Configurations.Mapper
         {
             // Batch mappings
             CreateMap<Batch, CreateBatchDTO>();
-            CreateMap<Batch, UpdateBatchDTO>()
-                .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()));
+            CreateMap<Batch, UpdateBatchDTO>();
             CreateMap<UpdateBatchDTO, Batch>()
-               .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()))
                .ForMember(dest => dest.EntryDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.EntryDate, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
-            CreateMap<ListBatchDTO, Batch>()
-                .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()));
+            CreateMap<ListBatchDTO, Batch>();
 
             CreateMap<Batch, ListBatchDTO>()
-                  .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()))
                   .ForMember(dest => dest.EntryDate,
                   opt => opt.MapFrom(src => FormatDate(src.EntryDate)));
 

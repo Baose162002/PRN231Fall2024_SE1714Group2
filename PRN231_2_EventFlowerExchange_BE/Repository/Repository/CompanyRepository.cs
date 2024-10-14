@@ -46,6 +46,9 @@ namespace Repository.Repository
                 company.CompanyDescription = updateCompany.CompanyDescription;
                 company.CompanyName = updateCompany.CompanyName;
                 company.CompanyAddress = updateCompany.CompanyAddress;
+                company.TaxNumber = updateCompany.TaxNumber;
+                company.PostalCode = updateCompany.PostalCode;
+                company.City = updateCompany.City;
                 flowerShopContext.Companies.Update(company);
                 await flowerShopContext.SaveChangesAsync();
             }

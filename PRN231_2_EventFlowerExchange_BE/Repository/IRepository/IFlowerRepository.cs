@@ -14,5 +14,6 @@ namespace Repository.IRepository
         Task Create(Flower flower);
         Task Update(Flower flower, int id);
         Task Delete(int id);
+        Task UpdateFlower(Flower flower);
     }
 }
