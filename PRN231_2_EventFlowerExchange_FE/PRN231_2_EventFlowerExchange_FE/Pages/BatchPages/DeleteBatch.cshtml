@@ -13,16 +13,18 @@
             @if (Model.Batch != null)
             {
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <p class="font-medium text-gray-700">Batch Type:</p>
-                    <p>@Model.Batch.FlowerType</p>
+                    <p class="font-medium text-gray-700">Event Name:</p>
+                    <p>@Model.Batch.EventName</p>
+                    <p class="font-medium text-gray-700">Event Date:</p>
+                    <p>@Model.Batch.EventDate</p>
                     <p class="font-medium text-gray-700">Batch Date:</p>
                     <p>@Model.Batch.EntryDate</p>
                     <p class="font-medium text-gray-700">Batch Quantity:</p>
                     <p>@Model.Batch.BatchQuantity</p>
+                    <p class="font-medium text-gray-700">Remaining Quantity:</p>
+                    <p>@Model.Batch.RemainingQuantity</p>
                     <p class="font-medium text-gray-700">Batch Description:</p>
                     <p>@Model.Batch.Description</p>
-                    <p class="font-medium text-gray-700">Batch Condition:</p>
-                    <p>@Model.Batch.Condition</p>
                 </div>
 
                 <div class="flex justify-end space-x-4">

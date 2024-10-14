@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(FlowerShopContext))]
-    [Migration("20241014050352_Initial")]
+    [Migration("20241014080037_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -32,6 +32,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BatchId"));
+
+                    b.Property<string>("BatchName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("BatchQuantity")
                         .HasColumnType("int");

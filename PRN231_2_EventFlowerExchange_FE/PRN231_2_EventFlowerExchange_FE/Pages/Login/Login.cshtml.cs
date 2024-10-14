@@ -35,7 +35,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Login
             }
 
             var client = _httpClientFactory.CreateClient();
-            var response = await client.PostAsJsonAsync($"{_configuration["ApiSettings:BaseUrl"]}/auth/login", LoginRequest);
+            var response = await client.PostAsJsonAsync($"{_configuration["ApiSettings:BaseUrl"]}/api/auth/login", LoginRequest);
 
             if (response.IsSuccessStatusCode)
             {

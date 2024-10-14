@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BusinessObject
 {
@@ -24,7 +25,7 @@ namespace BusinessObject
 
         [ForeignKey("BatchId")]
         public Enum.EnumList.Status Status { get; set; }
-    
+
         public Batch Batch { get; set; }
     }
 }

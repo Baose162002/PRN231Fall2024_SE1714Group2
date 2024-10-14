@@ -12,29 +12,45 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Flower Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price Per Unit</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batch Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remaining Quantity</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entry Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach (var batch in Model.Batches)
                     {
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">@batch.FlowerType</td>
-                            <td class="px-6 py-4 whitespace-nowrap">@batch.PricePerUnit.ToString("C")</td>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">@batch.BatchName</td>
+                            <td class="px-6 py-4 whitespace-nowrap">@batch.EventName</td>
+                            <td class="px-6 py-4 whitespace-nowrap">@batch.EventDate</td>
                             <td class="px-6 py-4 whitespace-nowrap">@batch.Description</td>
                             <td class="px-6 py-4 whitespace-nowrap">@batch.BatchQuantity</td>
-                            <td class="px-6 py-4 whitespace-nowrap">@batch.Condition</td>
+                            <td class="px-6 py-4 whitespace-nowrap">@batch.RemainingQuantity</td>
                             <td class="px-6 py-4 whitespace-nowrap">@batch.EntryDate</td>
-                            <td class="px-6 py-4 whitespace-nowrap space-x-2">
-                                <a href="/BatchPages/BatchDetails?id=@batch.BatchId" class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-300">Details</a>
-                                <a href="/BatchPages/EditBatch?id=@batch.BatchId" class="inline-block px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-700 transition duration-300">Edit</a>
-                                <a href="/BatchPages/DeleteBatch?id=@batch.BatchId" class="inline-block px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition duration-300">Delete</a>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @{
+                                    var companyName = Model.Companies.FirstOrDefault(c => c.CompanyId == batch.CompanyId)?.CompanyName;
+                                    if (companyName != null)
+                                    {
+                                        @companyName
+                                    }
+                                    else
+                                    {
+                                        <span class="text-red-500">Unknown Company</span>
+                                    }
+                                }
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="/BatchPages/BatchDetails?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out">Details</a>
+                                <a href="/BatchPages/EditBatch?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-500 focus:outline-none focus:shadow-outline-yellow active:bg-yellow-600 transition duration-150 ease-in-out">Edit</a>
+                                <a href="/BatchPages/DeleteBatch?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-red-600 rounded-md hover:bg-red-500 focus:outline-none focus:shadow-outline-red active:bg-red-600 transition duration-150 ease-in-out">Delete</a>
                             </td>
                         </tr>
                     }

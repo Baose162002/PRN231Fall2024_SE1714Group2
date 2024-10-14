@@ -30,7 +30,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             }
 
             // Gọi API để lấy danh sách hoa
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/Flower");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/Flower/GetAll");
 
             if (response.IsSuccessStatusCode)
             {
