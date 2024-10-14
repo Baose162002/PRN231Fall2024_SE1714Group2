@@ -9,15 +9,15 @@ namespace BusinessObject.DTO.Request
 {
     public class CreateBatchDTO
     {
-        
-        public string FlowerType { get; set; }
+
+        public string EventName { get; set; }
+        public DateTime EventDate { get; set; }
         public int BatchQuantity { get; set; }
+        public int RemainingQuantity { get; set; }
         public string Description { get; set; }
         public decimal PricePerUnit { get; set; }
-        public string Condition { get; set; }
         public string EntryDate { get; set; }
         public int CompanyId { get; set; }
-        public int FlowerId { get; set; }
      
     }
 }

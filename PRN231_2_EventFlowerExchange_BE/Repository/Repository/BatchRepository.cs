@@ -18,7 +18,7 @@ namespace Repository.Repository
             var _context = new FlowerShopContext();
             var batches = await _context.Batches
                .Include(e => e.Company)   
-               .Include(e => e.Flower)
+               .Include(e => e.Flowers)
                .Where(e => e.Status == 0)
                .ToListAsync();
             return batches;
@@ -27,7 +27,7 @@ namespace Repository.Repository
         public async Task<Batch> GetBatchById(int id)
         {
             var _context = new FlowerShopContext();
-            var existing = await _context.Batches.Include(e => e.Company).Include(e => e.Flower).FirstOrDefaultAsync(b => b.BatchId == id);
+            var existing = await _context.Batches.Include(e => e.Company).Include(e => e.Flowers).FirstOrDefaultAsync(b => b.BatchId == id);
             return existing;
         }
         public async Task<Flower> GetFlowerById(int id)
@@ -50,14 +50,12 @@ namespace Repository.Repository
             var existing = await GetBatchById(id);
             if(existing != null)
             {
-                existing.FlowerType = batch.FlowerType;
+                existing.EventName = batch.EventName;
+                existing.EventDate = batch.EventDate;
                 existing.BatchQuantity = batch.BatchQuantity;
+                existing.RemainingQuantity = batch.RemainingQuantity;
                 existing.Description = batch.Description;
-                existing.PricePerUnit = batch.PricePerUnit;
-                existing.Condition = batch.Condition;
                 existing.EntryDate = batch.EntryDate;
-                existing.BatchStatus = batch.BatchStatus;
-                existing.FlowerId = batch.FlowerId;
             }
             _context.Batches.Update(existing);
             await _context.SaveChangesAsync();
@@ -78,12 +76,17 @@ namespace Repository.Repository
 
         public async Task<List<Batch>> GetAvailableBatchesByFlowerId(int flowerId)
         {
-            var _context = new FlowerShopContext();
-            return await _context.Batches
-                .Where(b => b.FlowerId == flowerId && b.BatchQuantity > 0 && b.BatchStatus == EnumList.BatchStatus.Available)
-                .OrderBy(b => b.EntryDate) // Sắp xếp theo ngày nhập kho
-                .ToListAsync();
+            using (var _context = new FlowerShopContext())
+            {
+                return await _context.Batches
+                    .Include(b => b.Flowers) // Bao gồm các hoa trong lô
+                    .Where(b => b.Flowers.Any(f => f.FlowerId == flowerId && f.RemainingQuantity > 0 && f.FlowerStatus == EnumList.FlowerStatus.Available)
+                                 && b.RemainingQuantity > 0) // Kiểm tra số lượng còn lại của lô
+                    .OrderBy(b => b.EntryDate) // Sắp xếp theo ngày nhập kho
+                    .ToListAsync();
+            }
         }
+
 
         public async Task UpdateBatch(Batch batch)
         {

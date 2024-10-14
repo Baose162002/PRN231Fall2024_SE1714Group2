@@ -12,26 +12,6 @@ namespace BusinessObject.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Flower",
-                columns: table => new
-                {
-                    FlowerId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PricePerUnit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Origin = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Flower", x => x.FlowerId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
@@ -59,6 +39,9 @@ namespace BusinessObject.Migrations
                     CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CompanyAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CompanyDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TaxNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },
@@ -102,15 +85,13 @@ namespace BusinessObject.Migrations
                 {
                     BatchId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FlowerType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EventName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EventDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BatchQuantity = table.Column<int>(type: "int", nullable: false),
+                    RemainingQuantity = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PricePerUnit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Condition = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EntryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BatchStatus = table.Column<int>(type: "int", nullable: false),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
-                    FlowerId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -121,12 +102,6 @@ namespace BusinessObject.Migrations
                         column: x => x.CompanyId,
                         principalTable: "Company",
                         principalColumn: "CompanyId");
-                    table.ForeignKey(
-                        name: "FK_Batch_Flower_FlowerId",
-                        column: x => x.FlowerId,
-                        principalTable: "Flower",
-                        principalColumn: "FlowerId",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -177,6 +152,36 @@ namespace BusinessObject.Migrations
                         column: x => x.OrderId,
                         principalTable: "Order",
                         principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Flower",
+                columns: table => new
+                {
+                    FlowerId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PricePerUnit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Origin = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RemainingQuantity = table.Column<int>(type: "int", nullable: false),
+                    Condition = table.Column<int>(type: "int", nullable: false),
+                    FlowerStatus = table.Column<int>(type: "int", nullable: false),
+                    BatchId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Flower", x => x.FlowerId);
+                    table.ForeignKey(
+                        name: "FK_Flower_Batch_BatchId",
+                        column: x => x.BatchId,
+                        principalTable: "Batch",
+                        principalColumn: "BatchId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -241,11 +246,6 @@ namespace BusinessObject.Migrations
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Batch_FlowerId",
-                table: "Batch",
-                column: "FlowerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Company_UserId",
                 table: "Company",
                 column: "UserId");
@@ -260,6 +260,11 @@ namespace BusinessObject.Migrations
                 table: "Delivery",
                 column: "OrderId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Flower_BatchId",
+                table: "Flower",
+                column: "BatchId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Order_CustomerId",
@@ -300,6 +305,9 @@ namespace BusinessObject.Migrations
                 name: "Delivery");
 
             migrationBuilder.DropTable(
+                name: "Flower");
+
+            migrationBuilder.DropTable(
                 name: "OrderDetail");
 
             migrationBuilder.DropTable(
@@ -316,9 +324,6 @@ namespace BusinessObject.Migrations
 
             migrationBuilder.DropTable(
                 name: "Company");
-
-            migrationBuilder.DropTable(
-                name: "Flower");
 
             migrationBuilder.DropTable(
                 name: "User");

@@ -42,9 +42,8 @@ namespace Service.Service
 
         public async Task Create(CreateBatchDTO batch)
         {
-            if (batch == null || string.IsNullOrEmpty(batch.FlowerType)     
+            if (batch == null
               || string.IsNullOrEmpty(batch.Description)
-              || string.IsNullOrEmpty(batch.Condition)   
             || batch.PricePerUnit == null || batch.BatchQuantity == null || batch.CompanyId == null)
             {
                 throw new ArgumentException("All fieds must be filled");
@@ -64,23 +63,17 @@ namespace Service.Service
                 throw new ArgumentException("Invalid create date format", nameof(batch.EntryDate));
             }
          
-            var flowerexisting = await _batchRepository.GetFlowerById(batch.FlowerId);
-            if(flowerexisting == null)
-            {
-                throw new ArgumentException("Flower is not existed");
-            }
+        
 
             Batch batches = new Batch
             {
-                FlowerType = batch.FlowerType,
+                EventName = batch.EventName,
+                EventDate = batch.EventDate,
                 BatchQuantity = batch.BatchQuantity,
+                RemainingQuantity = batch.RemainingQuantity,
                 Description = batch.Description,
-                PricePerUnit = batch.PricePerUnit,
-                Condition = batch.Condition,
                 EntryDate = entryDate,
-                BatchStatus = EnumList.BatchStatus.Available,
                 CompanyId = batch.CompanyId,
-                FlowerId = batch.FlowerId,
                 Status = EnumList.Status.Active
             };
             await _batchRepository.Create(_mapper.Map<Batch>(batches));
@@ -90,16 +83,11 @@ namespace Service.Service
         {
             if (updateBatchDTO == null || string.IsNullOrEmpty(updateBatchDTO.FlowerType)
              || string.IsNullOrEmpty(updateBatchDTO.Description)
-             || string.IsNullOrEmpty(updateBatchDTO.Condition)
            || updateBatchDTO.PricePerUnit == null || updateBatchDTO.BatchQuantity == null)
             {
                 throw new ArgumentException("All fieds must be filled");
             }
-            Regex statusRegex = new Regex(@"^(Available|SoldOut)$");
-            if (!statusRegex.IsMatch(updateBatchDTO.BatchStatus.ToString()))
-            {
-                throw new ArgumentException("Status must be either Available, SoldOut!");
-            }
+
             if (updateBatchDTO.PricePerUnit < 0)
             {
                 throw new ArgumentException("Price minimum must be a positive number");
