@@ -9,7 +9,7 @@ using Service.IService;
 using Service.Service;
 using System.Text.Json.Serialization;
 
-namespace RBN_Api.Extensions
+namespace WebApi_EventFlowerExchange.Extensions
 {
 
     public static class ServiceCollectionExtensions

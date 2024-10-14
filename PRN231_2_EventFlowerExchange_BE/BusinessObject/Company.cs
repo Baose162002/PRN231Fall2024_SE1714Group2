@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace BusinessObject
 {
@@ -25,6 +26,7 @@ namespace BusinessObject
         [ForeignKey("UserId")]
         public User Seller { get; set; }
         public Enum.EnumList.Status Status { get; set; }
+        [JsonIgnore]
 
         public ICollection<Batch> Batches { get; set; }
     }

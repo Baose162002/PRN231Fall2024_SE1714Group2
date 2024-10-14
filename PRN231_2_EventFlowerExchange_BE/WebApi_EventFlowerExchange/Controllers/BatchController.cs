@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Service.IService;
 
 namespace WebApi_EventFlowerExchange.Controllers
@@ -18,7 +19,8 @@ namespace WebApi_EventFlowerExchange.Controllers
 
        
         [HttpGet]
-        public async Task<IActionResult> GetAllBatch()
+        [EnableQuery]
+        public async Task<IActionResult> Get()
         {
             var batches = await _batchService.GetAllBatch();
             if(batches == null || !batches.Any())

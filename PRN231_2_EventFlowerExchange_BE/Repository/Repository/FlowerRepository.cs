@@ -17,7 +17,7 @@ namespace Repository.Repository
 
         public async Task<List<Flower>> GetAllFlowers()
         {
-            return await _context.Flowers.Where(x => x.Status == 0).ToListAsync();
+            return await _context.Flowers.Where(x => x.Status == EnumList.Status.Active).ToListAsync();
         }
 
         public async Task<Flower> GetFlowerById(int id)

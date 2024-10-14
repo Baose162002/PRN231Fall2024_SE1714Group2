@@ -26,11 +26,10 @@ namespace Service.Service
             _batchRepository = batchRepository;
             _mapper = mapper;
         }
-        public async Task<List<ListBatchDTO>> GetAllBatch()
+        public async Task<List<Batch>> GetAllBatch()
         {
             var batches = await _batchRepository.GetAllBatch();
-            var batchDTO = _mapper.Map<List<ListBatchDTO>>(batches);
-            return batchDTO;
+            return batches;
         }
 
         public async Task<ListBatchDTO> GetBatchById(int id)
@@ -42,37 +41,38 @@ namespace Service.Service
 
         public async Task Create(CreateBatchDTO batch)
         {
-            if (batch == null
-              || string.IsNullOrEmpty(batch.Description)
-            || batch.PricePerUnit == null || batch.BatchQuantity == null || batch.CompanyId == null)
+            if (batch == null || string.IsNullOrWhiteSpace(batch.BatchName)
+              || string.IsNullOrWhiteSpace(batch.Description)
+            || batch.BatchQuantity == null || batch.CompanyId == null)
             {
                 throw new ArgumentException("All fieds must be filled");
             }
-            if (batch.PricePerUnit < 0)
-            {
-                throw new ArgumentException("Price minimum must be a positive number");
-            }
+
+          
             if (batch.BatchQuantity < 0)
             {
                 throw new ArgumentException("Quantity minimum must be a positive number");
             }
-            string[] dateFormats = { "dd/MM/yyyy", "dd/M/yyyy", "d/MM/yyyy", "d/M/yyyy" };
-            DateTime entryDate, expirationDate;
-            if (!DateTime.TryParseExact(batch.EntryDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out entryDate))
+            if (batch.RemainingQuantity < 0)
             {
-                throw new ArgumentException("Invalid create date format", nameof(batch.EntryDate));
+                throw new ArgumentException("RemainingQuantity minimum must be a positive number");
             }
-         
-        
+
+            if (batch.RemainingQuantity > batch.BatchQuantity)
+            {
+                throw new ArgumentException("RemainingQuantity cannot exceed BatchQuantity.");
+            }
+
 
             Batch batches = new Batch
             {
+                BatchName = batch.BatchName,
                 EventName = batch.EventName,
                 EventDate = batch.EventDate,
                 BatchQuantity = batch.BatchQuantity,
                 RemainingQuantity = batch.RemainingQuantity,
                 Description = batch.Description,
-                EntryDate = entryDate,
+                EntryDate = batch.EntryDate,
                 CompanyId = batch.CompanyId,
                 Status = EnumList.Status.Active
             };
@@ -81,28 +81,27 @@ namespace Service.Service
 
         public async Task Update(UpdateBatchDTO updateBatchDTO, int id)
         {
-            if (updateBatchDTO == null || string.IsNullOrEmpty(updateBatchDTO.FlowerType)
-             || string.IsNullOrEmpty(updateBatchDTO.Description)
-           || updateBatchDTO.PricePerUnit == null || updateBatchDTO.BatchQuantity == null)
+            if (updateBatchDTO == null || string.IsNullOrWhiteSpace(updateBatchDTO.BatchName)
+             || string.IsNullOrWhiteSpace(updateBatchDTO.Description)
+           || updateBatchDTO.BatchQuantity == null)
             {
                 throw new ArgumentException("All fieds must be filled");
             }
-
-            if (updateBatchDTO.PricePerUnit < 0)
+            if (updateBatchDTO.RemainingQuantity > updateBatchDTO.BatchQuantity)
             {
-                throw new ArgumentException("Price minimum must be a positive number");
+                throw new ArgumentException("RemainingQuantity cannot exceed BatchQuantity.");
             }
+
+
             if (updateBatchDTO.BatchQuantity < 0)
             {
                 throw new ArgumentException("Quantity minimum must be a positive number");
             }
-            string[] dateFormats = { "dd/MM/yyyy", "dd/M/yyyy", "d/MM/yyyy", "d/M/yyyy" };
-            DateTime entryDate, expirationDate;
-            if (!DateTime.TryParseExact(updateBatchDTO.EntryDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out entryDate))
+            if (updateBatchDTO.RemainingQuantity < 0)
             {
-                throw new ArgumentException("Invalid create date format", nameof(updateBatchDTO.EntryDate));
+                throw new ArgumentException("RemainingQuantity minimum must be a positive number");
             }
-       
+    
             Batch existing = await _batchRepository.GetBatchById(id);
             if(existing == null)
             {

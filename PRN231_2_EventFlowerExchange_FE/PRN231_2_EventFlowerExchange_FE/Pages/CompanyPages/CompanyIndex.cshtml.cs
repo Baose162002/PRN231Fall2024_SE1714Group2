@@ -19,7 +19,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages
 
         public async Task OnGetAsync()
         {
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/Company");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/Company");
 
             if (response.IsSuccessStatusCode)
             {

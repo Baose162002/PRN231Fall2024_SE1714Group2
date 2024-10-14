@@ -47,10 +47,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             {
                 var jsonContent = await response.Content.ReadAsStringAsync();
                 Input = JsonSerializer.Deserialize<UpdateBatchDTO>(jsonContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                if (DateTime.TryParseExact(Input.EntryDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var entryDate))
-                {
-                    Input.EntryDate = entryDate.ToString("yyyy-MM-dd");
-                }
                 _logger.LogInformation("Batch data loaded successfully");
                 return Page();
             }
@@ -78,15 +74,8 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                     ModelState.AddModelError(string.Empty, "You are not authenticated. Please log in.");
                     return Page();
                 }
-                if (DateTime.TryParseExact(Input.EntryDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
-                {
-                    Input.EntryDate = parsedDate.ToString("dd/MM/yyyy");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid date format.");
-                    return Page();
-                }
+        
+     
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 

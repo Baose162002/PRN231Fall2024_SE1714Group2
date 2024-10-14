@@ -9,12 +9,16 @@
     {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Flower Type</label>
-                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.FlowerType</p>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Batch Name</label>
+                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.BatchName</p>
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Price Per Unit</label>
-                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.PricePerUnit.ToString("C")</p>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Event Name</label>
+                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.EventName</p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Event Date</label>
+                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.EventDate</p>
             </div>
             <div class="mb-4 md:col-span-2">
                 <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
@@ -25,8 +29,8 @@
                 <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.BatchQuantity</p>
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Condition</label>
-                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.Condition</p>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Remaining Quantity</label>
+                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.RemainingQuantity</p>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2">Entry Date</label>

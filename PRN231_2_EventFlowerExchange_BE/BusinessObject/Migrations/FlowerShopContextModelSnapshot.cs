@@ -30,6 +30,10 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BatchId"));
 
+                    b.Property<string>("BatchName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("BatchQuantity")
                         .HasColumnType("int");
 

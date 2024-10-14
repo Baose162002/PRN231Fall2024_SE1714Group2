@@ -40,7 +40,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
             try
             {
                 var jsonContent = new StringContent(JsonSerializer.Serialize(RegisterRequest), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"{_baseApiUrl}/user/register-buyer", jsonContent);
+                var response = await _httpClient.PostAsync($"{_baseApiUrl}/api/user/register-buyer", jsonContent);
 
                 if (response.IsSuccessStatusCode)
                 {

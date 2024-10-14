@@ -21,13 +21,11 @@ namespace Service.Configurations.Mapper
             // Batch mappings
             CreateMap<Batch, CreateBatchDTO>();
             CreateMap<Batch, UpdateBatchDTO>();
-            CreateMap<UpdateBatchDTO, Batch>()
-               .ForMember(dest => dest.EntryDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.EntryDate, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
+            CreateMap<UpdateBatchDTO, Batch>();
             CreateMap<ListBatchDTO, Batch>();
 
-            CreateMap<Batch, ListBatchDTO>()
-                  .ForMember(dest => dest.EntryDate,
-                  opt => opt.MapFrom(src => FormatDate(src.EntryDate)));
+            CreateMap<Batch, ListBatchDTO>();
+               
 
             // Flower mappings
             CreateMap<CreateFlowerDTO, Flower>();
