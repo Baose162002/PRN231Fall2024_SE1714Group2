@@ -42,7 +42,7 @@ namespace Service.Service
         {
             try
             {
-                ValidatePhoneNumber(createUserDTO.Phone);
+          /*      ValidatePhoneNumber(createUserDTO.Phone);*/
                 ValidateEmail(createUserDTO.Email);
 
                 if (await CheckEmailExist(createUserDTO.Email))
@@ -61,7 +61,8 @@ namespace Service.Service
                     Phone = createUserDTO.Phone,
                     Address = createUserDTO.Address,
                     Role = EnumList.UserRole.Buyer,
-                    Password = createUserDTO.Password // Note: You should hash the password before saving
+                    Password = createUserDTO.Password,
+                    Status = EnumList.Status.Active
                 };
 
                 var success = await _userRepository.AddAsync(user);
@@ -146,9 +147,10 @@ namespace Service.Service
             if (existingUser == null)
                 throw new ArgumentException("User not found");
 
-            _mapper.Map(updateUserDTO, existingUser);
+            existingUser.Status = updateUserDTO.Status;
             return await _userRepository.UpdateAsync(existingUser);
         }
+
 
         public async Task<bool> DeleteUser(int id)
         {
