@@ -1,47 +1,73 @@
-﻿@page
+﻿@page "/EditUser/{id:int}"
 @model PRN231_2_EventFlowerExchange_FE.Pages.UserPages.UserEditModel
 @{
     ViewData["Title"] = "Edit User";
 }
 
-<h2>Edit User</h2>
+<div class="flex overflow-hidden bg-white pt-16">
+    <div class="bg-white border rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl">
+        <h2 class="text-2xl font-medium mb-4">Chỉnh Sửa Người Dùng</h2>
 
-<form method="post">
-    <div class="form-group">
-        <label asp-for="UserDTO.FullName">Full Name</label>
-        <input asp-for="UserDTO.FullName" class="form-control" />
-        <span asp-validation-for="UserDTO.FullName" class="text-danger"></span>
+        <form method="post" id="editUserForm">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+            <div class="flex flex-wrap -mx-2">
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="UpdateUserDTO.FullName" class="block text-gray-700 font-medium mb-2">Họ và Tên</label>
+                    <input asp-for="UpdateUserDTO.FullName" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="UpdateUserDTO.FullName" class="text-danger"></span>
+                </div>
+
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="UpdateUserDTO.Email" class="block text-gray-700 font-medium mb-2">Email</label>
+                    <input asp-for="UpdateUserDTO.Email" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="UpdateUserDTO.Email" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap -mx-2">
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="UpdateUserDTO.Phone" class="block text-gray-700 font-medium mb-2">Số điện thoại</label>
+                    <input asp-for="UpdateUserDTO.Phone" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="UpdateUserDTO.Phone" class="text-danger"></span>
+                </div>
+
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="UpdateUserDTO.Role" class="block text-gray-700 font-medium mb-2">Vai trò</label>
+                    <select asp-for="UpdateUserDTO.Role" asp-items="Html.GetEnumSelectList<BusinessObject.Enum.EnumList.UserRole>()" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400"></select>
+                    <span asp-validation-for="UpdateUserDTO.Role" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="UpdateUserDTO.Address" class="block text-gray-700 font-medium mb-2">Địa chỉ</label>
+                <input asp-for="UpdateUserDTO.Address" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                <span asp-validation-for="UpdateUserDTO.Address" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="UpdateUserDTO.Status" class="block text-gray-700 font-medium mb-2">Trạng thái</label>
+                <select asp-for="UpdateUserDTO.Status" asp-items="Html.GetEnumSelectList<BusinessObject.Enum.EnumList.Status>()" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400"></select>
+                <span asp-validation-for="UpdateUserDTO.Status" class="text-danger"></span>
+            </div>
+
+
+            <div class="flex justify-between items-center mt-6">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Lưu thay đổi</button>
+                <a asp-page="./Index" class="text-blue-500 hover:underline">Quay lại danh sách người dùng</a>
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        <label asp-for="UserDTO.Email">Email</label>
-        <input asp-for="UserDTO.Email" class="form-control" />
-        <span asp-validation-for="UserDTO.Email" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="UserDTO.Phone">Phone</label>
-        <input asp-for="UserDTO.Phone" class="form-control" />
-        <span asp-validation-for="UserDTO.Phone" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="UserDTO.Address">Address</label>
-        <input asp-for="UserDTO.Address" class="form-control" />
-        <span asp-validation-for="UserDTO.Address" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="UserDTO.Role">Role</label>
-        <select asp-for="UserDTO.Role" class="form-control">
-            <option value="Buyer">Buyer</option>
-            <option value="Seller">Seller</option>
-            <option value="Admin">Admin</option>
-        </select>
-        <span asp-validation-for="UserDTO.Role" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
-</form>
+</div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $('#editUserForm').on('submit', function () {
+                console.log('Form is being submitted');
+            });
+        });
+    </script>
 }
