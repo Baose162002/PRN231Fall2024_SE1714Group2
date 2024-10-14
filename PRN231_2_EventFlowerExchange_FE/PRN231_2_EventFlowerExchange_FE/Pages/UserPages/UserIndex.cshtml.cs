@@ -21,13 +21,13 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
         public async Task<IActionResult> OnGetAsync()
         {
             var token = HttpContext.Session.GetString("JWTToken");
-            var role = HttpContext.Session.GetString("UserRole");
+           /* var role = HttpContext.Session.GetString("UserRole");
 
             if (string.IsNullOrEmpty(token) || role != "Admin")
             {
                 return RedirectToPage("/Login");
             }
-
+*/
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.GetAsync($"{_baseApiUrl}/user");

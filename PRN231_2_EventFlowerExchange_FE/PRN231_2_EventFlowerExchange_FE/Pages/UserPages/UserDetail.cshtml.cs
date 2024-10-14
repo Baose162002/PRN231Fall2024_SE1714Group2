@@ -1,37 +1,26 @@
-using BusinessObject.DTO.Request;
+using BusinessObject.Dto.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Net;
 using System.Net.Http.Headers;
-using System.Text.Json;
+using System.Net;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
 {
-    public class UserCreateModel : PageModel
+    public class UserDetailModel : PageModel
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseApiUrl;
 
-        public UserCreateModel(HttpClient httpClient, IConfiguration configuration)
+        public UserDetailModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _baseApiUrl = configuration["ApiSettings:BaseUrl"];
         }
 
-        [BindProperty]
-        public CreateUserDTO CreateUserDTO { get; set; }
+        public UserResponseDto User { get; set; }
 
-        public void OnGet()
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-        }
-
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
             var token = HttpContext.Session.GetString("JWTToken");
 
             if (string.IsNullOrEmpty(token))
@@ -41,11 +30,11 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.PostAsJsonAsync($"{_baseApiUrl}/user/register-buyer", CreateUserDTO);
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/user/{id}");
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToPage("/UserPages/UserIndex");
+                User = await response.Content.ReadFromJsonAsync<UserResponseDto>();
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -54,9 +43,11 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
             }
             else
             {
-                ModelState.AddModelError(string.Empty, $"Error creating user: {response.ReasonPhrase}");
-                return Page();
+                ModelState.AddModelError(string.Empty, $"Error loading user details: {response.ReasonPhrase}");
+                return RedirectToPage("/UserPages/UserIndex");
             }
+
+            return Page();
         }
     }
 }

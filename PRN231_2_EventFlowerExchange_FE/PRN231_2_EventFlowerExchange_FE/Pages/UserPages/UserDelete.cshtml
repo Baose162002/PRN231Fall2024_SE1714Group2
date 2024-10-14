@@ -1,4 +1,67 @@
-﻿@page
+﻿@page "/UserDelete/{id:int}"
 @model PRN231_2_EventFlowerExchange_FE.Pages.UserPages.UserDeleteModel
 @{
+    ViewData["Title"] = "Delete User";
+    ViewData["ShowHeader"] = false;
+    ViewData["ShowFooter"] = false;
+}
+
+<partial name="_AdminHeader" />
+<div class="flex overflow-hidden bg-white pt-16">
+    <partial name="_AdminNav" />
+    <div class="bg-white border rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl">
+        <h2 class="text-2xl font-medium mb-4 text-red-600">Xóa Người Dùng</h2>
+        <p class="mb-4 text-gray-700">Bạn có chắc chắn muốn xóa người dùng này?</p>
+
+        <div class="bg-gray-100 p-4 rounded-lg mb-6">
+            <h3 class="text-lg font-medium mb-2">Thông tin người dùng</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <p class="font-medium text-gray-700">ID:</p>
+                    <p>@Model.User.UserId</p>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-700">Họ và Tên:</p>
+                    <p>@Model.User.FullName</p>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-700">Email:</p>
+                    <p>@Model.User.Email</p>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-700">Số điện thoại:</p>
+                    <p>@Model.User.Phone</p>
+                </div>
+                <div class="sm:col-span-2">
+                    <p class="font-medium text-gray-700">Địa chỉ:</p>
+                    <p>@Model.User.Address</p>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-700">Vai trò:</p>
+                    <p>@Model.User.Role</p>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" id="deleteUserForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="User.UserId" />
+            <div class="flex justify-between items-center mt-6">
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Xóa Người Dùng</button>
+            <a href="/UserManagement" class="text-blue-500 hover:underline">Quay lại danh sách người dùng</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#deleteUserForm').on('submit', function (e) {
+                if (!confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
 }
