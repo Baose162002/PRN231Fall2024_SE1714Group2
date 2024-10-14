@@ -16,5 +16,9 @@ namespace BusinessObject.DTO.Response
         public decimal PricePerUnit { get; set; }
         public string Origin { get; set; }
         public string Color { get; set; }
+        public int RemainingQuantity { get; set; } // Số lượng còn lại loại hoa này để bán
+        public string Condition { get; set; } // Fresh, Partially Fresh, Damaged
+
+        public string FlowerStatus { get; set; }
     }
 }

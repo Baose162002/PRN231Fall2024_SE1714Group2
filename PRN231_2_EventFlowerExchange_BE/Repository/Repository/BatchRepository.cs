@@ -17,9 +17,8 @@ namespace Repository.Repository
         {
             var _context = new FlowerShopContext();
             var batches = await _context.Batches
-               .Include(e => e.Company)   
-               .Include(e => e.Flowers)
-               .Where(e => e.Status == 0)
+               .Include(e => e.Company)
+               .Where(e => e.Status == Status.Active)
                .ToListAsync();
             return batches;
         }
@@ -27,7 +26,7 @@ namespace Repository.Repository
         public async Task<Batch> GetBatchById(int id)
         {
             var _context = new FlowerShopContext();
-            var existing = await _context.Batches.Include(e => e.Company).Include(e => e.Flowers).FirstOrDefaultAsync(b => b.BatchId == id);
+            var existing = await _context.Batches.Include(e => e.Company).FirstOrDefaultAsync(b => b.BatchId == id);
             return existing;
         }
         public async Task<Flower> GetFlowerById(int id)
@@ -50,6 +49,7 @@ namespace Repository.Repository
             var existing = await GetBatchById(id);
             if(existing != null)
             {
+                existing.BatchName = batch.BatchName;
                 existing.EventName = batch.EventName;
                 existing.EventDate = batch.EventDate;
                 existing.BatchQuantity = batch.BatchQuantity;
@@ -79,10 +79,10 @@ namespace Repository.Repository
             using (var _context = new FlowerShopContext())
             {
                 return await _context.Batches
-                    .Include(b => b.Flowers) // Bao gồm các hoa trong lô
+                    .Include(b => b.Flowers)
                     .Where(b => b.Flowers.Any(f => f.FlowerId == flowerId && f.RemainingQuantity > 0 && f.FlowerStatus == EnumList.FlowerStatus.Available)
-                                 && b.RemainingQuantity > 0) // Kiểm tra số lượng còn lại của lô
-                    .OrderBy(b => b.EntryDate) // Sắp xếp theo ngày nhập kho
+                                 && b.RemainingQuantity > 0)
+                    .OrderBy(b => b.EntryDate) 
                     .ToListAsync();
             }
         }

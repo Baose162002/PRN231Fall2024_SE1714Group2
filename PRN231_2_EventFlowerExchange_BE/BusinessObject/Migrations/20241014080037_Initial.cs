@@ -85,6 +85,7 @@ namespace BusinessObject.Migrations
                 {
                     BatchId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    BatchName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EventName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EventDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BatchQuantity = table.Column<int>(type: "int", nullable: false),

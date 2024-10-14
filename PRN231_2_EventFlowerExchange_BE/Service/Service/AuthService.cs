@@ -18,25 +18,20 @@ namespace Service.Service
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
 
-        // Constructor: Dependency Injection cho IUserRepository và IConfiguration
         public AuthService(IUserRepository userRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
             _configuration = configuration;
         }
 
-        // Phương thức xác thực người dùng và tạo token
         public async Task<IActionResult> LoginAsync(User loginUser)
         {
-            // Kiểm tra thông tin đăng nhập
             var user = await _userRepository.GetByEmailAsync(loginUser.Email);
             if (user == null || user.Password != loginUser.Password)
             {
-                // Trả về lỗi nếu thông tin đăng nhập không hợp lệ
                 return new UnauthorizedObjectResult(new { Message = "Invalid email or password" });
             }
 
-            // Tạo danh sách claims chứa thông tin người dùng
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
@@ -45,10 +40,8 @@ namespace Service.Service
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
-            // Tạo token JWT
             var token = GenerateToken(authClaims);
 
-            // Trả về thông tin đăng nhập thành công
             return new OkObjectResult(new
             {
                 token = new JwtSecurityTokenHandler().WriteToken(token),
@@ -61,12 +54,9 @@ namespace Service.Service
 
         private JwtSecurityToken GenerateToken(IEnumerable<Claim> authClaims)
         {
-            // Tạo khóa bảo mật từ chuỗi secret trong cấu hình
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-            // Tạo thông tin xác thực ký số
             var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // Tạo JWT token
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],

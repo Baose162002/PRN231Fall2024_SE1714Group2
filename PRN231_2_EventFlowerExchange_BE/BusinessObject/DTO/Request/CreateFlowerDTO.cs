@@ -15,5 +15,7 @@ namespace BusinessObject.DTO.Request
         public decimal PricePerUnit { get; set; }
         public string Origin { get; set; }
         public string Color { get; set; }
+        public int RemainingQuantity { get; set; }
+        public int BatchId { get; set; }
     }
 }

@@ -50,7 +50,21 @@ namespace Service.Service
             {
                 throw new ArgumentException("Invalid input data.");
             }
-
+            Flower flowers = new Flower
+            {
+                Name = flowerDTO.Name,
+                Type = flowerDTO.Type,
+                Image = flowerDTO.Image,
+                Description = flowerDTO.Description,
+                PricePerUnit = flowerDTO.PricePerUnit,
+                Origin = flowerDTO.Origin,
+                Color = flowerDTO.Color,
+                RemainingQuantity = flowerDTO.RemainingQuantity,
+                Condition = EnumList.FlowerCondition.Fresh,
+                FlowerStatus = EnumList.FlowerStatus.Available,
+                BatchId = flowerDTO.BatchId,
+                Status = EnumList.Status.Active
+            };
             var flower = _mapper.Map<Flower>(flowerDTO);
             await _flowerRepository.Create(flower);
         }

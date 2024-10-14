@@ -1,14 +1,76 @@
 ﻿@page
 @model PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages.CreateFlowerModel
-@{
-}
-<h1>Create Flower</h1>
 
-<form method="post">
-    <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" class="form-control" id="name" name="FlowerName" required />
+<div class="container mx-auto mt-8 px-4">
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="bg-gray-100 px-6 py-4 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-center text-gray-800">Create Flower</h2>
+            </div>
+            <div class="p-6">
+                <form method="post" enctype="multipart/form-data" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="name" asp-for="FlowerInput.Name" required />
+                        </div>
+                        <div>
+                            <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="type" asp-for="FlowerInput.Type" required />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="description" asp-for="FlowerInput.Description" required rows="3"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="pricePerUnit" class="block text-sm font-medium text-gray-700">Price Per Unit</label>
+                            <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="pricePerUnit" asp-for="FlowerInput.PricePerUnit" required />
+                        </div>
+                        <div>
+                            <label for="origin" class="block text-sm font-medium text-gray-700">Origin</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="origin" asp-for="FlowerInput.Origin" required />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="color" asp-for="FlowerInput.Color" required />
+                        </div>
+                        <div>
+                            <label for="batch" class="block text-sm font-medium text-gray-700">Batch</label>
+                            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="batch" asp-for="FlowerInput.BatchId" required>
+                                <option value="">Select a Batch</option>
+                                @if (Model.Batches == null || !Model.Batches.Any())
+                                {
+                                    <option value="" disabled>No batches available. Please create a batch first.</option>
+                                }
+                                else
+                                {
+                                    foreach (var batch in Model.Batches)
+                                    {
+                                        <option value="@batch.BatchId">@batch.BatchName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="imageFile" class="block text-sm font-medium text-gray-700">Upload Image</label>
+                        <input type="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" id="imageFile" name="imageFile" accept="image/*" required />
+                    </div>
+
+                    <div>
+                        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Create Flower
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <!-- Add other flower input fields here -->
-    <button type="submit" class="btn btn-primary">Create Flower</button>
-</form>
+</div>
