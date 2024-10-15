@@ -30,7 +30,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/user/{id}");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/user/{id}");
 
             if (response.IsSuccessStatusCode)
             {

@@ -18,7 +18,7 @@
                     <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8">
                         <div class="mb-4 flex items-center justify-between">
                             <div>
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Quản lý người dùng</h3>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">User List</h3>
                             </div>
                             <div>
                                 <a href="/CreateUser" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create New User</a>
@@ -54,12 +54,12 @@
                                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">@user.Address</td>
                                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">@user.Role</td>
                                                             <td class="p-4 whitespace-nowrap">
-                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full @(user.Status == 1 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800")">
-                                                                    @(user.Status == 1 ? "Active" : "Inactive")
+                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full @(user.Status.ToLower() == "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800")">
+                                                                    @user.Status
                                                                 </span>
                                                             </td>
                                                             <td class="p-4 whitespace-nowrap text-sm font-medium">
-                                                                <a asp-page="/UserPages/UserEdit" asp-route-id="@user.UserId" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</a>
+                                                                <a asp-page="/UserPages/UserEdit" asp-route-id="@user.UserId" class="text-yellow-300 hover:text-yellow-700 mr-2">Edit</a>
                                                                 <a asp-page="/UserPages/UserDetail" asp-route-id="@user.UserId" class="text-blue-600 hover:text-blue-900 mr-2">Details</a>
                                                                 <a asp-page="/UserPages/UserDelete" asp-route-id="@user.UserId" class="text-red-600 hover:text-red-900">Delete</a>
                                                             </td>

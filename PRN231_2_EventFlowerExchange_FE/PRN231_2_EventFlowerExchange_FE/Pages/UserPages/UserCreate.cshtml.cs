@@ -41,7 +41,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.PostAsJsonAsync($"{_baseApiUrl}/user/register-buyer", CreateUserDTO);
+            var response = await _httpClient.PostAsJsonAsync($"{_baseApiUrl}/api/user/register-buyer", CreateUserDTO);
 
             if (response.IsSuccessStatusCode)
             {

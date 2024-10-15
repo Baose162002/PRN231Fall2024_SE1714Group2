@@ -1,4 +1,4 @@
-using BusinessObject.Dto.Response;
+﻿using BusinessObject.Dto.Response;
 using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +34,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/user/{id}");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/user/{id}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -56,7 +56,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
             else
             {
                 ModelState.AddModelError(string.Empty, $"Error loading user: {response.ReasonPhrase}");
-                return RedirectToPage("/UserPages/UserIndex/UserPages/UserIndex");
+                return RedirectToPage("/UserPages/UserIndex");
             }
 
             return Page();
@@ -78,22 +78,34 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.PutAsJsonAsync($"{_baseApiUrl}/user/{id}", UpdateUserDTO);
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{_baseApiUrl}/api/user/{id}", UpdateUserDTO);
 
-            if (response.IsSuccessStatusCode)
-            {
-                return RedirectToPage("/UserPages/UserIndex");
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "User information updated successfully!";
+                    return RedirectToPage("/UserPages/UserEdit", new { id });
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
+                    return RedirectToPage("/Login/Login");
+                }
+                else
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(responseContent);
+
+                    return Page();
+                }
             }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            catch (HttpRequestException e)
             {
-                ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
-                return RedirectToPage("/Login/Login");
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, $"Error updating user: {response.ReasonPhrase}");
+                ModelState.AddModelError(string.Empty, $"Error connecting to the server: {e.Message}");
                 return Page();
             }
         }
+
     }
 }

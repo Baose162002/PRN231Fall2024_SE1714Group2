@@ -2,6 +2,7 @@
 using BusinessObject.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Service.IService;
 using System;
 using System.Threading.Tasks;
@@ -20,7 +21,8 @@ namespace WebApi_EventFlowerExchange.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        [EnableQuery]
+        public async Task<IActionResult> Get()
         {
             var users = await _userService.GetAllUsers();
             if (users == null || users.Count == 0)

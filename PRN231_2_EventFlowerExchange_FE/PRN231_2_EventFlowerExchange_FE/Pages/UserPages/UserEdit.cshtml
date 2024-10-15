@@ -6,15 +6,20 @@
 
 <div class="flex overflow-hidden bg-white pt-16">
     <div class="bg-white border rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl">
-        <h2 class="text-2xl font-medium mb-4">Chỉnh Sửa Người Dùng</h2>
-
+        <h2 class="text-2xl font-medium mb-4">Edit User</h2>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div id="successMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                <span class="block sm:inline">@TempData["SuccessMessage"]</span>
+            </div>
+        }
         <form method="post" id="editUserForm">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
 
             <div class="flex flex-wrap -mx-2">
                 <div class="w-full sm:w-1/2 px-2 mb-4">
-                    <label asp-for="UpdateUserDTO.FullName" class="block text-gray-700 font-medium mb-2">Họ và Tên</label>
+                    <label asp-for="UpdateUserDTO.FullName" class="block text-gray-700 font-medium mb-2">Full Name</label>
                     <input asp-for="UpdateUserDTO.FullName" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
                     <span asp-validation-for="UpdateUserDTO.FullName" class="text-danger"></span>
                 </div>
@@ -28,34 +33,29 @@
 
             <div class="flex flex-wrap -mx-2">
                 <div class="w-full sm:w-1/2 px-2 mb-4">
-                    <label asp-for="UpdateUserDTO.Phone" class="block text-gray-700 font-medium mb-2">Số điện thoại</label>
+                    <label asp-for="UpdateUserDTO.Phone" class="block text-gray-700 font-medium mb-2">Phone Number</label>
                     <input asp-for="UpdateUserDTO.Phone" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
                     <span asp-validation-for="UpdateUserDTO.Phone" class="text-danger"></span>
                 </div>
 
                 <div class="w-full sm:w-1/2 px-2 mb-4">
-                    <label asp-for="UpdateUserDTO.Role" class="block text-gray-700 font-medium mb-2">Vai trò</label>
-                    <select asp-for="UpdateUserDTO.Role" asp-items="Html.GetEnumSelectList<BusinessObject.Enum.EnumList.UserRole>()" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400"></select>
+                    <label asp-for="UpdateUserDTO.Role" class="block text-gray-700 font-medium mb-2">Role</label>
+                    <select asp-for="UpdateUserDTO.Role" asp-items="Html.GetEnumSelectList<BusinessObject.Enum.EnumList.UserRole>()" class="readonly border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" disabled>
+                    </select>
                     <span asp-validation-for="UpdateUserDTO.Role" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="mb-4">
-                <label asp-for="UpdateUserDTO.Address" class="block text-gray-700 font-medium mb-2">Địa chỉ</label>
+                <label asp-for="UpdateUserDTO.Address" class="block text-gray-700 font-medium mb-2">Address</label>
                 <input asp-for="UpdateUserDTO.Address" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
                 <span asp-validation-for="UpdateUserDTO.Address" class="text-danger"></span>
             </div>
 
-            <div class="mb-4">
-                <label asp-for="UpdateUserDTO.Status" class="block text-gray-700 font-medium mb-2">Trạng thái</label>
-                <select asp-for="UpdateUserDTO.Status" asp-items="Html.GetEnumSelectList<BusinessObject.Enum.EnumList.Status>()" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400"></select>
-                <span asp-validation-for="UpdateUserDTO.Status" class="text-danger"></span>
-            </div>
-
 
             <div class="flex justify-between items-center mt-6">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Lưu thay đổi</button>
-                <a asp-page="./Index" class="text-blue-500 hover:underline">Quay lại danh sách người dùng</a>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Save Changes</button>
+                <a asp-page="/Index" class="text-blue-500 hover:underline">Back to Home</a>
             </div>
         </form>
     </div>
@@ -68,6 +68,11 @@
             $('#editUserForm').on('submit', function () {
                 console.log('Form is being submitted');
             });
+
+            // Automatically hide success message after 5 seconds
+            setTimeout(function () {
+                $('#successMessage').fadeOut('slow');
+            }, 5000);
         });
     </script>
 }
