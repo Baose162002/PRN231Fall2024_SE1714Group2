@@ -64,7 +64,7 @@ namespace Service.Service
             }
 
             List<OrderDetail> orderDetails = new List<OrderDetail>();
-            decimal totalPrice = 0;
+            double totalPrice = 0;
 
             // Lấy danh sách các Batch có chứa FlowerId tương ứng
             var flowerBatches = await _batchRepository.GetAvailableBatchesByFlowerId(orderDTO.FlowerId);
@@ -98,7 +98,7 @@ namespace Service.Service
                 // Tạo đối tượng OrderDetail
                 var orderDetail = new OrderDetail
                 {
-                    BatchId = batch.BatchId,
+                    FlowerId = batch.BatchId,
                     QuantityOrdered = batchQuantityToUse,
                     Price = flower.PricePerUnit, // Lấy giá từ hoa
                     TotalPrice = batchQuantityToUse * flower.PricePerUnit // Tính tổng giá của OrderDetail

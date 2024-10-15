@@ -189,8 +189,8 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("PricePerUnit")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("PricePerUnit")
+                        .HasColumnType("float");
 
                     b.Property<int>("RemainingQuantity")
                         .HasColumnType("int");
@@ -233,10 +233,10 @@ namespace BusinessObject.Migrations
                     b.Property<int>("OrderStatus")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasDefaultValue(1);
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("TotalPrice")
+                        .HasColumnType("float");
 
                     b.HasKey("OrderId");
 
@@ -247,27 +247,32 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.OrderDetail", b =>
                 {
+                    b.Property<int>("OrderDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailId"));
+
+                    b.Property<int>("FlowerId")
+                        .HasColumnType("int");
+
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BatchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderDetailId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.Property<int>("QuantityOrdered")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("TotalPrice")
+                        .HasColumnType("float");
 
-                    b.HasKey("OrderId", "BatchId");
+                    b.HasKey("OrderDetailId");
 
-                    b.HasIndex("BatchId");
+                    b.HasIndex("FlowerId");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("OrderDetail");
                 });
@@ -447,9 +452,9 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.OrderDetail", b =>
                 {
-                    b.HasOne("BusinessObject.Batch", "Batch")
+                    b.HasOne("BusinessObject.Flower", "Flower")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("BatchId")
+                        .HasForeignKey("FlowerId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -459,7 +464,7 @@ namespace BusinessObject.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Batch");
+                    b.Navigation("Flower");
 
                     b.Navigation("Order");
                 });
@@ -498,14 +503,17 @@ namespace BusinessObject.Migrations
                 {
                     b.Navigation("Flowers");
 
-                    b.Navigation("OrderDetails");
-
                     b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("BusinessObject.Company", b =>
                 {
                     b.Navigation("Batches");
+                });
+
+            modelBuilder.Entity("BusinessObject.Flower", b =>
+                {
+                    b.Navigation("OrderDetails");
                 });
 
             modelBuilder.Entity("BusinessObject.Order", b =>

@@ -1,0 +1,42 @@
+﻿@page
+@model PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages.FlowerIndexModel
+@{
+}
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-black mb-8">Featured Flowers</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            @if (Model.Flowers != null && Model.Flowers.Count > 0)
+            {
+                foreach (var flower in Model.Flowers)
+                {
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <!-- Link to BuyFlowerDetail page with flower ID -->
+                        <a href="/BuyFlowerDetail?id=@flower.FlowerId">
+                            <img src="@flower.Image" alt="@flower.Name" class="w-full h-64 object-cover">
+                        </a>
+                        <div class="p-6">
+                            <!-- Flower Name Link -->
+                            <a href="/BuyFlowerDetail?id=@flower.FlowerId">
+                                <h3 class="text-xl font-bold text-black mb-2">@flower.Name</h3>
+                            </a>
+                            <p class="text-gray-700 text-base">@flower.Description</p>
+                            <div class="mt-4 flex items-center justify-between">
+                                <span class="text-gray-700 font-medium">$@flower.PricePerUnit</span>
+                          
+                            </div>
+                            <p><strong>Origin:</strong> @flower.Origin</p>
+                            <p><strong>Color:</strong> @flower.Color</p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No flowers available.</p>
+            }
+        </div>
+    </div>
+</section>
+
+

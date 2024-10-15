@@ -32,7 +32,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
             var baseApiUrl = _configuration["ApiSettings:BaseUrl"];
 
             // Gọi API để lấy chi tiết của hoa
-            var response = await _httpClient.GetAsync($"{baseApiUrl}/api/flower/{id}");
+            var response = await _httpClient.GetAsync($"{baseApiUrl}/api/flower/getby/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var jsonContent = await response.Content.ReadAsStringAsync();

@@ -14,15 +14,15 @@ namespace BusinessObject
         [Key]
         public int OrderDetailId { get; set; }
         public int QuantityOrdered { get; set; }
-        public decimal Price { get; set; }
-        public decimal TotalPrice { get; set; }
+        public double Price { get; set; }
+        public double TotalPrice { get; set; }
 
         public int OrderId { get; set; }
         [ForeignKey("OrderId")]
         public Order Order { get; set; }
 
-        public int BatchId { get; set; }
-        [ForeignKey("BatchId")]
-        public Batch Batch { get; set; }
+        public int FlowerId { get; set; }
+        [ForeignKey("FlowerId")]
+        public Flower Flower { get; set; }
     }
 }

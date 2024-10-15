@@ -57,9 +57,6 @@ namespace BusinessObject
                 .HasForeignKey<Delivery>(d => d.OrderId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<OrderDetail>()
-                .HasKey(od => new { od.OrderId, od.BatchId });
-
             
             modelBuilder.Entity<OrderDetail>()
                 .HasOne(od => od.Order)
@@ -69,9 +66,9 @@ namespace BusinessObject
 
 
             modelBuilder.Entity<OrderDetail>()
-                .HasOne(od => od.Batch)
+                .HasOne(od => od.Flower)
                 .WithMany(b => b.OrderDetails)
-                .HasForeignKey(od => od.BatchId)
+                .HasForeignKey(od => od.FlowerId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Review>()
