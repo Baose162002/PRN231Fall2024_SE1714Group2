@@ -27,7 +27,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             var token = HttpContext.Session.GetString("JWTToken");
             if (string.IsNullOrEmpty(token))
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/Login/Login");
             }
 
             // Thiết lập Header Authorization với JWT Token
@@ -35,7 +35,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             BaseApiUrl = _configuration["ApiSettings:BaseUrl"];
 
             // Lấy thông tin batch từ API
-            var response = await _httpClient.GetAsync($"{BaseApiUrl}/batch/{id}");
+            var response = await _httpClient.GetAsync($"{BaseApiUrl}/api/batch/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var jsonContent = await response.Content.ReadAsStringAsync();
@@ -61,11 +61,10 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.DeleteAsync($"{BaseApiUrl}/batch/{id}"); // Put request to update status.
+            var response = await _httpClient.DeleteAsync($"{BaseApiUrl}/api/batch/{id}"); // Put request to update status.
 
             if (response.IsSuccessStatusCode)
             {
-                TempData["SuccessMessage"] = "Batch deleted successfully.";
                 return RedirectToPage("./BatchIndex");
             }
             else
