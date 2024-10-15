@@ -45,7 +45,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                 if (response.IsSuccessStatusCode)
                 {
                     SuccessMessage = "Seller registration successful! You can now log in.";
-                    return Page();
+                    return RedirectToPage("/Index");
                 }
                 else
                 {
@@ -57,7 +57,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                         ModelState.AddModelError(string.Empty, message);
                     }
 
-                    return Page();
+                    return RedirectToPage("/Index");
                 }
             }
             catch (Exception ex)

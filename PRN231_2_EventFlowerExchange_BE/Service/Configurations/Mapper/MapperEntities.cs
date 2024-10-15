@@ -52,7 +52,11 @@ namespace Service.Configurations.Mapper
             CreateMap<CreateUserDTO, User>();
             CreateMap<UpdateUserDTO, User>();
             CreateMap<User, ListUserDTO>();
-            CreateMap<User, UserResponseDto>(); // Add this mapping
+
+            CreateMap<User, UserResponseDto>()
+/*                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))  
+*/                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));  // Convert enum Status to string
+
 
             // Company mappings
             CreateMap<Company, CompanyDTO>();

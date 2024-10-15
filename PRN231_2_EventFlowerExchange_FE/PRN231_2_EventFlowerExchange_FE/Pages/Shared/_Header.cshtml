@@ -1,4 +1,7 @@
-﻿<header class="sticky top-0 bg-white shadow-md w-full z-50">
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<header class="sticky top-0 bg-white shadow-md w-full z-50">
     <nav class="container mx-auto px-6 py-3">
         <div class="flex justify-between items-center">
             <div class="flex items-center">
@@ -14,14 +17,45 @@
                 <a href="/BatchIndex" class="text-gray-800 hover:text-indigo-600">Batch</a>
                 <a href="/Company" class="text-gray-800 hover:text-indigo-600">Company</a>
                 <a href="#contact" class="text-gray-800 hover:text-indigo-600">Contact Us</a>
+                @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Admin")
+                {
+                    <a href="/UserManagement" class="text-gray-800 hover:text-indigo-600">User Management</a>
+                }
             </div>
             <div class="hidden md:flex items-center space-x-4">
-                @if (Context.Session.GetString("JWTToken") != null)
+                @if (HttpContextAccessor.HttpContext.Session.GetString("JWTToken") != null)
                 {
-                    <span class="text-gray-800">Welcome, @Context.Session.GetString("UserName")!</span>
-                    <form method="post" asp-page="/Login/Logout">
-                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Logout</button>
-                    </form>
+                    <div class="relative group inline-block">
+                        <button class="outline-none focus:outline-none px-3 py-1 bg-white rounded-sm flex items-center min-w-32">
+                            <span class="pr-1 font-semibold flex-1">Welcome, @HttpContextAccessor.HttpContext.Session.GetString("UserName")!</span>
+                            <span>
+                                <svg class="fill-current h-4 w-4 transform group-hover:-rotate-180 transition duration-150 ease-in-out"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                                </svg>
+                            </span>
+                        </button>
+                        <ul class="bg-white border rounded-sm transform scale-0 group-hover:scale-100 absolute transition duration-150 ease-in-out origin-top min-w-32">
+                            <li class="rounded-sm px-3 py-1 hover:bg-gray-100">
+                                @{
+                                    var userIdString = HttpContextAccessor.HttpContext.Session.GetString("UserId");
+                                    if (!string.IsNullOrEmpty(userIdString))
+                                    {
+                                        <a href="/EditUser/@userIdString" class="block w-full">Edit Profile</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="block w-full text-gray-500">Profile Unavailable</span>
+                                    }
+                                }
+                            </li>
+                            <li class="rounded-sm px-3 py-1 hover:bg-gray-100">
+                                <form method="post" asp-page="/Login/Logout">
+                                    <button type="submit" class="w-full text-left">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 }
                 else
                 {
@@ -29,7 +63,6 @@
                     <a href="/Register" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Register</a>
                 }
                 <div class="hidden md:flex items-center space-x-4">
-                    <!-- Cart icon and count -->
                     <a href="/Cart" class="relative">
                         <img src="~/icon/shopping-cart.png" alt="Cart" class="h-8 w-8">
                         <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
@@ -39,30 +72,42 @@
                 </div>
             </div>
             <div class="md:hidden">
+                <!-- Mobile menu button -->
             </div>
         </div>
-
     </nav>
 </header>
+
+<style>
+    .group:hover .group-hover\:scale-100 {
+        transform: scale(1)
+    }
+
+    .group:hover .group-hover\:-rotate-180 {
+        transform: rotate(180deg)
+    }
+
+    .scale-0 {
+        transform: scale(0)
+    }
+
+    .min-w-32 {
+        min-width: 8rem
+    }
+</style>
+
 @section Scripts {
     <script>
         function updateCartCount() {
-            // Get the cart items from cookies
             const cartItems = document.cookie.split('; ').find(row => row.startsWith('cartItems='));
-
             if (cartItems) {
                 const cartItemsValue = JSON.parse(decodeURIComponent(cartItems.split('=')[1]));
                 const totalCount = cartItemsValue.reduce((total, item) => total + item.Quantity, 0);
-
-                // Update the cart count element
                 document.getElementById('cart-count').textContent = totalCount;
             } else {
                 document.getElementById('cart-count').textContent = 0;
             }
         }
-
-        // Call this function when the page loads to update the cart count
         window.onload = updateCartCount;
     </script>
-
-    }
+}

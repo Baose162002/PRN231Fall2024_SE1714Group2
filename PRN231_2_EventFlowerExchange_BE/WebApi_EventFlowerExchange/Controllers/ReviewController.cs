@@ -2,6 +2,7 @@
 using BusinessObject.DTO.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Service.IService;
 using System;
 using System.Threading.Tasks;
@@ -20,8 +21,10 @@ namespace WebApi_EventFlowerExchange.Controllers
             _reviewService = reviewService;
         }
 
+
         [HttpGet]
-        public async Task<IActionResult> GetAllReviews()
+        [EnableQuery]
+        public async Task<IActionResult> Get()
         {
             var reviews = await _reviewService.GetAllReviews();
             if (reviews == null || reviews.Count == 0)

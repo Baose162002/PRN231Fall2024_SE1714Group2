@@ -24,10 +24,10 @@ namespace Service.Service
             _mapper = mapper;
         }
 
-        public async Task<List<ListReviewDTO>> GetAllReviews()
+        public async Task<List<Review>> GetAllReviews()
         {
             var reviews = await _reviewRepository.GetAllReviews();
-            return _mapper.Map<List<ListReviewDTO>>(reviews);
+            return _mapper.Map<List<Review>>(reviews);
         }
 
         public async Task<ListReviewDTO> GetReviewById(int id)

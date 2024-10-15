@@ -25,5 +25,10 @@ namespace BusinessObject.DTO.Request
 
         [Required(ErrorMessage = "Role is required")]
         public EnumList.UserRole Role { get; set; }
+
+
+        public EnumList.Status Status { get; set; }
+
+
     }
 }

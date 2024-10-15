@@ -1,14 +1,87 @@
-﻿@page
+﻿@page "/CreateUser"
 @model PRN231_2_EventFlowerExchange_FE.Pages.UserPages.UserCreateModel
 @{
     ViewData["Title"] = "Create User";
+    ViewData["ShowHeader"] = false;
+    ViewData["ShowFooter"] = false;
 }
 
-<h2>Create User</h2>
+<partial name="_AdminHeader" />
+<div class="flex overflow-hidden bg-white pt-16">
+    <partial name="_AdminNav" />
+    <div class="bg-white border rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl">
+        <h2 class="text-2xl font-medium mb-4">Tạo Người Dùng Mới</h2>
 
+        <form method="post" id="createUserForm">
+            @Html.AntiForgeryToken()
+
+            <div class="flex flex-wrap -mx-2">
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="CreateUserDTO.FullName" class="block text-gray-700 font-medium mb-2">Họ và Tên</label>
+                    <input asp-for="CreateUserDTO.FullName" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="CreateUserDTO.FullName" class="text-danger"></span>
+                </div>
+
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="CreateUserDTO.Email" class="block text-gray-700 font-medium mb-2">Email</label>
+                    <input asp-for="CreateUserDTO.Email" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="CreateUserDTO.Email" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap -mx-2">
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="CreateUserDTO.Password" class="block text-gray-700 font-medium mb-2">Mật khẩu</label>
+                    <input asp-for="CreateUserDTO.Password" type="password" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="CreateUserDTO.Password" class="text-danger"></span>
+                </div>
+
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="CreateUserDTO.Phone" class="block text-gray-700 font-medium mb-2">Số điện thoại</label>
+                    <input asp-for="CreateUserDTO.Phone" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="CreateUserDTO.Phone" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="CreateUserDTO.Address" class="block text-gray-700 font-medium mb-2">Địa chỉ</label>
+                <textarea asp-for="CreateUserDTO.Address" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" rows="3"></textarea>
+                <span asp-validation-for="CreateUserDTO.Address" class="text-danger"></span>
+            </div>
+
+            <div class="text-right mt-2">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Tạo người dùng</button>
+            </div>
+        </form>
+
+        @if (!ModelState.IsValid)
+        {
+            <div class="alert alert-danger mt-4">
+                <ul>
+                    @foreach (var modelState in ViewData.ModelState.Values)
+                    {
+                        foreach (var error in modelState.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+
+        <div class="mt-4">
+            <a href="/UserManagement" class="text-blue-500 hover:underline">Quay lại danh sách người dùng</a>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $('#createUserForm').on('submit', function () {
+                console.log('Form is being submitted');
+            });
+        });
+    </script>
 }

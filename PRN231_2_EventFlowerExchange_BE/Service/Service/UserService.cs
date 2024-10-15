@@ -26,10 +26,10 @@ namespace Service.Service
             _mapper = mapper;
         }
 
-        public async Task<List<ListUserDTO>> GetAllUsers()
+        public async Task<List<User>> GetAllUsers()
         {
             var users = await _userRepository.GetAllUsers();
-            return _mapper.Map<List<ListUserDTO>>(users);
+            return _mapper.Map<List<User>>(users);
         }
 
         public async Task<ListUserDTO> GetUserById(int id)
@@ -42,7 +42,7 @@ namespace Service.Service
         {
             try
             {
-                ValidatePhoneNumber(createUserDTO.Phone);
+          /*      ValidatePhoneNumber(createUserDTO.Phone);*/
                 ValidateEmail(createUserDTO.Email);
 
                 if (await CheckEmailExist(createUserDTO.Email))
@@ -61,13 +61,14 @@ namespace Service.Service
                     Phone = createUserDTO.Phone,
                     Address = createUserDTO.Address,
                     Role = EnumList.UserRole.Buyer,
-                    Password = createUserDTO.Password // Note: You should hash the password before saving
+                    Password = createUserDTO.Password, 
+                    Status = EnumList.Status.Active 
                 };
 
                 var success = await _userRepository.AddAsync(user);
                 if (!success)
                 {
-                    throw new Exception("Không thể tạo người dùng.");
+                    throw new Exception("Unable to create user.");
                 }
 
                 return _mapper.Map<UserResponseDto>(user);
@@ -105,7 +106,7 @@ namespace Service.Service
                     Phone = createUserDTO.Phone,
                     Address = createUserDTO.Address,
                     Role = EnumList.UserRole.Seller,
-                    Password = createUserDTO.Password, // Note: You should hash the password before saving
+                    Password = createUserDTO.Password,  
                     Status = EnumList.Status.Active
                 };
 
@@ -146,9 +147,17 @@ namespace Service.Service
             if (existingUser == null)
                 throw new ArgumentException("User not found");
 
-            _mapper.Map(updateUserDTO, existingUser);
+            // Update user fields from DTO
+            existingUser.FullName = updateUserDTO.FullName;
+            existingUser.Email = updateUserDTO.Email;
+            existingUser.Phone = updateUserDTO.Phone;
+            existingUser.Address = updateUserDTO.Address;
+            existingUser.Role = updateUserDTO.Role;
+            existingUser.Status = updateUserDTO.Status;
+
             return await _userRepository.UpdateAsync(existingUser);
         }
+
 
         public async Task<bool> DeleteUser(int id)
         {
