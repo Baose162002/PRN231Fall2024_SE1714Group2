@@ -30,8 +30,6 @@ namespace BusinessObject
         public Company Company { get; set; }
     
         [JsonIgnore]
-        public ICollection<OrderDetail> OrderDetails { get; set; }
-        [JsonIgnore]
 
         public ICollection<Review> Reviews { get; set; }
         [JsonIgnore]

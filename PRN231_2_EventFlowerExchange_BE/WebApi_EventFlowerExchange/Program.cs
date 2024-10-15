@@ -83,6 +83,7 @@ builder.Services.AddAutoMapper(typeof(MapperEntities).Assembly);
 
 
 builder.Services.Register();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();

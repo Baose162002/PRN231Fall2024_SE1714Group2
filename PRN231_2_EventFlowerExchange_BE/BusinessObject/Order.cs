@@ -14,7 +14,7 @@ namespace BusinessObject
         [Key]
         public int OrderId { get; set; }
         public Enum.EnumList.OrderStatus OrderStatus { get; set; }
-        public decimal TotalPrice { get; set; }
+        public double TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
         public string DeliveryAddress { get; set; }
         public DateTime DeliveryDate { get; set; }
