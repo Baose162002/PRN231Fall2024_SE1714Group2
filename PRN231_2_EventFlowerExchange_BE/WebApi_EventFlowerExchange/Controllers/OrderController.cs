@@ -68,7 +68,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             }
         }
 
-        [HttpPost]
+    /*    [HttpPost]
         public async Task<IActionResult> CreateOrderByBatch([FromBody] CreateOrderDTO createOrderDTO)
         {
             try
@@ -80,7 +80,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             {
                 return BadRequest(e.Message);
             }
-        }
+        }*/
 
         // PUT: api/Order/id
         [HttpPut("{id}")]

@@ -15,8 +15,8 @@ namespace Service.IService
         Task<ListOrderDTO> GetOrderById(int id);
 
         Task Create(CreateOrderDTO order);
-        Task CreateOrderByBatch(CreateOrderDTO order);
-
+/*        Task CreateOrderByBatch(CreateOrderDTO order);
+*/
         Task Update(UpdateOrderDTO updateOrderDTO, int id);
         Task Delete(int id);
         Task<Order> UpdateOrderStatus(int updatedOrder);

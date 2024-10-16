@@ -22,7 +22,6 @@ namespace WebApi_EventFlowerExchange.Controllers
 
         [EnableQuery]
         [HttpGet("GetAll")]
-        [EnableQuery]
         public async Task<IActionResult> Get()
         {
             var flowers = await _flowerService.GetAllFlowers();

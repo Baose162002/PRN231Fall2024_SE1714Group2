@@ -192,7 +192,7 @@ namespace Service.Service
             return _orderRepository.SearchOrders(searchCriteria);
         }
 
-        //Tạo Order bằng cách chọn Flower tùy thuộc vào Batch
+      /*  //Tạo Order bằng cách chọn Flower tùy thuộc vào Batch
         public async Task CreateOrderByBatch(CreateOrderDTO orderDTO)
         {
             // Tìm tất cả các Batch có chứa loại hoa này (FlowerId)
@@ -256,7 +256,7 @@ namespace Service.Service
 
             // Lưu vào DB
             await _orderRepository.Create(order);
-        }
+        }*/
 
 
     }
