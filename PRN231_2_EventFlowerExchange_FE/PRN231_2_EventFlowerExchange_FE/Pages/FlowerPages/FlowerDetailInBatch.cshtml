@@ -1,0 +1,58 @@
+﻿@page
+@model PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages.FlowerDetailInBatchModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Details in Batch</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mx-auto px-4 py-6">
+        <h2 class="text-3xl font-bold text-black mb-8">Flowers in Batch</h2>
+        @if (Model.Flowers != null && Model.Flowers.Any())
+        {
+            <table class="w-full table-auto border-collapse border border-gray-200">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Flower</th>
+                        <th class="px-4 py-2">Type</th>
+                        <th class="px-4 py-2">Price</th>
+                        <th class="px-4 py-2">Remaining Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var flower in Model.Flowers)
+                    {
+                        <tr>
+                            <td class="border px-4 py-2">@flower.Name</td>
+                            <td class="border px-4 py-2">@flower.Type</td>
+                            <td class="border px-4 py-2">$@flower.PricePerUnit.ToString("F2")</td>
+                            <td class="border px-4 py-2">@flower.RemainingQuantity</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No flowers found for this batch.</p>
+        }
+
+        @if (Model.Flowers != null && Model.Flowers.Any())
+        {
+            <a href="/FlowerPages/CreateFlower?batchId=@Model.Flowers.First().BatchId" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Create Flower
+            </a>
+        }
+        else
+        {
+            <p>No flowers available.</p>
+        }
+
+
+    </div>
+</body>
+</html>

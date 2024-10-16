@@ -17,10 +17,10 @@ namespace BusinessObject
         public int Rating { get; set; }
         public string Feedback { get; set; }
         public DateTime ReviewDate { get; set; }
-        public int BatchId { get; set; }
-        [ForeignKey("BatchId")]
+        public int FlowerId { get; set; }
+        [ForeignKey("FlowerId")]
         [JsonIgnore]
-        public Batch Batch { get; set; }
+        public Flower Flower { get; set; }
       
         public int CustomerId { get; set; }
         [ForeignKey("CustomerId")]

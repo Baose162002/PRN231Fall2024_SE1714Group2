@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BusinessObject;
 
 namespace Service.IService
 {
     public interface IFlowerService
     {
-        Task<List<ListFlowerDTO>> GetAllFlowers();
+        Task<List<Flower>> GetAllFlowers();
         Task<ListFlowerDTO> GetFlowerById(int id);
         Task Create(CreateFlowerDTO flowerDTO);
         Task Update(UpdateFlowerDTO flowerDTO, int id);
