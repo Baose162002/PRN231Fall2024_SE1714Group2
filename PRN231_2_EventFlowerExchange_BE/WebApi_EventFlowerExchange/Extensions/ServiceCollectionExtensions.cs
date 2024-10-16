@@ -39,6 +39,7 @@ namespace WebApi_EventFlowerExchange.Extensions
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<IDeliveryRepository, DeliveryRepository>(); 
             // Register services here
             services.AddScoped<IBatchService, BatchService>();
             services.AddScoped<IAuthService, AuthService>();
@@ -52,6 +53,8 @@ namespace WebApi_EventFlowerExchange.Extensions
             services.AddScoped<PaymentService>();
             services.AddScoped<VnPayLibrary>();
 
+
+            services.AddScoped<IDeliveryService, DeliveryService>();
             services.AddAutoMapper(typeof(MapperEntities).Assembly);
 
             return services;

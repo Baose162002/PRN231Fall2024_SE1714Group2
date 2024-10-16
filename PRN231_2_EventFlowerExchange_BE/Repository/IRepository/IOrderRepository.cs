@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using System;
 using System.Collections.Generic;
@@ -16,5 +17,7 @@ namespace Repository.IRepository
         Task Update(Order order, int id);
         Task Delete(int id);
         Order UpdateOrderStatusAsync(int id);
+
+        Task<List<Order>> SearchOrders(OrderSearchDTO searchCriteria);
     }
 }

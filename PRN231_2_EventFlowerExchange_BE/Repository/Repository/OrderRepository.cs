@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using Microsoft.EntityFrameworkCore;
 using Repository.IRepository;
@@ -104,5 +105,34 @@ namespace Repository.Repository
 
             return order; // Trả về đơn hàng đã cập nhật
         }
+
+        public async Task<List<Order>> SearchOrders(OrderSearchDTO searchCriteria)
+        {
+            var _context = new FlowerShopContext();
+            var query = _context.Orders.AsQueryable();
+
+            if (searchCriteria.Status.HasValue)
+            {
+                query = query.Where(o => o.OrderStatus == searchCriteria.Status.Value);
+            }
+
+            if (searchCriteria.OrderDateFrom.HasValue)
+            {
+                query = query.Where(o => o.OrderDate >= searchCriteria.OrderDateFrom.Value);
+            }
+
+            if (searchCriteria.OrderDateTo.HasValue)
+            {
+                query = query.Where(o => o.OrderDate <= searchCriteria.OrderDateTo.Value);
+            }
+
+            if (searchCriteria.CustomerId.HasValue)
+            {
+                query = query.Where(o => o.CustomerId == searchCriteria.CustomerId.Value);
+            }
+
+            return await query.ToListAsync();
+        }
+
     }
 }
