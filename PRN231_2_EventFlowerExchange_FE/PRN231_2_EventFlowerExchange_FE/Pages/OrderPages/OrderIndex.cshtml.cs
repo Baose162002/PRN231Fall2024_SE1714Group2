@@ -43,7 +43,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
             //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Gọi API
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/order");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/order");
 
             if (response.IsSuccessStatusCode)
             {

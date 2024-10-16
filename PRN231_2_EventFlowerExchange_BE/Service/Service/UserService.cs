@@ -153,7 +153,9 @@ namespace Service.Service
             existingUser.Phone = updateUserDTO.Phone;
             existingUser.Address = updateUserDTO.Address;
             existingUser.Role = updateUserDTO.Role;
-            existingUser.Status = updateUserDTO.Status;
+
+            // Always set status to Active
+            existingUser.Status = EnumList.Status.Active;
 
             return await _userRepository.UpdateAsync(existingUser);
         }

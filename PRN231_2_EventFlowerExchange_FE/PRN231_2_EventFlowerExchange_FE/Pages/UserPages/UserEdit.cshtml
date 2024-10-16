@@ -37,7 +37,8 @@
                     <input asp-for="UpdateUserDTO.Phone" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
                     <span asp-validation-for="UpdateUserDTO.Phone" class="text-danger"></span>
                 </div>
-
+                <!-- Hidden input field to keep the Role value -->
+                <input type="hidden" asp-for="UpdateUserDTO.Role" />
                 <div class="w-full sm:w-1/2 px-2 mb-4">
                     <label asp-for="UpdateUserDTO.Role" class="block text-gray-700 font-medium mb-2">Role</label>
                     <select asp-for="UpdateUserDTO.Role" asp-items="Html.GetEnumSelectList<BusinessObject.Enum.EnumList.UserRole>()" class="readonly border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" disabled>
