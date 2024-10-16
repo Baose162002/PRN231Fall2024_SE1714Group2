@@ -1,0 +1,76 @@
+﻿@page
+@model PRN231_2_EventFlowerExchange_FE.Pages.OrderPages.CreateOrderModel
+@{
+    ViewData["Title"] = "Create Order";
+}
+
+<h2>Create Order</h2>
+
+<form method="post">
+    <div>
+        <label for="FlowerId">Select Flower:</label>
+        <select id="FlowerId" name="Input.FlowerId" asp-for="Input.FlowerId" asp-items="@(new SelectList(Model.Flowers, "FlowerId", "Name"))" onchange="fetchBatches()" required>
+            <option value="">-- Select Flower --</option>
+        </select>
+    </div>
+
+    <br />
+
+    <div id="batch-container" style="display:none;">
+        <h3>Select Batches for the Flower</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Batch ID</th>
+                    <th>Available Quantity</th>
+                    <th>Enter Quantity</th>
+                </tr>
+            </thead>
+            <tbody id="batch-list">
+                <!-- Batches will be dynamically populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <br />
+
+    <div>
+        <input type="submit" value="Create Order" />
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        async function fetchBatches() {
+            const flowerId = document.getElementById("FlowerId").value;
+            if (!flowerId) {
+                document.getElementById("batch-container").style.display = "none";
+                return;
+            }
+
+            const response = await fetch(`api/Batch/getBatchesByFlower/${flowerId}`);
+            const batches = await response.json();
+
+            const batchList = document.getElementById("batch-list");
+            batchList.innerHTML = ''; // Clear existing rows
+
+            if (batches.length > 0) {
+                document.getElementById("batch-container").style.display = "block";
+                batches.forEach(batch => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                                <td>${batch.batchId}</td>
+                                <td>${batch.batchQuantity}</td>
+                                <td>
+                                    <input type="number" name="Input.OrderDetails[${batch.batchId}].QuantityOrdered" min="0" max="${batch.batchQuantity}" value="0" />
+                                    <input type="hidden" name="Input.OrderDetails[${batch.batchId}].BatchId" value="${batch.batchId}" />
+                                </td>
+                            `;
+                    batchList.appendChild(row);
+                });
+            } else {
+                document.getElementById("batch-container").style.display = "none";
+            }
+        }
+    </script>
+}

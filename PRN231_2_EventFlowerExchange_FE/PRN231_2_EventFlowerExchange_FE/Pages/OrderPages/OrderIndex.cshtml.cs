@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using BusinessObject;
 using Newtonsoft.Json;
 using BusinessObject.DTO.Response;
+using System.Net.Http.Headers;
+using System.Net;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
 {
@@ -27,6 +29,19 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            //// Lấy token từ session
+            //var token = HttpContext.Session.GetString("JWTToken");
+
+
+            //if (string.IsNullOrEmpty(token))
+            //{
+            //    // Nếu không có token, redirect về trang đăng nhập
+            //    return RedirectToPage("/Login/Login");
+            //}
+
+            //// Thêm token vào header của HttpClient
+            //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             // Gọi API
             var response = await _httpClient.GetAsync($"{_baseApiUrl}/order");
 
@@ -34,9 +49,15 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
             {
                 Orders = await response.Content.ReadFromJsonAsync<List<ListOrderDTO>>();
             }
+            //else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            //{
+            //    // Kiểm tra nếu token bị hết hạn hoặc không hợp lệ
+            //    ModelState.AddModelError(string.Empty, "Token không hợp lệ hoặc hết hạn.");
+            //    return RedirectToPage("/Login");
+            //}
             else
             {
-                return NotFound("Unable to retrieve orders");
+                ModelState.AddModelError(string.Empty, $"Lỗi khi tải danh sách order: {response.ReasonPhrase}");
             }
 
             return Page();

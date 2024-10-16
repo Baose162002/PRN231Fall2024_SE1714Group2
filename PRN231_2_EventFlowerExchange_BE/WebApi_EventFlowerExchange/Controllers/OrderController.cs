@@ -1,5 +1,6 @@
 ﻿using BusinessObject;
 using BusinessObject.DTO.Request;
+using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,13 +15,19 @@ namespace WebApi_EventFlowerExchange.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IFlowerService _flowerService;
+        private readonly IBatchService _batchService;
         private readonly string[] _orderStatusValues = { "Pending", "Confirmed", "Dispatched", "Delivered" };
 
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, IFlowerService flowerService, IBatchService batchService)
         {
             _orderService = orderService;
+            _flowerService = flowerService;
+            _batchService = batchService;
         }
+
+        
 
         // GET: api/Order
         [HttpGet]
@@ -47,12 +54,26 @@ namespace WebApi_EventFlowerExchange.Controllers
         }
 
         // POST: api/Order
-        [HttpPost]
+        [HttpPost("quick-order")]
         public async Task<IActionResult> CreateOrder(CreateOrderDTO createOrderDTO)
         {
             try
             {
                 await _orderService.Create(createOrderDTO);
+                return Ok("Order created successfully");
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateOrderByBatch([FromBody] CreateOrderDTO createOrderDTO)
+        {
+            try
+            {
+                await _orderService.CreateOrderByBatch(createOrderDTO);
                 return Ok("Order created successfully");
             }
             catch (ArgumentException e)

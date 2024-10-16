@@ -14,6 +14,7 @@ namespace BusinessObject.DTO.Response
 
         // TotalPrice is calculated as the sum of all OrderDetailDTO TotalPrice values
         public decimal TotalPrice => OrderDetails != null ? OrderDetails.Sum(od => od.TotalPrice) : 0;
+        public decimal TotalQuantity => OrderDetails != null ? OrderDetails.Sum(od => od.QuantityOrdered) : 0;
 
         public string OrderDate { get; set; }
         public string DeliveryAddress { get; set; }
@@ -21,7 +22,6 @@ namespace BusinessObject.DTO.Response
 
         public ListUserDTO Customer { get; set; } // Display customer details easily
         public List<OrderDetailDTO> OrderDetails { get; set; }
-        public string IdempotencyKey { get; set; }
     }
 
 }

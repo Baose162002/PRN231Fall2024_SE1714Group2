@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.OData.Query;
 using Service.IService;
 
@@ -79,5 +80,19 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("getBatchesByFlower/{flowerId}")]
+        public async Task<IActionResult> GetBatchesByFlower(int flowerId)
+        {
+            var batches = await _batchService.GetAvailableBatchesByFlowerId(flowerId);
+
+            if (!batches.Any())
+            {
+                return NotFound("No batches found for the selected flower.");
+            }
+
+            return Ok(batches);
+        }
+
     }
 }
