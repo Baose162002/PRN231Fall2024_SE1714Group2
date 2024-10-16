@@ -32,6 +32,13 @@ namespace Service.Service
             var batchDTO = _mapper.Map<List<ListBatchDTO>>(batches);
             return batchDTO;
         }
+        
+        public async Task<List<ListBatchDTO>> GetAvailableBatchesByFlowerId(int flowerId)
+        {
+            var batches = await _batchRepository.GetAvailableBatchesByFlowerId(flowerId);
+            var batchDTO = _mapper.Map<List<ListBatchDTO>>(batches);
+            return batchDTO;
+        }
 
         public async Task<ListBatchDTO> GetBatchById(int id)
         {

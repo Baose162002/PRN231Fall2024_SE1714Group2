@@ -3,39 +3,39 @@
 @{
     ViewData["Title"] = "Order List";
 }
-<div class="container mt-5 pt-4">
+<div class="container mt-5 pt-4 text-center">
     <h1 class="mb-4">Order List</h1>
-
     <a href="/OrderPages/CreateOrder" class="btn btn-primary mb-3">Create New Order</a>
 
     @if (Model.Orders != null && Model.Orders.Any())
     {
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead class="thead-dark">
+        <div class="table-responsive d-flex justify-content-center">
+            <table class="min-w-full divide-y divide-gray-200 table table-striped table-hover">
+                <thead>
                     <tr>
-                        <th>Order Date</th>
-                        <th>Total Price</th>
-                        <th>Delivery Address</th>
-                        <th>Delivery Date</th>
-                        <th>Status</th>
-                        <th>Customer</th>
-                        <th>Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivery Address</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivery Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="bg-white divide-y divide-gray-200">
                     @foreach (var order in Model.Orders)
                     {
                         <tr>
-                            <td>@order.OrderDate</td>
-                            <td>@order.TotalPrice.ToString("C")</td>
-                            <td>@order.DeliveryAddress</td>
-                            <td>@order.DeliveryDate</td>
-                            <td>@order.OrderStatus</td>
-                            <td>
-                                <a href="/OrderPages/OrderDetails?id=@order.OrderId" class="btn btn-info btn-sm">Details</a>
-                                <a href="/OrderPages/EditOrder?id=@order.OrderId" class="btn btn-warning btn-sm">Edit</a>
-                                <a href="/OrderPages/DeleteOrder/@order.OrderId" class="btn btn-danger btn-sm">Delete</a>
+                            <td class="px-6 py-4 whitespace-nowrap">@order.OrderDate</td>
+                            <td class="px-6 py-4 whitespace-nowrap">@order.TotalPrice.ToString("C")</td>
+                            <td class="px-6 py-4 whitespace-nowrap">@order.DeliveryAddress</td>
+                            <td class="px-6 py-4 whitespace-nowrap">@order.DeliveryDate</td>
+
+                            <td class="px-6 py-4 whitespace-nowrap">@order.OrderStatus</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="/OrderPages/OrderDetails?id=@order.OrderId" class="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out">Details</a>
+                                <a href="/OrderPages/EditOrder?id=@order.OrderId" class="px-4 py-2 font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-500 focus:outline-none focus:shadow-outline-yellow active:bg-yellow-600 transition duration-150 ease-in-out">Edit</a>
+                                <a href="/OrderPages/DeleteOrder?id=@order.OrderId" class="px-4 py-2 font-medium text-white bg-red-600 rounded-md hover:bg-red-500 focus:outline-none focus:shadow-outline-red active:bg-red-600 transition duration-150 ease-in-out">Delete</a>
                             </td>
                         </tr>
                     }

@@ -160,8 +160,6 @@ namespace Service.Service
             await _orderRepository.Update(updateOrder, id);
         }
 
-
-
         public async Task Delete(int orderId)
         {
             await _orderRepository.Delete(orderId);
@@ -176,5 +174,73 @@ namespace Service.Service
         {
             return _orderRepository.SearchOrders(searchCriteria);
         }
+
+        //Tạo Order bằng cách chọn Flower tùy thuộc vào Batch
+        public async Task CreateOrderByBatch(CreateOrderDTO orderDTO)
+        {
+            // Tìm tất cả các Batch có chứa loại hoa này (FlowerId)
+            var availableBatches = await _batchRepository.GetAvailableBatchesByFlowerId(orderDTO.FlowerId);
+
+            // Lấy danh sách BatchId hợp lệ từ FlowerId đã chọn
+            var validBatchIds = availableBatches.Select(b => b.BatchId).ToList();
+
+            // Kiểm tra xem các BatchId được chọn có hợp lệ không
+            foreach (var selectedBatch in orderDTO.SelectedBatches)
+            {
+                if (!validBatchIds.Contains(selectedBatch.BatchId))
+                {
+                    throw new ArgumentException($"BatchId {selectedBatch.BatchId} is not valid for FlowerId {orderDTO.FlowerId}");
+                }
+
+                // Lấy Batch từ cơ sở dữ liệu
+                var batch = await _batchRepository.GetBatchById(selectedBatch.BatchId);
+
+                // Kiểm tra số lượng hoa trong batch có đủ để đặt không
+                if (batch.BatchQuantity < selectedBatch.QuantityOrdered)
+                {
+                    throw new ArgumentException($"Insufficient quantity in Batch {selectedBatch.BatchId}. Available: {batch.BatchQuantity}");
+                }
+
+                // Cập nhật lại số lượng bông trong Batch
+                batch.BatchQuantity -= selectedBatch.QuantityOrdered;
+
+                // Lưu thay đổi vào cơ sở dữ liệu sau khi cập nhật BatchQuantity
+                await _batchRepository.UpdateBatch(batch);
+            }
+
+            // Tính tổng giá trị đơn hàng (TotalPrice)
+            decimal totalPrice = 0;
+            var orderDetails = new List<OrderDetail>();
+            foreach (var selectedBatch in orderDTO.SelectedBatches)
+            {
+                var batch = await _batchRepository.GetBatchById(selectedBatch.BatchId);
+                var orderDetail = new OrderDetail
+                {
+                    BatchId = selectedBatch.BatchId,
+                    QuantityOrdered = selectedBatch.QuantityOrdered,
+                    Price = batch.PricePerUnit
+                };
+                orderDetails.Add(orderDetail);
+
+                totalPrice += selectedBatch.QuantityOrdered * batch.PricePerUnit;
+            }
+
+            // Tạo đơn hàng (Order)
+            var order = new Order
+            {
+                OrderStatus = EnumList.OrderStatus.Pending,
+                TotalPrice = totalPrice,
+                OrderDate = DateTime.Now,
+                DeliveryAddress = "Sample Address", // Nhập thông tin từ DTO nếu cần
+                DeliveryDate = DateTime.Now.AddDays(3), // Giả sử ngày giao hàng sau 3 ngày
+                CustomerId = 1, // Thay thế bằng ID người dùng thực tế
+                OrderDetails = orderDetails
+            };
+
+            // Lưu vào DB
+            await _orderRepository.Create(order);
+        }
+
+
     }
 }

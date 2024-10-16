@@ -17,6 +17,12 @@ namespace BusinessObject.DTO.Request
 
         public int FlowerId { get; set; }  // Chỉ cần truyền ID của loại hoa
         public int QuantityOrdered { get; set; }  // Số lượng tổng cần đặt
-        //public List<OrderDetailDTO> OrderDetails { get; set; }
+        public List<BatchSelectionDTO> SelectedBatches { get; set; } = new List<BatchSelectionDTO>();// Danh sách Batch đã chọn
+
+        public class BatchSelectionDTO
+        {
+            public int BatchId { get; set; } // ID của Batch đã chọn
+            public int QuantityOrdered { get; set; } // Số lượng muốn đặt từ Batch đó
+        }
     }
 }
