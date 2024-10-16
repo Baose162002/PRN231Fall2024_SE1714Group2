@@ -1,58 +1,80 @@
 ﻿@page "/BatchIndex"
 @model PRN231_2_EventFlowerExchange_FE.Pages.BatchPages.BatchIndexModel
 @{
-    ViewData["Title"] = "Batch List";
+    ViewData["Title"] = "Batch Management";
+    ViewData["ShowHeader"] = false;
+    ViewData["ShowFooter"] = false;
 }
-<div class="container mt-5 pt-4 text-center">
-    <h1 class="mb-4">Batch List</h1>
-    <a href="/BatchPages/CreateBatch" class="btn btn-primary mb-3">Create New Batch</a>
 
-    @if (Model.Batches != null && Model.Batches.Any())
-    {
-        <div class="table-responsive d-flex justify-content-center">
-            <table class="min-w-full divide-y divide-gray-200 table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Flower Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price Per Unit</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entry Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach (var batch in Model.Batches)
-                    {
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">@batch.FlowerType</td>
-                            <td class="px-6 py-4 whitespace-nowrap">@batch.PricePerUnit.ToString("C")</td>
-                            <td class="px-6 py-4 whitespace-nowrap">@batch.Description</td>
-                            <td class="px-6 py-4 whitespace-nowrap">@batch.BatchQuantity</td>
-                            <td class="px-6 py-4 whitespace-nowrap">@batch.Condition</td>
-                            <td class="px-6 py-4 whitespace-nowrap">@batch.EntryDate</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="/BatchPages/BatchDetails?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out">Details</a>
-                                <a href="/BatchPages/EditBatch?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-500 focus:outline-none focus:shadow-outline-yellow active:bg-yellow-600 transition duration-150 ease-in-out">Edit</a>
-                                <a href="/BatchPages/DeleteBatch?id=@batch.BatchId" class="px-4 py-2 font-medium text-white bg-red-600 rounded-md hover:bg-red-500 focus:outline-none focus:shadow-outline-red active:bg-red-600 transition duration-150 ease-in-out">Delete</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+<div class="bg-gray-100 min-h-screen">
+    <partial name="_AdminHeader" />
+
+    <div class="flex overflow-hidden bg-white pt-16">
+        <partial name="_AdminNav" />
+
+        <div id="main-content" class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
+            <main class="py-10 px-4">
+                <div class="max-w-7xl mx-auto">
+                    <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h3 class="text-xl font-bold text-gray-900">Batch List</h3>
+                            <a href="/BatchPages/CreateBatch" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create New Batch</a>
+                        </div>
+                        <div class="flex flex-col mt-8">
+                            <div class="overflow-x-auto">
+                                <div class="align-middle inline-block min-w-full">
+                                    <div class="overflow-hidden">
+                                        @if (Model.Batches != null && Model.Batches.Any())
+                                        {
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead class="bg-gray-50">
+                                                    <tr>
+                                                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batch Name</th>
+                                                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Name</th>
+                                                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Date</th>
+                                                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                                                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    @foreach (var batch in Model.Batches)
+                                                    {
+                                                        <tr>
+                                                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">@batch.BatchName</td>
+                                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">@batch.EventName</td>
+                                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">@batch.EventDate.ToShortDateString()</td>
+                                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">@batch.BatchQuantity</td>
+                                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                                @{
+                                                                    var companyName = Model.Companies.FirstOrDefault(c => c.CompanyId == batch.CompanyId)?.CompanyName;
+                                                                    @(companyName ?? "Unknown Company")
+                                                                }
+                                                            </td>
+                                                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium">
+                                                                <a asp-page="/BatchPages/BatchDetails" asp-route-id="@batch.BatchId" class="cursor-pointer whitespace-nowrap rounded-md bg-sky-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed dark:bg-sky-500 dark:text-white dark:focus-visible:outline-sky-500 mr-2">Details</a>
+                                                                <a asp-page="/BatchPages/EditBatch" asp-route-id="@batch.BatchId" class="cursor-pointer whitespace-nowrap rounded-md bg-amber-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed bg-yellow-500 mr-2">Edit</a>
+                                                                <a asp-page="/BatchPages/DeleteBatch" asp-route-id="@batch.BatchId" class="cursor-pointer whitespace-nowrap rounded-md bg-red-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed dark:bg-red-500 dark:text-white dark:focus-visible:outline-red-500">Delete</a>
+                                                                <a asp-page="/FlowerPages/FlowerDetailInBatch" asp-route-batchId="@batch.BatchId" class="cursor-pointer whitespace-nowrap rounded-md bg-red-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed dark:bg-red-500 dark:text-white dark:focus-visible:outline-red-500">
+                                                                    View Flower
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-center py-4 text-gray-500">No batches found.</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
-    }
-    else
-    {
-        <div class="alert alert-info" role="alert">
-            No batches available at the moment.
-        </div>
-    }
+    </div>
 </div>
-
-@section Scripts {
-    <script>
-        // Add any additional JavaScript functionality here if needed
-    </script>
-}

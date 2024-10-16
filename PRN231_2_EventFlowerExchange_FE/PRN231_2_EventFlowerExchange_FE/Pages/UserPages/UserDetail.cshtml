@@ -1,0 +1,47 @@
+﻿@page
+@model PRN231_2_EventFlowerExchange_FE.Pages.UserPages.UserDetailModel
+@{
+    ViewData["Title"] = "User Details";
+    ViewData["ShowHeader"] = false;
+    ViewData["ShowFooter"] = false;
+}
+
+<partial name="_AdminHeader" />
+<div class="flex overflow-hidden bg-white pt-16">
+    <partial name="_AdminNav" />
+    <div class="bg-white border rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl">
+        <h2 class="text-2xl font-medium mb-4">Thông Tin Người Dùng</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <p class="font-medium text-gray-700">Mã người dùng:</p>
+                <p>@Model.User.UserId</p>
+            </div>
+            <div>
+                <p class="font-medium text-gray-700">Họ và Tên:</p>
+                <p>@Model.User.FullName</p>
+            </div>
+            <div>
+                <p class="font-medium text-gray-700">Email:</p>
+                <p>@Model.User.Email</p>
+            </div>
+            <div>
+                <p class="font-medium text-gray-700">Số điện thoại:</p>
+                <p>@Model.User.Phone</p>
+            </div>
+            <div class="sm:col-span-2">
+                <p class="font-medium text-gray-700">Địa chỉ:</p>
+                <p>@Model.User.Address</p>
+            </div>
+            <div>
+                <p class="font-medium text-gray-700">Vai trò:</p>
+                <p>@Model.User.Role</p>
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-between">
+            <a href="/EditUser/@Model.User.UserId" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Chỉnh sửa</a>
+            <a href="/UserManagement" class="text-blue-500 hover:underline">Quay lại danh sách người dùng</a>
+        </div>
+    </div>
+</div>

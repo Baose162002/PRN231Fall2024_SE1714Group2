@@ -1,7 +1,9 @@
+﻿using BusinessObject.Dto.Response;
 using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -19,25 +21,25 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
         }
 
         [BindProperty]
-        public UpdateUserDTO UserDTO { get; set; }
+        public UpdateUserDTO UpdateUserDTO { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var role = HttpContext.Session.GetString("UserRole");
-            if (role != "Admin")
+            var token = HttpContext.Session.GetString("JWTToken");
+
+            if (string.IsNullOrEmpty(token))
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/Login/Login");
             }
 
-            var token = HttpContext.Session.GetString("JWTToken");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/user/{id}");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/user/{id}");
 
             if (response.IsSuccessStatusCode)
             {
-                var user = await response.Content.ReadFromJsonAsync<ListUserDTO>();
-                UserDTO = new UpdateUserDTO
+                var user = await response.Content.ReadFromJsonAsync<UserResponseDto>();
+                UpdateUserDTO = new UpdateUserDTO
                 {
                     FullName = user.FullName,
                     Email = user.Email,
@@ -45,10 +47,19 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
                     Address = user.Address,
                     Role = Enum.Parse<BusinessObject.Enum.EnumList.UserRole>(user.Role)
                 };
-                return Page();
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
+                return RedirectToPage("/Login/Login");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, $"Error loading user: {response.ReasonPhrase}");
+                return RedirectToPage("/UserPages/UserIndex");
             }
 
-            return NotFound();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int id)
@@ -59,22 +70,42 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
             }
 
             var token = HttpContext.Session.GetString("JWTToken");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToPage("/Login/Login");
+            }
+
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var json = JsonSerializer.Serialize(UserDTO);
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PutAsync($"{_baseApiUrl}/user/{id}", content);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                return RedirectToPage("./Index");
+                var response = await _httpClient.PutAsJsonAsync($"{_baseApiUrl}/api/user/{id}", UpdateUserDTO);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "User information updated successfully!";
+                    return RedirectToPage("/UserPages/UserEdit", new { id });
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
+                    return RedirectToPage("/Login/Login");
+                }
+                else
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(responseContent);
+
+                    return Page();
+                }
             }
-            else
+            catch (HttpRequestException e)
             {
-                ModelState.AddModelError(string.Empty, "Failed to update user.");
+                ModelState.AddModelError(string.Empty, $"Error connecting to the server: {e.Message}");
                 return Page();
             }
         }
+
     }
 }

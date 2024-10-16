@@ -30,15 +30,14 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
         }
 
         [BindProperty]
-        public CreateBatchDTOUpdateImg Input { get; set; }
+        public CreateBatchDTO Input { get; set; }
 
-        [BindProperty]
-        public IFormFile ImageFlower { get; set; }
+       
         public List<CompanyDTO> Companies { get; set; } = new List<CompanyDTO>();
 
         public async Task<IActionResult> OnGetAsync()
         {
-            Input = new CreateBatchDTOUpdateImg();
+            Input = new CreateBatchDTO();
 
             var token = HttpContext.Session.GetString("JWTToken");
             var role = HttpContext.Session.GetString("UserRole");
@@ -49,7 +48,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                 Companies = await GetCompaniesAsync(token); // Fetch companies
             }
 
-            // Additional logic for loading the event details, if applicable
             return Page();
         }
 
@@ -72,71 +70,9 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                     return Page();
                 }
 
-                // First, create the flower
-                var flowerInput = new CreateFlowerDTO
-                {
-                    Name = Request.Form["FlowerName"],
-                    Type = Input.FlowerType,
-                    Description = Input.Description,
-                    PricePerUnit = Input.PricePerUnit,
-                    Origin = Request.Form["Origin"],
-                    Color = Request.Form["Color"]
-                };
-                if (ImageFlower != null && ImageFlower.Length > 0)
-                {
-                    var cloudinaryService = new CloudinaryService(_configuration);
-                    var imageUrl = await cloudinaryService.UploadImageAsync(ImageFlower);
-
-                    // Set the uploaded image URL to the flower DTO
-                    flowerInput.Image = imageUrl;
-                }
-                var flowerJson = JsonSerializer.Serialize(flowerInput);
-                var flowerContent = new StringContent(flowerJson, Encoding.UTF8, "application/json");
-
-                var flowerApiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/flower"; // Update with your flower API URL
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                var flowerResponse = await _httpClient.PostAsync(flowerApiUrl, flowerContent);
-
-                if (flowerResponse.IsSuccessStatusCode)
-                {
-                    var responseContent = await flowerResponse.Content.ReadAsStringAsync();
-                    var createdFlower = JsonSerializer.Deserialize<ListFlowerDTO>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }); // Define this class to match the response
-                    Input.FlowerId = createdFlower.FlowerId; // Set the FlowerId in the BatchInput
-                }
-                else
-                {
-                    var errorContent = await flowerResponse.Content.ReadAsStringAsync();
-                    ModelState.AddModelError(string.Empty, $"Error creating flower. Status code: {errorContent}");
-                    return Page();
-                }
-
-
-
-                // Convert EntryDate to the required format "dd/MM/yyyy"
-                if (DateTime.TryParseExact(Input.EntryDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
-                {
-                    Input.EntryDate = parsedDate.ToString("dd/MM/yyyy");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid date format.");
-                    return Page();
-                }
-
                 var userRole = HttpContext.Session.GetString("UserRole");
 
-                if (userRole == "Admin")
-                {
-                    // If the user is an admin, the CompanyId should be provided by the dropdown
-                    // Validate that the CompanyId was selected
-                    if (Input.CompanyId <= 0) // or check for null if nullable
-                    {
-                        ModelState.AddModelError(string.Empty, "Please select a valid company.");
-                        return Page();
-                    }
-                }
-                else if (userRole == "Seller")
+                if (userRole == "Seller")
                 {
                     // Logic for fetching CompanyId for Company role remains unchanged
                     var userIdString = HttpContext.Session.GetString("UserId");
@@ -170,13 +106,12 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                 var json = JsonSerializer.Serialize(Input);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/batch";
+                var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/api/batch";
 
                 var response = await _httpClient.PostAsync(apiUrl, content);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    TempData["SuccessMessage"] = "Batch created successfully!";
                     return RedirectToPage("/BatchPages/BatchIndex");
                 }
                 else
@@ -198,7 +133,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
         private async Task<List<CompanyDTO>> GetCompaniesAsync(string token)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/company"; // Adjust API URL accordingly
+            var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/api/company"; // Adjust API URL accordingly
 
             var response = await _httpClient.GetAsync(apiUrl);
             if (response.IsSuccessStatusCode)
@@ -222,7 +157,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
             // Tạo URL cho API để lấy thông tin công ty
-            var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/Company/user/{userId}";
+            var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/api/Company/user/{userId}";
 
             // Gọi API để lấy thông tin công ty
             var response = await _httpClient.GetAsync(apiUrl);

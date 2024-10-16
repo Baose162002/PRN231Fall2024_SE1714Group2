@@ -20,18 +20,12 @@ namespace Service.Configurations.Mapper
         {
             // Batch mappings
             CreateMap<Batch, CreateBatchDTO>();
-            CreateMap<Batch, UpdateBatchDTO>()
-                .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()));
-            CreateMap<UpdateBatchDTO, Batch>()
-               .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()))
-               .ForMember(dest => dest.EntryDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.EntryDate, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
-            CreateMap<ListBatchDTO, Batch>()
-                .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()));
+            CreateMap<Batch, UpdateBatchDTO>();
+            CreateMap<UpdateBatchDTO, Batch>();
+            CreateMap<ListBatchDTO, Batch>();
 
-            CreateMap<Batch, ListBatchDTO>()
-                  .ForMember(dest => dest.BatchStatus, opt => opt.MapFrom(src => src.BatchStatus.ToString()))
-                  .ForMember(dest => dest.EntryDate,
-                  opt => opt.MapFrom(src => FormatDate(src.EntryDate)));
+            CreateMap<Batch, ListBatchDTO>();
+               
 
             // Flower mappings
             CreateMap<CreateFlowerDTO, Flower>();
@@ -54,11 +48,21 @@ namespace Service.Configurations.Mapper
             CreateMap<Flower, ListFlowerDTO>();
             CreateMap<ListFlowerDTO, Flower>();
 
+
+            //Delivery mappings
+            CreateMap<CreateDeliveryDTO, Delivery>();
+            CreateMap<UpdateDeliveryDTO, Delivery>();
+            CreateMap<Delivery, ListDeliveryDTO>();
+
             // User mappings
             CreateMap<CreateUserDTO, User>();
             CreateMap<UpdateUserDTO, User>();
             CreateMap<User, ListUserDTO>();
-            CreateMap<User, UserResponseDto>(); // Add this mapping
+
+            CreateMap<User, UserResponseDto>()
+/*                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))  
+*/                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));  // Convert enum Status to string
+
 
             // Company mappings
             CreateMap<Company, CompanyDTO>();

@@ -24,15 +24,17 @@ namespace Service.Service
         private readonly IOrderDetailRepository _orderDetailRepository;
         private readonly IUserRepository _userRepository;
         private readonly IBatchRepository _batchRepository;
+        private readonly IFlowerRepository _flowerRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IMapper mapper, IBatchRepository batchRepository, IOrderDetailRepository orderDetailRepository)
+        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IMapper mapper, IBatchRepository batchRepository, IOrderDetailRepository orderDetailRepository, IFlowerRepository flowerRepository)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
             _mapper = mapper;
             _batchRepository = batchRepository;
             _orderDetailRepository = orderDetailRepository;
+            _flowerRepository = flowerRepository;
         }
 
         public OrderService()
@@ -58,35 +60,49 @@ namespace Service.Service
             // Kiểm tra các trường bắt buộc
             if (orderDTO == null || string.IsNullOrEmpty(orderDTO.DeliveryAddress) || orderDTO.CustomerId == 0 || orderDTO.QuantityOrdered <= 0)
             {
-                throw new ArgumentException("All required fields must be filled");
+                throw new ArgumentException("All required fields must be filled.");
             }
 
             List<OrderDetail> orderDetails = new List<OrderDetail>();
-            decimal totalPrice = 0;
+            double totalPrice = 0;
 
             // Lấy danh sách các Batch có chứa FlowerId tương ứng
-            var flowerBatches = await _batchRepository.GetAvailableBatchesByFlowerId(orderDTO.FlowerId);
+            var flowerBatches = await _batchRepository.GetFlowersBySimilarTypeAndColorAndEarliestBatch(orderDTO.FlowerId);
 
             if (flowerBatches == null || !flowerBatches.Any())
             {
                 throw new ArgumentException("No batches available for this flower.");
             }
 
+            // Lấy thông tin hoa để kiểm tra số lượng
+            var flower = await _flowerRepository.GetFlowerById(orderDTO.FlowerId); // Lấy thông tin hoa theo ID
+            if (flower == null)
+            {
+                throw new ArgumentException("Flower not found.");
+            }
+
+            // Kiểm tra số lượng đặt hàng không vượt quá số lượng còn lại của hoa
+            if (orderDTO.QuantityOrdered > flower.RemainingQuantity)
+            {
+                throw new ArgumentException("Order quantity exceeds available quantity of the flower.");
+            }
+
             int remainingQuantity = orderDTO.QuantityOrdered; // Số lượng cần đặt
 
-            foreach (var batch in flowerBatches)
+            // Lặp qua các lô hoa để phân bổ số lượng đặt hàng
+            foreach (var flowers in flowerBatches)
             {
                 if (remainingQuantity <= 0) break; // Nếu đã đủ số lượng thì thoát
 
-                int batchQuantityToUse = Math.Min(batch.BatchQuantity, remainingQuantity); // Lấy số lượng ít hơn giữa lô và còn lại
+                int batchQuantityToUse = Math.Min(flowers.RemainingQuantity, remainingQuantity); // Lấy số lượng ít hơn giữa lô và còn lại
 
                 // Tạo đối tượng OrderDetail
                 var orderDetail = new OrderDetail
                 {
-                    BatchId = batch.BatchId,
+                    FlowerId = flowers.FlowerId, // Lấy BatchId
                     QuantityOrdered = batchQuantityToUse,
-                    Price = batch.PricePerUnit,
-                    TotalPrice = batchQuantityToUse * batch.PricePerUnit // Gán giá trị TotalPrice trước khi lưu
+                    Price = flowers.PricePerUnit, // Lấy giá từ hoa
+                    TotalPrice = batchQuantityToUse * flowers.PricePerUnit // Tính tổng giá của OrderDetail
                 };
 
                 // Tính tổng giá của OrderDetail và cập nhật tổng giá của Order
@@ -95,14 +111,11 @@ namespace Service.Service
                 // Thêm OrderDetail vào danh sách
                 orderDetails.Add(orderDetail);
 
-                // Cập nhật số lượng còn lại trong Batch
-                batch.BatchQuantity -= batchQuantityToUse;
-                await _batchRepository.UpdateBatch(batch);
-
                 // Giảm số lượng còn lại cần đặt
                 remainingQuantity -= batchQuantityToUse;
             }
 
+            // Nếu sau khi phân bổ các lô mà vẫn còn số lượng chưa đủ, ném lỗi
             if (remainingQuantity > 0)
             {
                 throw new ArgumentException("Not enough stock to fulfill the order.");
@@ -122,6 +135,10 @@ namespace Service.Service
 
             // Tạo đơn hàng mới
             await _orderRepository.Create(newOrder);
+
+            // Cập nhật số lượng còn lại của hoa
+            flower.RemainingQuantity -= orderDTO.QuantityOrdered; // Chỉ cập nhật RemainingQuantity bên hoa
+            await _flowerRepository.UpdateFlower(flower); // Cập nhật hoa
         }
 
         public async Task Update(UpdateOrderDTO updateOrderDTO, int id)

@@ -19,36 +19,44 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
             }
         }
 
-        public IActionResult OnPostUpdateQuantity(string flowerId, int quantity)
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public IActionResult OnPostUpdateQuantity([FromBody] UpdateQuantityRequest request)
         {
-            // Lấy giỏ hàng hiện tại từ cookie
+            // Lấy giỏ hàng từ cookie
             var cartJson = HttpContext.Request.Cookies["cartItems"];
-            if (string.IsNullOrEmpty(cartJson)) return RedirectToPage();
-
-            var cartItems = JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson);
+            var cartItems = string.IsNullOrEmpty(cartJson) ? new List<CartItemDTO>() : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson);
 
             // Tìm sản phẩm trong giỏ hàng và cập nhật số lượng
-            var cartItem = cartItems.FirstOrDefault(x => x.FlowerId == flowerId);
-            if (cartItem != null)
+            var item = cartItems.FirstOrDefault(x => x.FlowerId == request.FlowerId);
+            if (item != null)
             {
-                cartItem.Quantity = quantity;  // Cập nhật số lượng
-                if (cartItem.Quantity <= 0)
-                {
-                    cartItems.Remove(cartItem);  // Xóa khỏi giỏ hàng nếu số lượng <= 0
-                }
+                item.Quantity = request.Quantity; // Cập nhật số lượng
             }
 
-            // Cập nhật lại cookie
-            var options = new CookieOptions { Expires = DateTimeOffset.Now.AddDays(30) };
-            HttpContext.Response.Cookies.Append("cartItems", JsonSerializer.Serialize(cartItems), options);
+            // Lưu lại giỏ hàng vào cookie
+            var updatedCartJson = JsonSerializer.Serialize(cartItems);
+            HttpContext.Response.Cookies.Append("cartItems", updatedCartJson, new CookieOptions { Path = "/" });
 
-            return RedirectToPage(); // Refresh trang Cart
+            return new JsonResult(cartItems); // Trả lại giỏ hàng đã cập nhật
         }
 
+        [ValidateAntiForgeryToken]
         public IActionResult OnPostOrder()
         {
-            // Xử lý khi người dùng nhấn nút "Order" và chuyển đến trang Order
-            return RedirectToPage("/Order");
+            // Xử lý đặt hàng ở đây
+            // Ví dụ: lưu đơn hàng vào database
+
+            // Xóa giỏ hàng sau khi đặt hàng thành công
+            HttpContext.Response.Cookies.Delete("cartItems");
+
+            return new OkResult();
         }
+    }
+
+    public class UpdateQuantityRequest
+    {
+        public string FlowerId { get; set; }
+        public int Quantity { get; set; }
     }
 }

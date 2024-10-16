@@ -34,7 +34,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Gọi API lấy chi tiết batch
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/batch/{id}");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/batch/{id}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -42,7 +42,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Không thể tải chi tiết batch.");
+                ModelState.AddModelError(string.Empty, "Not found Batch.");
             }
 
             return Page();

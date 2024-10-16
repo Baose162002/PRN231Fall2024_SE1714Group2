@@ -30,18 +30,15 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BatchId"));
 
-                    b.Property<int>("BatchQuantity")
-                        .HasColumnType("int");
+                    b.Property<string>("BatchName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("BatchStatus")
+                    b.Property<int>("BatchQuantity")
                         .HasColumnType("int");
 
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Condition")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -50,15 +47,15 @@ namespace BusinessObject.Migrations
                     b.Property<DateTime>("EntryDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FlowerId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("FlowerType")
+                    b.Property<string>("EventName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("PricePerUnit")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("RemainingQuantity")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -66,8 +63,6 @@ namespace BusinessObject.Migrations
                     b.HasKey("BatchId");
 
                     b.HasIndex("CompanyId");
-
-                    b.HasIndex("FlowerId");
 
                     b.ToTable("Batch");
                 });
@@ -79,6 +74,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CompanyId"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CompanyAddress")
                         .IsRequired()
@@ -92,8 +91,16 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("TaxNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -153,13 +160,22 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FlowerId"));
 
+                    b.Property<int>("BatchId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Condition")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FlowerStatus")
+                        .HasColumnType("int");
 
                     b.Property<string>("Image")
                         .IsRequired()
@@ -173,8 +189,11 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("PricePerUnit")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("PricePerUnit")
+                        .HasColumnType("float");
+
+                    b.Property<int>("RemainingQuantity")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -184,6 +203,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("FlowerId");
+
+                    b.HasIndex("BatchId");
 
                     b.ToTable("Flower");
                 });
@@ -212,10 +233,10 @@ namespace BusinessObject.Migrations
                     b.Property<int>("OrderStatus")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasDefaultValue(1);
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("TotalPrice")
+                        .HasColumnType("float");
 
                     b.HasKey("OrderId");
 
@@ -226,27 +247,32 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.OrderDetail", b =>
                 {
+                    b.Property<int>("OrderDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailId"));
+
+                    b.Property<int>("FlowerId")
+                        .HasColumnType("int");
+
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BatchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderDetailId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.Property<int>("QuantityOrdered")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("TotalPrice")
+                        .HasColumnType("float");
 
-                    b.HasKey("OrderId", "BatchId");
+                    b.HasKey("OrderDetailId");
 
-                    b.HasIndex("BatchId");
+                    b.HasIndex("FlowerId");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("OrderDetail");
                 });
@@ -286,15 +312,15 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
 
-                    b.Property<int>("BatchId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Feedback")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FlowerId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -307,9 +333,9 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("BatchId");
-
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("FlowerId");
 
                     b.ToTable("Review", t =>
                         {
@@ -369,15 +395,7 @@ namespace BusinessObject.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("BusinessObject.Flower", "Flower")
-                        .WithMany("Batches")
-                        .HasForeignKey("FlowerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Company");
-
-                    b.Navigation("Flower");
                 });
 
             modelBuilder.Entity("BusinessObject.Company", b =>
@@ -410,6 +428,17 @@ namespace BusinessObject.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("BusinessObject.Flower", b =>
+                {
+                    b.HasOne("BusinessObject.Batch", "Batch")
+                        .WithMany("Flowers")
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Batch");
+                });
+
             modelBuilder.Entity("BusinessObject.Order", b =>
                 {
                     b.HasOne("BusinessObject.User", "Customer")
@@ -423,9 +452,9 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.OrderDetail", b =>
                 {
-                    b.HasOne("BusinessObject.Batch", "Batch")
+                    b.HasOne("BusinessObject.Flower", "Flower")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("BatchId")
+                        .HasForeignKey("FlowerId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -435,7 +464,7 @@ namespace BusinessObject.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Batch");
+                    b.Navigation("Flower");
 
                     b.Navigation("Order");
                 });
@@ -453,28 +482,26 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Review", b =>
                 {
-                    b.HasOne("BusinessObject.Batch", "Batch")
-                        .WithMany("Reviews")
-                        .HasForeignKey("BatchId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("BusinessObject.User", "Customer")
                         .WithMany("Reviews")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Batch");
+                    b.HasOne("BusinessObject.Flower", "Flower")
+                        .WithMany("Reviews")
+                        .HasForeignKey("FlowerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Flower");
                 });
 
             modelBuilder.Entity("BusinessObject.Batch", b =>
                 {
-                    b.Navigation("OrderDetails");
-
-                    b.Navigation("Reviews");
+                    b.Navigation("Flowers");
                 });
 
             modelBuilder.Entity("BusinessObject.Company", b =>
@@ -484,7 +511,9 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Flower", b =>
                 {
-                    b.Navigation("Batches");
+                    b.Navigation("OrderDetails");
+
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("BusinessObject.Order", b =>

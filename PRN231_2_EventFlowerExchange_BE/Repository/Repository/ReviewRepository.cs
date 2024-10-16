@@ -21,31 +21,33 @@ namespace Repository.Repository
         public async Task<List<Review>> GetAllReviews()
         {
             return await _context.Reviews
-                .Include(r => r.Customer)
                 .ToListAsync();
         }
 
         public async Task<Review> GetReviewById(int id)
         {
             return await _context.Reviews
-                .Include(r => r.Customer)
-                .FirstOrDefaultAsync(r => r.ReviewId == id);
+                                 .Include(r => r.Customer)  
+                                 .FirstOrDefaultAsync(r => r.ReviewId == id);
         }
 
-        public async Task<List<Review>> GetReviewsByBatchId(int batchId)
+
+        public async Task<List<Review>> GetReviewsByBatchId(int flowerId)
         {
             return await _context.Reviews
                 .Include(r => r.Customer)
-                .Where(r => r.BatchId == batchId)
+                .Where(r => r.FlowerId == flowerId)
                 .ToListAsync();
         }
 
         public async Task<List<Review>> GetReviewsByCustomerId(int customerId)
         {
             return await _context.Reviews
-                .Where(r => r.CustomerId == customerId)
-                .ToListAsync();
+                                 .Include(r => r.Customer)  
+                                 .Where(r => r.CustomerId == customerId)
+                                 .ToListAsync();
         }
+
 
         public async Task Create(Review review)
         {

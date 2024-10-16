@@ -17,9 +17,8 @@ namespace Repository.Repository
         {
             var _context = new FlowerShopContext();
             var batches = await _context.Batches
-               .Include(e => e.Company)   
-               .Include(e => e.Flower)
-               .Where(e => e.Status == 0)
+               .Include(e => e.Company)
+               .Where(e => e.Status == Status.Active)
                .ToListAsync();
             return batches;
         }
@@ -27,7 +26,7 @@ namespace Repository.Repository
         public async Task<Batch> GetBatchById(int id)
         {
             var _context = new FlowerShopContext();
-            var existing = await _context.Batches.Include(e => e.Company).Include(e => e.Flower).FirstOrDefaultAsync(b => b.BatchId == id);
+            var existing = await _context.Batches.Include(e => e.Company).FirstOrDefaultAsync(b => b.BatchId == id);
             return existing;
         }
         public async Task<Flower> GetFlowerById(int id)
@@ -50,14 +49,13 @@ namespace Repository.Repository
             var existing = await GetBatchById(id);
             if(existing != null)
             {
-                existing.FlowerType = batch.FlowerType;
+                existing.BatchName = batch.BatchName;
+                existing.EventName = batch.EventName;
+                existing.EventDate = batch.EventDate;
                 existing.BatchQuantity = batch.BatchQuantity;
+                existing.RemainingQuantity = batch.RemainingQuantity;
                 existing.Description = batch.Description;
-                existing.PricePerUnit = batch.PricePerUnit;
-                existing.Condition = batch.Condition;
                 existing.EntryDate = batch.EntryDate;
-                existing.BatchStatus = batch.BatchStatus;
-                existing.FlowerId = batch.FlowerId;
             }
             _context.Batches.Update(existing);
             await _context.SaveChangesAsync();
@@ -76,14 +74,48 @@ namespace Repository.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Batch>> GetAvailableBatchesByFlowerId(int flowerId)
+        public async Task<List<Flower>> GetFlowersBySimilarTypeAndColorAndEarliestBatch(int flowerId)
         {
-            var _context = new FlowerShopContext();
-            return await _context.Batches
-                .Where(b => b.FlowerId == flowerId && b.BatchQuantity > 0 && b.BatchStatus == EnumList.BatchStatus.Available)
-                .OrderBy(b => b.EntryDate) // Sắp xếp theo ngày nhập kho
-                .ToListAsync();
+            using (var _context = new FlowerShopContext())
+            {
+                // Bước 1: Lấy thông tin của Flower ban đầu
+                var initialFlower = await _context.Flowers
+                    .FirstOrDefaultAsync(f => f.FlowerId == flowerId);
+
+                if (initialFlower == null)
+                {
+                    return new List<Flower>(); // Không tìm thấy Flower với flowerId
+                }
+
+                var flowerType = initialFlower.Type; // Lấy Type của Flower
+                var flowerColor = initialFlower.Color; // Lấy Color của Flower
+
+                // Bước 2: Lấy tất cả các Batch chứa Flower có Type và Color tương tự
+                var similarFlowers = await _context.Flowers
+                    .Include(f => f.Batch) // Bao gồm thông tin Batch
+                    .Where(f => f.Type == flowerType &&
+                                 f.Color == flowerColor &&
+                                 f.RemainingQuantity > 0 &&
+                                 f.FlowerStatus == EnumList.FlowerStatus.Available &&
+                                 f.Condition == EnumList.FlowerCondition.Fresh)
+                    .ToListAsync();
+
+                // Bước 3: Lấy Flower với EntryDate nhỏ nhất theo Type và Color
+                var earliestBatchFlowers = similarFlowers
+                    .GroupBy(f => new { f.Type, f.Color }) // Nhóm theo Type và Color
+                    .Select(g => g
+                        .OrderBy(f => f.Batch.EntryDate) // Sắp xếp theo EntryDate
+                        .FirstOrDefault()) // Lấy Flower có EntryDate nhỏ nhất trong nhóm
+                    .Where(f => f != null) // Lọc bỏ các giá trị null
+                    .ToList();
+
+
+                return earliestBatchFlowers;
+            }
         }
+
+
+
 
         public async Task UpdateBatch(Batch batch)
         {

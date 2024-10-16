@@ -20,7 +20,6 @@ namespace Repository.Repository
             var orders = await _context.Orders
                 .Include(o => o.Customer) // Include related Customer entity
                 .Include(o => o.OrderDetails) // Include OrderDetails
-                .ThenInclude(od => od.Batch) // Include Batch within OrderDetails
                 .ThenInclude(b => b.Flower) // Include Flower within Batch
                 .ToListAsync();
             return orders;
@@ -32,7 +31,6 @@ namespace Repository.Repository
             var existing = await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Batch) // Include Batch within OrderDetails
                 .ThenInclude(b => b.Flower) // Include Flower within Batch
                 .FirstOrDefaultAsync(o => o.OrderId == id);
             return existing;

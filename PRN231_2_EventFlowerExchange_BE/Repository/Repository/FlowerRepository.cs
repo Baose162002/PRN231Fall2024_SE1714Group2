@@ -1,5 +1,6 @@
 ﻿using BusinessObject;
 using Microsoft.EntityFrameworkCore;
+using BusinessObject.Enum;
 using Repository.IRepository;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,12 +17,13 @@ namespace Repository.Repository
 
         public async Task<List<Flower>> GetAllFlowers()
         {
-            return await _context.Flowers.ToListAsync();
+            return await _context.Flowers.Where(x => x.Status == EnumList.Status.Active).ToListAsync();
         }
 
         public async Task<Flower> GetFlowerById(int id)
         {
-            return await _context.Flowers.FindAsync(id);
+            var existing = await _context.Flowers.FirstOrDefaultAsync(e => e.FlowerId == id);
+            return existing;
         }
 
         public async Task Create(Flower flower)
@@ -32,22 +34,49 @@ namespace Repository.Repository
 
         public async Task Update(Flower flower, int id)
         {
-            var existingFlower = await _context.Flowers.FindAsync(id);
-            if (existingFlower != null)
+            //var existingFlower = await _context.Flowers.FindAsync(id);
+            //if (existingFlower != null)
+            //{
+            //    _context.Entry(existingFlower).CurrentValues.SetValues(flower);
+            //    await _context.SaveChangesAsync();
+            //}
+            var _context = new FlowerShopContext();
+            var existing = await GetFlowerById(id);
+            if(existing != null)
             {
-                _context.Entry(existingFlower).CurrentValues.SetValues(flower);
-                await _context.SaveChangesAsync();
+                existing.Name = flower.Name;
+                existing.Type = flower.Type;
+                existing.Image = flower.Image;
+                existing.Description = flower.Description;
+                existing.PricePerUnit = flower.PricePerUnit;    
+                existing.Origin = flower.Origin;
+                existing.Color = flower.Color;
+                existing.RemainingQuantity = flower.RemainingQuantity;
+                existing.Condition = flower.Condition;
+                existing.FlowerStatus = flower.FlowerStatus;
+                existing.BatchId = flower.BatchId;
+                
             }
+            _context.Flowers.Update(existing);
+            await _context.SaveChangesAsync();
         }
 
         public async Task Delete(int id)
         {
-            var flower = await _context.Flowers.FindAsync(id); // Truy cập trực tiếp vào DbSet
-            if (flower != null)
+            var existing = await GetFlowerById(id);
+            if(existing == null)
             {
-                _context.Flowers.Remove(flower); // Truy cập trực tiếp vào DbSet
-                await _context.SaveChangesAsync();
+                throw new ArgumentException("Flower is not existed");
             }
+            existing.Status = EnumList.Status.Inactive;
+            _context.Flowers.Update(existing);
+            await _context.SaveChangesAsync();
+        }
+        public async Task UpdateFlower(Flower flower)
+        {
+            var _context = new FlowerShopContext();
+            _context.Flowers.Update(flower);
+            await _context.SaveChangesAsync();
         }
     }
 }

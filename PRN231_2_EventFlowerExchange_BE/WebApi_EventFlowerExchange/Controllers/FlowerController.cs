@@ -2,6 +2,7 @@
 using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Service.IService;
 using System.Threading.Tasks;
 
@@ -19,8 +20,10 @@ namespace WebApi_EventFlowerExchange.Controllers
             _flowerService = flowerService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllFlowers()
+        [EnableQuery]
+        [HttpGet("GetAll")]
+        [EnableQuery]
+        public async Task<IActionResult> Get()
         {
             var flowers = await _flowerService.GetAllFlowers();
             if (flowers == null || !flowers.Any())
@@ -31,7 +34,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             return Ok(flowers);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetBy/{id}")]
         public async Task<IActionResult> GetFlowerById(int id)
         {
             try
@@ -44,7 +47,7 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return NotFound(e.Message);
             }
         }
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task<IActionResult> CreateFlower(CreateFlowerDTO createFlowerDTO)
         {
             try
@@ -63,7 +66,7 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return BadRequest(e.Message);
             }
         }
-        [HttpPut("{id}")]
+        [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateFlower([FromBody] UpdateFlowerDTO updateFlowerDTO, int id)
         {
             try
@@ -76,7 +79,7 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return BadRequest(e.Message);
             }
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteFlower(int id)
         {
             try

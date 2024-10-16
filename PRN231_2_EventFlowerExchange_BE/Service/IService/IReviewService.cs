@@ -1,4 +1,5 @@
-﻿using BusinessObject.DTO.Request;
+﻿using BusinessObject;
+using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Service.IService
 {
     public interface IReviewService
     {
-        Task<List<ListReviewDTO>> GetAllReviews();
+        Task<List<Review>> GetAllReviews();
         Task<ListReviewDTO> GetReviewById(int id);
         Task<List<ListReviewDTO>> GetReviewsByBatchId(int batchId);
         Task<List<ListReviewDTO>> GetReviewsByCustomerId(int customerId);

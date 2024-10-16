@@ -9,7 +9,7 @@ using Service.IService;
 using Service.Service;
 using System.Text.Json.Serialization;
 
-namespace RBN_Api.Extensions
+namespace WebApi_EventFlowerExchange.Extensions
 {
 
     public static class ServiceCollectionExtensions
@@ -38,6 +38,8 @@ namespace RBN_Api.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<IDeliveryRepository, DeliveryRepository>(); 
             // Register services here
             services.AddScoped<IBatchService, BatchService>();
             services.AddScoped<IAuthService, AuthService>();
@@ -47,6 +49,12 @@ namespace RBN_Api.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<ICompanyService, CompanyService>();
+            services.AddScoped<IPayService, PaySerivce>();
+            services.AddScoped<PaymentService>();
+            services.AddScoped<VnPayLibrary>();
+
+
+            services.AddScoped<IDeliveryService, DeliveryService>();
             services.AddAutoMapper(typeof(MapperEntities).Assembly);
 
             return services;

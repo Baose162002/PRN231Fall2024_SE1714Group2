@@ -33,12 +33,12 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             if (string.IsNullOrEmpty(token))
             {
                 _logger.LogWarning("JWT Token is missing from session");
-                return RedirectToPage("/Login");
+                return RedirectToPage("/Login/Login");
             }
 
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/batch/{id}";
+            var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/api/batch/{id}";
             _logger.LogInformation($"Sending GET request to {apiUrl}");
 
             var response = await _httpClient.GetAsync(apiUrl);
@@ -47,10 +47,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             {
                 var jsonContent = await response.Content.ReadAsStringAsync();
                 Input = JsonSerializer.Deserialize<UpdateBatchDTO>(jsonContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                if (DateTime.TryParseExact(Input.EntryDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var entryDate))
-                {
-                    Input.EntryDate = entryDate.ToString("yyyy-MM-dd");
-                }
                 _logger.LogInformation("Batch data loaded successfully");
                 return Page();
             }
@@ -78,29 +74,20 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                     ModelState.AddModelError(string.Empty, "You are not authenticated. Please log in.");
                     return Page();
                 }
-                if (DateTime.TryParseExact(Input.EntryDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
-                {
-                    Input.EntryDate = parsedDate.ToString("dd/MM/yyyy");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid date format.");
-                    return Page();
-                }
+        
+     
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                 var json = JsonSerializer.Serialize(Input);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/batch/{id}";
+                var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/api/batch/{id}";
 
                 _logger.LogInformation($"Sending PUT request to {apiUrl}");
                 var response = await _httpClient.PutAsync(apiUrl, content);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    _logger.LogInformation("Batch updated successfully");
-                    TempData["SuccessMessage"] = "Batch updated successfully!";
                     return RedirectToPage("./BatchIndex");
                 }
                 else

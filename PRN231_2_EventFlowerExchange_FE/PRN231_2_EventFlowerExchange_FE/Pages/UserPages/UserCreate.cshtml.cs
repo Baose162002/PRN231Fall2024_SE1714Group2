@@ -1,6 +1,7 @@
 using BusinessObject.DTO.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -18,16 +19,10 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
         }
 
         [BindProperty]
-        public CreateUserDTO UserDTO { get; set; }
+        public CreateUserDTO CreateUserDTO { get; set; }
 
-        public IActionResult OnGet()
+        public void OnGet()
         {
-            var role = HttpContext.Session.GetString("UserRole");
-            if (role != "Admin")
-            {
-                return RedirectToPage("/Login");
-            }
-            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -38,20 +33,28 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
             }
 
             var token = HttpContext.Session.GetString("JWTToken");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToPage("/Login/Login");
+            }
+
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var json = JsonSerializer.Serialize(UserDTO);
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync($"{_baseApiUrl}/user", content);
+            var response = await _httpClient.PostAsJsonAsync($"{_baseApiUrl}/api/user/register-buyer", CreateUserDTO);
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToPage("./Index");
+                return RedirectToPage("/UserPages/UserIndex");
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
+                return RedirectToPage("/Login/Login");
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Failed to create user.");
+                ModelState.AddModelError(string.Empty, $"Error creating user: {response.ReasonPhrase}");
                 return Page();
             }
         }

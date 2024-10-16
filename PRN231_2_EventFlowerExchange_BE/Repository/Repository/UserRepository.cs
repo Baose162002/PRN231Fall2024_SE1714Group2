@@ -46,7 +46,9 @@ namespace Repository.Repository
         {
             var user = await GetUserById(id);
             if (user == null) return false;
-            _context.Users.Remove(user);
+
+            user.Status = BusinessObject.Enum.EnumList.Status.Inactive;
+            _context.Users.Update(user);
             var result = await _context.SaveChangesAsync();
             return result > 0;
         }

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
-using RBN_Api.Extensions;
 using Repository.IRepository;
 using Repository.Repository;
 using Service.Configurations.Mapper;
@@ -15,23 +14,14 @@ using System.Reflection.Emit;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.Edm;
+using WebApi_EventFlowerExchange.Extensions;
 
 
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Config OData
-var modelBuilder = new ODataConventionModelBuilder();
-modelBuilder.EntitySet<User>("User");
-modelBuilder.EntitySet<Flower>("Flower");
-modelBuilder.EntitySet<Batch>("Batch");
-modelBuilder.EntitySet<Company>("Company");
-modelBuilder.EntitySet<Review>("Review");
-modelBuilder.EntitySet<Delivery>("Delivery");
-modelBuilder.EntitySet<Payment>("Payment");
-modelBuilder.EntitySet<Order>("Order");
-modelBuilder.EntitySet<OrderDetail>("OrderDetail");
 
 // Configure JWT Authentication
 builder.Services.AddAuthentication(options =>
@@ -66,6 +56,25 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Config OData
+static IEdmModel GetEdmModel()
+{
+    var builder = new ODataConventionModelBuilder();
+    builder.EntitySet<User>("User");
+    builder.EntitySet<Flower>("Flower");
+    builder.EntitySet<Batch>("Batch");
+    builder.EntitySet<Company>("Company");
+    builder.EntitySet<Review>("Review");
+    builder.EntitySet<Delivery>("Delivery");
+    builder.EntitySet<Payment>("Payment");
+    builder.EntitySet<Order>("Order");
+    builder.EntitySet<OrderDetail>("OrderDetail");
+    return builder.GetEdmModel();
+}
+
+builder.Services.AddControllers().AddOData(opt => opt.Select().Filter().Count().OrderBy().Expand().SetMaxTop(null).AddRouteComponents("odata", GetEdmModel()));
+
+
 
 builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 builder.Logging.AddConsole();
@@ -74,10 +83,10 @@ builder.Services.AddAutoMapper(typeof(MapperEntities).Assembly);
 
 
 builder.Services.Register();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 // Configure Swagger
@@ -113,10 +122,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddAutoMapper(typeof(MapperEntities));
 
-builder.Services.AddControllers().AddOData(
-    options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
-        "odata",
-        modelBuilder.GetEdmModel()));
+
 
 var app = builder.Build();
 
@@ -127,7 +133,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseODataBatching();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

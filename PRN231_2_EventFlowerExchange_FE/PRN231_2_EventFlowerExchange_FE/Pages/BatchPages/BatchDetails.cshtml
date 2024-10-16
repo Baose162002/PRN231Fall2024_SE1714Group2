@@ -2,48 +2,69 @@
 @model PRN231_2_EventFlowerExchange_FE.Pages.BatchPages.BatchDetailsModel
 @{
     ViewData["Title"] = "Batch Details";
+    ViewData["ShowHeader"] = false;
+    ViewData["ShowFooter"] = false;
 }
-<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
-    <h1 class="text-2xl font-bold mb-6">Batch Details</h1>
-    @if (Model.Batch != null)
-    {
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Flower Type</label>
-                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.FlowerType</p>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Price Per Unit</label>
-                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.PricePerUnit.ToString("C")</p>
-            </div>
-            <div class="mb-4 md:col-span-2">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
-                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.Description</p>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Quantity</label>
-                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.BatchQuantity</p>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Condition</label>
-                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.Condition</p>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Entry Date</label>
-                <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.EntryDate</p>
-            </div>
+
+<div class="bg-gray-100 min-h-screen">
+    <partial name="_AdminHeader" />
+
+    <div class="flex overflow-hidden bg-white pt-16">
+        <partial name="_AdminNav" />
+
+        <div id="main-content" class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
+            <main class="py-10 px-4">
+                <div class="max-w-7xl mx-auto">
+                    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                        <h1 class="text-2xl font-bold mb-6">Batch Details</h1>
+                        @if (Model.Batch != null)
+                        {
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Batch Name</label>
+                                    <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.BatchName</p>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Event Name</label>
+                                    <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.EventName</p>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Event Date</label>
+                                    <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.EventDate.ToShortDateString()</p>
+                                </div>
+                                <div class="mb-4 md:col-span-2">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                                    <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.Description</p>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Quantity</label>
+                                    <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.BatchQuantity</p>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Remaining Quantity</label>
+                                    <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.RemainingQuantity</p>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Entry Date</label>
+                                    <p class="text-gray-600 bg-gray-100 p-2 rounded">@Model.Batch.EntryDate.ToShortDateString()</p>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                <strong class="font-bold">Error!</strong>
+                                <span class="block sm:inline"> Unable to load batch details.</span>
+                            </div>
+                        }
+                        <div class="mt-6">
+                            <a href="/BatchIndex" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
-    }
-    else
-    {
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <strong class="font-bold">Error!</strong>
-            <span class="block sm:inline"> Unable to load batch details.</span>
-        </div>
-    }
-    <div class="mt-6">
-        <a href="/BatchIndex" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Back to List
-        </a>
     </div>
 </div>

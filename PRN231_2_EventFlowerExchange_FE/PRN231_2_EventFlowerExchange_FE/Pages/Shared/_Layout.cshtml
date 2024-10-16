@@ -14,41 +14,42 @@
     <link rel="icon" href="~/images/fevicon.png" type="image/gif" />
     <link rel="stylesheet" href="~/css/jquery.mCustomScrollbar.min.css">
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen"> <!--[if lt IE 9]> <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script> <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script> <![endif]-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
-</head>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+</head>
 <style>
-    /* CSS bổ sung để footer luôn ở dưới cùng */
     body {
         display: flex;
         flex-direction: column;
-        min-height: 100vh; /* Đảm bảo chiều cao tối thiểu là 100% viewport */
+        min-height: 100vh;
     }
 
     main {
-        flex: 1; /* Cho phép main mở rộng để chiếm không gian còn lại */
+        flex: 1;
     }
 
     footer {
-        background-color: white; /* Đặt màu nền cho footer */
+        background-color: white;
     }
 </style>
-<partial name="_Header" />
 <body>
-
-
-
-
-    <main >
+    @if (ViewData["ShowHeader"] as bool? != false)
+    {
+        <partial name="_Header" />
+    }
+    <main>
         @RenderBody()
     </main>
-
-
-
+    @if (ViewData["ShowFooter"] as bool? != false)
+    {
+        <partial name="_Footer" />
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
-
-<partial name="_Footer" />
-
 </html>

@@ -30,7 +30,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             }
 
             // Gọi API để lấy danh sách hoa
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/Flower");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/Flower/GetAll");
 
             if (response.IsSuccessStatusCode)
             {
@@ -40,16 +40,17 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             else
             {
                 Flowers = new List<ListFlowerDTO>();
-                ModelState.AddModelError(string.Empty, "Không thể tải danh sách hoa.");
+                ModelState.AddModelError(string.Empty, "Not found flower");
             }
         }
 
-        // Chuyển phương thức thành bất đồng bộ (async)
-        public async Task<IActionResult> OnPostAddToCartAsync(string flowerId)
-        {
-            // Gọi phương thức bất đồng bộ để lấy thông tin hoa
-            var flower = await GetFlowerById(flowerId);
+       
 
+    
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OnPostAddToCartAsync([FromBody] AddToCartRequest request)
+        {
+            var flower = await GetFlowerById(request.FlowerId);
             if (flower != null)
             {
                 var cartItem = new CartItemDTO
@@ -59,54 +60,65 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
                     Description = flower.Description,
                     PricePerUnit = flower.PricePerUnit,
                     Image = flower.Image,
-                    Quantity = 1 // Quản lý số lượng nếu cần
+                    Quantity = 1
                 };
-
-                AddToCart(cartItem);
+                var cartCount = AddToCart(cartItem);
+                return new JsonResult(new { success = true, cartCount = cartCount });
             }
-
-            return RedirectToPage(); // Quay lại trang hiện tại
+            return new JsonResult(new { success = false, message = "Flower not found" });
         }
 
-        // Phương thức để lấy thông tin hoa bất đồng bộ
         private async Task<ListFlowerDTO> GetFlowerById(string flowerId)
         {
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/Flower/{flowerId}");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/Flower/GetBy/{flowerId}");
             if (response.IsSuccessStatusCode)
             {
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 return await response.Content.ReadFromJsonAsync<ListFlowerDTO>(options);
             }
-
             return null;
         }
 
-        public void AddToCart(CartItemDTO flower)
+        private int AddToCart(CartItemDTO flower)
         {
-            // Lấy giỏ hàng hiện tại từ cookie (nếu có)
             var cartJson = HttpContext.Request.Cookies["cartItems"];
             List<CartItemDTO> cartItems = string.IsNullOrEmpty(cartJson)
                 ? new List<CartItemDTO>()
                 : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson);
 
-            // Kiểm tra xem hoa đã tồn tại trong giỏ hàng chưa
             var existingItem = cartItems.FirstOrDefault(x => x.FlowerId == flower.FlowerId);
             if (existingItem != null)
             {
-                // Nếu đã có, tăng số lượng
                 existingItem.Quantity += 1;
             }
             else
             {
-                // Nếu không có, thêm hoa mới vào giỏ hàng với số lượng 1
                 flower.Quantity = 1;
                 cartItems.Add(flower);
             }
 
-            // Cập nhật cookie với danh sách giỏ hàng mới
             var options = new CookieOptions { Expires = DateTimeOffset.Now.AddDays(30) };
             HttpContext.Response.Cookies.Append("cartItems", JsonSerializer.Serialize(cartItems), options);
+
+            return cartItems.Sum(item => item.Quantity);
         }
 
+        public IActionResult OnGetGetCartCount()
+        {
+            var cartJson = HttpContext.Request.Cookies["cartItems"];
+            if (string.IsNullOrEmpty(cartJson))
+                return new JsonResult(new { count = 0 });
+
+            var cartItems = JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson);
+            return new JsonResult(new { count = cartItems.Sum(item => item.Quantity) });
+        }
     }
+
+    public class AddToCartRequest
+    {
+        public string FlowerId { get; set; }
+    }
+
+
 }
+
