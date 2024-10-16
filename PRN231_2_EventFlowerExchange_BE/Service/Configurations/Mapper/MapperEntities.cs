@@ -48,6 +48,12 @@ namespace Service.Configurations.Mapper
             CreateMap<Flower, ListFlowerDTO>();
             CreateMap<ListFlowerDTO, Flower>();
 
+
+            //Delivery mappings
+            CreateMap<CreateDeliveryDTO, Delivery>();
+            CreateMap<UpdateDeliveryDTO, Delivery>();
+            CreateMap<Delivery, ListDeliveryDTO>();
+
             // User mappings
             CreateMap<CreateUserDTO, User>();
             CreateMap<UpdateUserDTO, User>();
