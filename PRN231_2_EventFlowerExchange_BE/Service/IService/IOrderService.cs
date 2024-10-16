@@ -17,5 +17,6 @@ namespace Service.IService
         Task Update(UpdateOrderDTO updateOrderDTO, int id);
         Task Delete(int id);
         Task<Order> UpdateOrderStatus(int updatedOrder);
+        Task<List<Order>> SearchOrders(OrderSearchDTO searchCriteria);
     }
 }

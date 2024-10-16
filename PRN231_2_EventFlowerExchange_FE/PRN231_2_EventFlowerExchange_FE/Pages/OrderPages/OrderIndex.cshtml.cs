@@ -9,14 +9,14 @@ using BusinessObject;
 using Newtonsoft.Json;
 using BusinessObject.DTO.Response;
 
-namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPage
+namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
 {
-    public class IndexModel : PageModel
+    public class OrderIndexModel : PageModel
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseApiUrl;
 
-        public IndexModel(HttpClient httpClient, IConfiguration configuration)
+        public OrderIndexModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _baseApiUrl = configuration["ApiSettings:BaseUrl"];
@@ -32,8 +32,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPage
 
             if (response.IsSuccessStatusCode)
             {
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                Orders = JsonConvert.DeserializeObject<List<ListOrderDTO>>(jsonResponse);
+                Orders = await response.Content.ReadFromJsonAsync<List<ListOrderDTO>>();
             }
             else
             {
