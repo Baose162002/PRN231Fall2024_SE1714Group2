@@ -10,6 +10,7 @@ using static PRN231_2_EventFlowerExchange_FE.Pages.BatchPages.BatchIndexModel;
 using System.Text.Json.Serialization;
 using static BusinessObject.Enum.EnumList;
 using System.IdentityModel.Tokens.Jwt;
+using BusinessObject;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
 {
@@ -28,9 +29,8 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
 
         [BindProperty]
         public CreateFlowerDTO FlowerInput { get; set; }
-        public List<ListBatchDTO> Batches { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int companyId)
+        public async Task<IActionResult> OnGetAsync(int? batchId)
         {
             var token = HttpContext.Session.GetString("JWTToken");
 
@@ -38,46 +38,12 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
             {
                 return RedirectToPage("/Login/Login");
             }
-
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-            var userRole = HttpContext.Session.GetString("UserRole");
-            var userId = HttpContext.Session.GetString("UserId");
-
-            string odataQuery = ""; // Mặc định cho Admin
-
-            if (userRole == "Seller" && userId != null)
+            if (batchId.HasValue)
             {
-                var company = await GetCompanyByUserIdAsync(userId);
-                if (company != null)
+                FlowerInput = new CreateFlowerDTO
                 {
-                    odataQuery = $"/odata/batch?$filter=CompanyId eq {company.CompanyId}";
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Unable to retrieve company information.");
-                    return Page();
-                }
-            }
-            var apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}{odataQuery}";
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var response = await _httpClient.GetAsync(apiUrl);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var jsonString = await response.Content.ReadAsStringAsync();
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
+                    BatchId = batchId.Value
                 };
-
-                var odataResponse = JsonSerializer.Deserialize<ODataResponse<ListBatchDTO>>(jsonString, options);
-                Batches = odataResponse.Value; // Gán danh sách batch vào thuộc tính Batches
-            }
-            else
-            {
-                var errorMessage = await response.Content.ReadAsStringAsync();
-                ModelState.AddModelError(string.Empty, $"Error fetching batch information: {errorMessage}");
             }
             return Page();
         }
@@ -100,7 +66,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
             if (response.IsSuccessStatusCode)
             {
                 // Redirect on success
-                return RedirectToPage("/Index");
+                return RedirectToPage("/FlowerPages/FlowerDetailInBatch", new { batchId = FlowerInput.BatchId });
             }
             else
             {

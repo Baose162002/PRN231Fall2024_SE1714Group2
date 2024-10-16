@@ -78,9 +78,9 @@ namespace BusinessObject
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Review>()
-                .HasOne(r => r.Batch)
+                .HasOne(r => r.Flower)
                 .WithMany(b => b.Reviews)
-                .HasForeignKey(r => r.BatchId)
+                .HasForeignKey(r => r.FlowerId)
                 .OnDelete(DeleteBehavior.NoAction);
 
 

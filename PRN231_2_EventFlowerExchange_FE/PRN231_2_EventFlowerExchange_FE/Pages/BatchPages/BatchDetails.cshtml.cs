@@ -42,7 +42,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Không thể tải chi tiết batch.");
+                ModelState.AddModelError(string.Empty, "Not found Batch.");
             }
 
             return Page();

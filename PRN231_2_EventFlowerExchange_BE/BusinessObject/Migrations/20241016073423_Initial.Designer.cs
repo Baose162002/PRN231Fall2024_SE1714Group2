@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(FlowerShopContext))]
-    [Migration("20241015072208_Initial")]
+    [Migration("20241016073423_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -315,15 +315,15 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
 
-                    b.Property<int>("BatchId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Feedback")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FlowerId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -336,9 +336,9 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("BatchId");
-
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("FlowerId");
 
                     b.ToTable("Review", t =>
                         {
@@ -485,28 +485,26 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Review", b =>
                 {
-                    b.HasOne("BusinessObject.Batch", "Batch")
-                        .WithMany("Reviews")
-                        .HasForeignKey("BatchId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("BusinessObject.User", "Customer")
                         .WithMany("Reviews")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Batch");
+                    b.HasOne("BusinessObject.Flower", "Flower")
+                        .WithMany("Reviews")
+                        .HasForeignKey("FlowerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Flower");
                 });
 
             modelBuilder.Entity("BusinessObject.Batch", b =>
                 {
                     b.Navigation("Flowers");
-
-                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("BusinessObject.Company", b =>
@@ -517,6 +515,8 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("BusinessObject.Flower", b =>
                 {
                     b.Navigation("OrderDetails");
+
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("BusinessObject.Order", b =>

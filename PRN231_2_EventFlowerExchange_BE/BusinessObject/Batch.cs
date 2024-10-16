@@ -31,9 +31,6 @@ namespace BusinessObject
     
         [JsonIgnore]
 
-        public ICollection<Review> Reviews { get; set; }
-        [JsonIgnore]
-
         public virtual ICollection<Flower> Flowers { get; set; } = new List<Flower>();
     }
 }

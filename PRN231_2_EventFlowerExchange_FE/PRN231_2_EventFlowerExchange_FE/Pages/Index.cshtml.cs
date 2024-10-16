@@ -44,10 +44,13 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             }
         }
 
-        public async Task<IActionResult> OnPostAddToCartAsync(string flowerId)
-        {
-            var flower = await GetFlowerById(flowerId);
+       
 
+    
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OnPostAddToCartAsync([FromBody] AddToCartRequest request)
+        {
+            var flower = await GetFlowerById(request.FlowerId);
             if (flower != null)
             {
                 var cartItem = new CartItemDTO
@@ -59,26 +62,24 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
                     Image = flower.Image,
                     Quantity = 1
                 };
-
-                AddToCart(cartItem);
+                var cartCount = AddToCart(cartItem);
+                return new JsonResult(new { success = true, cartCount = cartCount });
             }
-
-            return RedirectToPage(); 
+            return new JsonResult(new { success = false, message = "Flower not found" });
         }
 
         private async Task<ListFlowerDTO> GetFlowerById(string flowerId)
         {
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/Flower/{flowerId}");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/Flower/GetBy/{flowerId}");
             if (response.IsSuccessStatusCode)
             {
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 return await response.Content.ReadFromJsonAsync<ListFlowerDTO>(options);
             }
-
             return null;
         }
 
-        public void AddToCart(CartItemDTO flower)
+        private int AddToCart(CartItemDTO flower)
         {
             var cartJson = HttpContext.Request.Cookies["cartItems"];
             List<CartItemDTO> cartItems = string.IsNullOrEmpty(cartJson)
@@ -98,7 +99,26 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
 
             var options = new CookieOptions { Expires = DateTimeOffset.Now.AddDays(30) };
             HttpContext.Response.Cookies.Append("cartItems", JsonSerializer.Serialize(cartItems), options);
+
+            return cartItems.Sum(item => item.Quantity);
         }
 
+        public IActionResult OnGetGetCartCount()
+        {
+            var cartJson = HttpContext.Request.Cookies["cartItems"];
+            if (string.IsNullOrEmpty(cartJson))
+                return new JsonResult(new { count = 0 });
+
+            var cartItems = JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson);
+            return new JsonResult(new { count = cartItems.Sum(item => item.Quantity) });
+        }
     }
+
+    public class AddToCartRequest
+    {
+        public string FlowerId { get; set; }
+    }
+
+
 }
+
