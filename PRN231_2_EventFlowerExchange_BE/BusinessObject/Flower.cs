@@ -28,6 +28,8 @@ namespace BusinessObject
 
         public Batch Batch { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
+        public ICollection<Review> Reviews { get; set; }
+
 
     }
 }

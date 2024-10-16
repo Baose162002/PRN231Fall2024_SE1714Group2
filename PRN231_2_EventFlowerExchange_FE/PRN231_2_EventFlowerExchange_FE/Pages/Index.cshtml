@@ -38,7 +38,10 @@
                                 <p class="text-gray-700 text-base">@flower.Description</p>
                                 <div class="mt-4 flex items-center justify-between">
                                     <span class="text-gray-700 font-medium">$@flower.PricePerUnit</span>
-                                    <button x-on:click="addToCart(@flower.FlowerId, '@flower.Name', @flower.PricePerUnit)"
+                                    <form id="antiforgeryform">
+                                        @Html.AntiForgeryToken()
+                                    </form>
+                                    <button onclick="addToCart('@flower.FlowerId')"
                                             class="px-4 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-200">
                                         Add to cart
                                     </button>
@@ -116,26 +119,45 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-        function addToCart(flowerId) {
-            $.post("/Index?handler=AddToCart", { flowerId: flowerId }, function () {
-                // Update the cart count after successful addition
-                updateCartCount();
-            });
+        function addToCart(flowerId, name, pricePerUnit) {
+            // Lấy token từ form
+            var token = document.querySelector('#antiforgeryform input[name="__RequestVerificationToken"]').value;
+
+            fetch('/Index?handler=AddToCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({ flowerId: flowerId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateCartCount(data.cartCount);
+                        alert('Item added to cart!');
+                    } else {
+                        alert('Failed to add item to cart. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while adding the item to cart.');
+                });
         }
 
-        function updateCartCount() {
-            const cartItems = document.cookie.split('; ').find(row => row.startsWith('cartItems='));
-
-            if (cartItems) {
-                const cartItemsValue = JSON.parse(decodeURIComponent(cartItems.split('=')[1]));
-                const totalCount = cartItemsValue.reduce((total, item) => total + item.Quantity, 0);
-
-                document.getElementById('cart-count').textContent = totalCount;
-            } else {
-                document.getElementById('cart-count').textContent = 0;
+        function updateCartCount(count) {
+            var cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = count;
             }
         }
 
         // Call this function when the page loads to update the cart count
-        window.onload = updateCartCount;
+        window.onload = function () {
+            fetch('/Index?handler=GetCartCount')
+                .then(response => response.json())
+                .then(data => updateCartCount(data.count))
+                .catch(error => console.error('Error:', error));
+        };
     </script>

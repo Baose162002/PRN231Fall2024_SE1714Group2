@@ -2,6 +2,7 @@
 using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Service.IService;
 using System.Threading.Tasks;
 
@@ -19,8 +20,10 @@ namespace WebApi_EventFlowerExchange.Controllers
             _flowerService = flowerService;
         }
 
+        [EnableQuery]
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAllFlowers()
+        [EnableQuery]
+        public async Task<IActionResult> Get()
         {
             var flowers = await _flowerService.GetAllFlowers();
             if (flowers == null || !flowers.Any())

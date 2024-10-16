@@ -187,35 +187,6 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Review",
-                columns: table => new
-                {
-                    ReviewId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Rating = table.Column<int>(type: "int", nullable: false),
-                    Feedback = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BatchId = table.Column<int>(type: "int", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Review", x => x.ReviewId);
-                    table.CheckConstraint("CK_Review_Rating", "Rating >= 1 AND Rating <= 5");
-                    table.ForeignKey(
-                        name: "FK_Review_Batch_BatchId",
-                        column: x => x.BatchId,
-                        principalTable: "Batch",
-                        principalColumn: "BatchId");
-                    table.ForeignKey(
-                        name: "FK_Review_User_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "User",
-                        principalColumn: "UserId");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OrderDetail",
                 columns: table => new
                 {
@@ -240,6 +211,35 @@ namespace BusinessObject.Migrations
                         column: x => x.OrderId,
                         principalTable: "Order",
                         principalColumn: "OrderId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Review",
+                columns: table => new
+                {
+                    ReviewId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Feedback = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FlowerId = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Review", x => x.ReviewId);
+                    table.CheckConstraint("CK_Review_Rating", "Rating >= 1 AND Rating <= 5");
+                    table.ForeignKey(
+                        name: "FK_Review_Flower_FlowerId",
+                        column: x => x.FlowerId,
+                        principalTable: "Flower",
+                        principalColumn: "FlowerId");
+                    table.ForeignKey(
+                        name: "FK_Review_User_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "User",
+                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -289,14 +289,14 @@ namespace BusinessObject.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Review_BatchId",
-                table: "Review",
-                column: "BatchId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Review_CustomerId",
                 table: "Review",
                 column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Review_FlowerId",
+                table: "Review",
+                column: "FlowerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_User_Email",
@@ -321,10 +321,10 @@ namespace BusinessObject.Migrations
                 name: "Review");
 
             migrationBuilder.DropTable(
-                name: "Flower");
+                name: "Order");
 
             migrationBuilder.DropTable(
-                name: "Order");
+                name: "Flower");
 
             migrationBuilder.DropTable(
                 name: "Batch");

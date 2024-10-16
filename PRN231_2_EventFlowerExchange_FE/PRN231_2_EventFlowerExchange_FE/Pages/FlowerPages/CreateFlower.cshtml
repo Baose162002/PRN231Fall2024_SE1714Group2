@@ -8,15 +8,38 @@
                 <h2 class="text-2xl font-bold text-center text-gray-800">Create Flower</h2>
             </div>
             <div class="p-6">
+                <div class="text-red-600">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <strong>Error!</strong> Please fix the errors below:
+                        </div>
+                    }
+
+                    <!-- Validation Summary for errors -->
+                    <div class="text-red-600">
+                        @Html.ValidationSummary(false, "", new { @class = "text-red-500" })
+                    </div>
+                </div>
+
                 <form method="post" enctype="multipart/form-data" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
                             <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="name" asp-for="FlowerInput.Name" required />
                         </div>
+
+                        <!-- Type Selection -->
                         <div>
                             <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
-                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="type" asp-for="FlowerInput.Type" required />
+                            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="type" asp-for="FlowerInput.Type" required>
+                                <option value="Rose">Rose</option>
+                                <option value="Tulip">Tulip</option>
+                                <option value="Lily">Lily</option>
+                                <option value="Daisy">Daisy</option>
+                                <option value="Orchid">Orchid</option>
+                                <option value="Sunflower">Sunflower</option>
+                            </select>
                         </div>
                     </div>
 
@@ -30,6 +53,7 @@
                             <label for="pricePerUnit" class="block text-sm font-medium text-gray-700">Price Per Unit</label>
                             <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="pricePerUnit" asp-for="FlowerInput.PricePerUnit" required />
                         </div>
+
                         <div>
                             <label for="origin" class="block text-sm font-medium text-gray-700">Origin</label>
                             <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="origin" asp-for="FlowerInput.Origin" required />
@@ -37,27 +61,27 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Color Selection -->
                         <div>
                             <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
-                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="color" asp-for="FlowerInput.Color" required />
-                        </div>
-                        <div>
-                            <label for="batch" class="block text-sm font-medium text-gray-700">Batch</label>
-                            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="batch" asp-for="FlowerInput.BatchId" required>
-                                <option value="">Select a Batch</option>
-                                @if (Model.Batches == null || !Model.Batches.Any())
-                                {
-                                    <option value="" disabled>No batches available. Please create a batch first.</option>
-                                }
-                                else
-                                {
-                                    foreach (var batch in Model.Batches)
-                                    {
-                                        <option value="@batch.BatchId">@batch.BatchName</option>
-                                    }
-                                }
+                            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="color" asp-for="FlowerInput.Color" required>
+                                <option value="Red">Red</option>
+                                <option value="Yellow">Yellow</option>
+                                <option value="White">White</option>
+                                <option value="Pink">Pink</option>
+                                <option value="Purple">Purple</option>
+                                <option value="Orange">Orange</option>
                             </select>
                         </div>
+
+                        <div>
+                            <label for="batchId" class="block text-sm font-medium text-gray-700">Batch ID</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="batchId" asp-for="FlowerInput.BatchId" readonly />
+                        </div>
+                    </div>
+                    <div>
+                        <label for="RemainingQuantity" class="block text-sm font-medium text-gray-700">Remaining Quantity</label>
+                        <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="remainingQuantity" asp-for="FlowerInput.RemainingQuantity" required />
                     </div>
                     <div>
                         <label for="imageFile" class="block text-sm font-medium text-gray-700">Upload Image</label>
