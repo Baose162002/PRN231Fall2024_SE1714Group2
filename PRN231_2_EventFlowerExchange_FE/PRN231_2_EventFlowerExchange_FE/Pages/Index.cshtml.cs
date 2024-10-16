@@ -68,7 +68,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
 
         private async Task<ListFlowerDTO> GetFlowerById(string flowerId)
         {
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/Flower/{flowerId}");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/Flower/{flowerId}");
             if (response.IsSuccessStatusCode)
             {
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };

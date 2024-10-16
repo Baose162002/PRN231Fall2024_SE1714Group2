@@ -1,48 +1,68 @@
-﻿@page "/Company"
+﻿@page "/CompanyIndex"
 @model PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages.IndexModel
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Company Management";
+    ViewData["ShowHeader"] = false;
+    ViewData["ShowFooter"] = false;
 }
 
-<h1>Index</h1>
+<div class="bg-gray-100 min-h-screen">
+    <partial name="_AdminHeader" />
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Company[0].CompanyName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Company[0].CompanyAddress)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Company[0].CompanyDescription)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Company) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CompanyName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CompanyAddress)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CompanyDescription)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.CompanyId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.CompanyId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.CompanyId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="flex overflow-hidden bg-white pt-16">
+        <partial name="_AdminNav" />
+
+        <div id="main-content" class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
+            <main class="py-10 px-4">
+                <div class="max-w-7xl mx-auto">
+                    <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h3 class="text-xl font-bold text-gray-900">Company List</h3>
+                            <a href="/CompanyPages/CreateCompany" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create New Company</a>
+                        </div>
+                        <div class="flex flex-col mt-8">
+                            <div class="overflow-x-auto">
+                                <div class="align-middle inline-block min-w-full">
+                                    <div class="overflow-hidden">
+                                        @if (Model.Company != null && Model.Company.Any())
+                                        {
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead class="bg-gray-50">
+                                                    <tr>
+                                                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company Name</th>
+                                                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company Address</th>
+                                                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company Description</th>
+                                                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    @foreach (var company in Model.Company)
+                                                    {
+                                                        <tr>
+                                                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">@company.CompanyName</td>
+                                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">@company.CompanyAddress</td>
+                                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">@company.CompanyDescription</td>
+                                                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium">
+                                                                <a asp-page="/CompanyPages/CompanyDetails" asp-route-id="@company.CompanyId" class="cursor-pointer whitespace-nowrap rounded-md bg-sky-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed dark:bg-sky-500 dark:text-white dark:focus-visible:outline-sky-500 mr-2">Details</a>
+                                                                <a asp-page="/CompanyPages/EditCompany" asp-route-id="@company.CompanyId" class="cursor-pointer whitespace-nowrap rounded-md bg-amber-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed bg-yellow-500 mr-2">Edit</a>
+                                                                <a asp-page="/CompanyPages/DeleteCompany" asp-route-id="@company.CompanyId" class="cursor-pointer whitespace-nowrap rounded-md bg-red-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed dark:bg-red-500 dark:text-white dark:focus-visible:outline-red-500">Delete</a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-center py-4 text-gray-500">No companies found.</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>

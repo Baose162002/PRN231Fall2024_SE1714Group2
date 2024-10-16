@@ -14,13 +14,10 @@
                 <a href="/Index" class="text-gray-800 hover:text-indigo-600">Home</a>
                 <a href="#about" class="text-gray-800 hover:text-indigo-600">About</a>
                 <a href="/FlowerPages/FlowerIndex" class="text-gray-800 hover:text-indigo-600">Flowers</a>
-                <a href="/BatchIndex" class="text-gray-800 hover:text-indigo-600">Batch</a>
-                <a href="#plant" class="text-gray-800 hover:text-indigo-600">Flowers</a>
-                <a href="/Company" class="text-gray-800 hover:text-indigo-600">Company</a>
-                @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Admin")
+           @*      @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Admin")
                 {
                     <a href="/UserManagement" class="text-gray-800 hover:text-indigo-600">User Management</a>
-                }
+                } *@
             </div>
             <div class="hidden md:flex items-center space-x-4">
                 @if (HttpContextAccessor.HttpContext.Session.GetString("JWTToken") != null)
@@ -36,19 +33,32 @@
                             </span>
                         </button>
                         <ul class="bg-white border rounded-sm transform scale-0 group-hover:scale-100 absolute transition duration-150 ease-in-out origin-top min-w-32">
-                            <li class="rounded-sm px-3 py-1 hover:bg-gray-100">
+                            <ul class="bg-white border rounded-sm transform scale-0 group-hover:scale-100 absolute transition duration-150 ease-in-out origin-top min-w-32">
                                 @{
                                     var userIdString = HttpContextAccessor.HttpContext.Session.GetString("UserId");
                                     if (!string.IsNullOrEmpty(userIdString))
                                     {
-                                        <a href="/EditUser/@userIdString" class="block w-full">Edit Profile</a>
+                                        <li class="rounded-sm px-3 py-1 hover:bg-gray-100">
+                                            <a href="/EditUser/@userIdString" class="block w-full">Edit Profile</a>
+                                        </li>
+                                        <li class="rounded-sm px-3 py-1 hover:bg-gray-100">
+                                            <a href="/OrderHistory/@userIdString" class="block w-full">Order History</a>
+                                        </li>
                                     }
                                     else
                                     {
-                                        <span class="block w-full text-gray-500">Profile Unavailable</span>
+                                        <li class="rounded-sm px-3 py-1 hover:bg-gray-100">
+                                            <span class="block w-full text-gray-500">Profile Unavailable</span>
+                                        </li>
+                                        <li class="rounded-sm px-3 py-1 hover:bg-gray-100">
+                                            <span class="block w-full text-gray-500">Order History Unavailable</span>
+                                        </li>
                                     }
                                 }
-                            </li>
+                     
+
+
+
                             @{
                                 var userRole = HttpContextAccessor.HttpContext.Session.GetString("UserRole");
                                 if (userRole == "Admin")
@@ -75,6 +85,7 @@
                                     <button type="submit" class="w-full text-left">Logout</button>
                                 </form>
                             </li>
+                        </ul>
                         </ul>
                     </div>
                 }
