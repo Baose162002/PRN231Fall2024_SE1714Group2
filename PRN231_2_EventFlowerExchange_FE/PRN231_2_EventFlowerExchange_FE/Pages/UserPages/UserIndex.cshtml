@@ -6,7 +6,7 @@
     ViewData["ShowFooter"] = false;
 }
 
-<div>
+<div x-data="{ searchTerm: '', searchColumn: 'all' }">
     <partial name="_AdminHeader" />
 
     <div class="flex overflow-hidden bg-white pt-16">
@@ -24,6 +24,26 @@
                                 <a href="/CreateUser" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create New User</a>
                             </div>
                         </div>
+
+                        <!-- Search input and column selector -->
+                        <div class="mb-4 flex space-x-2">
+                            <select x-model="searchColumn"
+                                    class="px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300">
+                                <option value="all">All Columns</option>
+                                <option value="id">ID</option>
+                                <option value="fullName">Full Name</option>
+                                <option value="email">Email</option>
+                                <option value="phone">Phone</option>
+                                <option value="address">Address</option>
+                                <option value="role">Role</option>
+                                <option value="status">Status</option>
+                            </select>
+                            <input type="text"
+                                   x-model="searchTerm"
+                                   placeholder="Search users..."
+                                   class="flex-1 px-3 py-2 placeholder-gray-300 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300">
+                        </div>
+
                         <div class="flex flex-col mt-8">
                             <div class="overflow-x-auto rounded-lg">
                                 <div class="align-middle inline-block min-w-full">
@@ -46,7 +66,25 @@
                                                 <tbody class="bg-white divide-y divide-gray-200">
                                                     @foreach (var user in Model.Users)
                                                     {
-                                                        <tr>
+                                                        <tr x-show="
+                                                            searchTerm === '' ||
+                                                            (searchColumn === 'all' && (
+                                                                '@user.UserId'.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                                                '@user.FullName'.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                                                '@user.Email'.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                                                '@user.Phone'.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                                                '@user.Address'.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                                                '@user.Role'.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                                                '@user.Status'.toLowerCase().includes(searchTerm.toLowerCase())
+                                                            )) ||
+                                                            (searchColumn === 'id' && '@user.UserId'.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                                                            (searchColumn === 'fullName' && '@user.FullName'.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                                                            (searchColumn === 'email' && '@user.Email'.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                                                            (searchColumn === 'phone' && '@user.Phone'.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                                                            (searchColumn === 'address' && '@user.Address'.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                                                            (searchColumn === 'role' && '@user.Role'.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                                                            (searchColumn === 'status' && '@user.Status'.toLowerCase().includes(searchTerm.toLowerCase()))
+                                                                ">
                                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">@user.UserId</td>
                                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">@user.FullName</td>
                                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">@user.Email</td>
@@ -59,9 +97,6 @@
                                                                 </span>
                                                             </td>
                                                             <td class="p-4 whitespace-nowrap text-sm font-medium flex space-x-2">
-                                                             @*    <a asp-page="/UserPages/UserEdit" asp-route-id="@user.UserId" class="cursor-pointer whitespace-nowrap rounded-md bg-sky-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed dark:bg-sky-500 dark:text-white dark:focus-visible:outline-sky-500">
-                                                                    Edit
-                                                                </a> *@
                                                                 <a asp-page="/UserPages/UserDetail" asp-route-id="@user.UserId" class="cursor-pointer whitespace-nowrap rounded-md bg-sky-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:opacity-75 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 active:opacity-100 active:outline-offset-0 disabled:opacity-75 disabled:cursor-not-allowed dark:bg-sky-500 dark:text-white dark:focus-visible:outline-sky-500">
                                                                     Details
                                                                 </a>
@@ -90,4 +125,6 @@
 
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="https://demo.themesberg.com/windster/app.bundle.js"></script>
+    <!-- Alpine.js -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
 </div>

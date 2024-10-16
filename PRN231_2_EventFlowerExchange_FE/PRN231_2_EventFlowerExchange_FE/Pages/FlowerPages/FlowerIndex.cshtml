@@ -1,42 +1,54 @@
 ﻿@page
 @model PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages.FlowerIndexModel
 @{
+    ViewData["Title"] = "Featured Flowers";
 }
-<section class="py-20">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-black mb-8">Featured Flowers</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            @if (Model.Flowers != null && Model.Flowers.Count > 0)
-            {
-                foreach (var flower in Model.Flowers)
-                {
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                        <!-- Link to BuyFlowerDetail page with flower ID -->
-                        <a href="/BuyFlowerDetail?id=@flower.FlowerId">
-                            <img src="@flower.Image" alt="@flower.Name" class="w-full h-64 object-cover">
-                        </a>
-                        <div class="p-6">
-                            <!-- Flower Name Link -->
-                            <a href="/BuyFlowerDetail?id=@flower.FlowerId">
-                                <h3 class="text-xl font-bold text-black mb-2">@flower.Name</h3>
-                            </a>
-                            <p class="text-gray-700 text-base">@flower.Description</p>
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-gray-700 font-medium">$@flower.PricePerUnit</span>
-                          
-                            </div>
-                            <p><strong>Origin:</strong> @flower.Origin</p>
-                            <p><strong>Color:</strong> @flower.Color</p>
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <p>No flowers available.</p>
-            }
-        </div>
+
+<!-- ✅ Grid Section - Starts Here 👇 -->
+<section id="FeaturedFlowers"
+         class="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
+
+    <div class="w-full col-span-1 lg:col-span-3 md:col-span-2 mb-8">
+        <h2 class="text-3xl font-bold text-black">Featured Flowers</h2>
     </div>
+
+    @if (Model.Flowers != null && Model.Flowers.Count > 0)
+    {
+        @foreach (var flower in Model.Flowers)
+        {
+            <!--   ✅ Flower card - Starts Here 👇 -->
+            <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
+                <a href="/BuyFlowerDetail?id=@flower.FlowerId">
+                    <img src="@flower.Image" alt="@flower.Name" class="h-80 w-72 object-cover rounded-t-xl" />
+                    <div class="px-4 py-3 w-72">
+                        <span class="text-gray-400 mr-3 uppercase text-xs">@flower.Origin</span>
+                        <p class="text-lg font-bold text-black truncate block capitalize">@flower.Name</p>
+                        <div class="flex items-center">
+                            <p class="text-lg font-semibold text-black cursor-auto my-3">$@flower.PricePerUnit</p>
+                           
+                            <div class="ml-auto">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                     fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                          d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
+                                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">@flower.Color</p>
+                        <p class="text-sm text-gray-600 mt-1 truncate">@flower.Description</p>
+                    </div>
+                </a>
+            </div>
+            <!--   🛑 Flower card - Ends Here  -->
+        }
+    }
+    else
+    {
+        <div class="w-full col-span-1 lg:col-span-3 md:col-span-2 text-center">
+            <p class="text-gray-700 text-lg">No flowers available.</p>
+        </div>
+    }
+
 </section>
-
-
+<!-- 🛑 Grid Section - Ends Here -->

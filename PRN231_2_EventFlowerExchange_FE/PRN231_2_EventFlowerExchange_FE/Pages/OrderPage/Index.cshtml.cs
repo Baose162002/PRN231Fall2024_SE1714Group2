@@ -28,7 +28,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPage
         public async Task<IActionResult> OnGetAsync()
         {
             // Gọi API
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/order");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/order");
 
             if (response.IsSuccessStatusCode)
             {
