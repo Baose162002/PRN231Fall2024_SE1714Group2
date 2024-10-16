@@ -21,6 +21,8 @@
                         <th class="px-4 py-2">Type</th>
                         <th class="px-4 py-2">Price</th>
                         <th class="px-4 py-2">Remaining Quantity</th>
+                        <th class="px-4 py-2">Actions</th> 
+
                     </tr>
                 </thead>
                 <tbody>
@@ -31,6 +33,14 @@
                             <td class="border px-4 py-2">@flower.Type</td>
                             <td class="border px-4 py-2">$@flower.PricePerUnit.ToString("F2")</td>
                             <td class="border px-4 py-2">@flower.RemainingQuantity</td>
+                            <td class="border px-4 py-2">
+                                <a href="/FlowerPages/EditFlower?id=@flower.FlowerId" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 rounded">
+                                    Edit
+                                </a>
+                                <a href="/FlowerPages/DeleteFlower?id=@flower.FlowerId" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">
+                                    Delete
+                                </a>
+                            </td>
                         </tr>
                     }
                 </tbody>
