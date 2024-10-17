@@ -1,170 +1,101 @@
 ﻿@page
 @model PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages.EditFlowerModel
 
-<h2>Edit Flower</h2>
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="bg-red-500 text-white p-4 rounded mb-4">
-        <strong>Error:</strong> @ViewData.ModelState[""].Errors.FirstOrDefault()?.ErrorMessage
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Flower</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-6 py-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Edit Flower</h2>
+        
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="bg-red-500 text-white p-4 rounded mb-4">
+                <strong>Error:</strong> @ViewData.ModelState[""].Errors.FirstOrDefault()?.ErrorMessage
+            </div>
+        }
+
+        <form method="post" enctype="multipart/form-data" class="bg-white p-6 rounded shadow-md">
+            <div class="mb-4">
+                <label for="Name" class="block text-gray-700 font-bold mb-2">Flower Name:</label>
+                <input type="text" id="Name" name="Flower.Name" value="@Model.Flower.Name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+            </div>
+
+            <div class="mb-4">
+                <label for="Type" class="block text-gray-700 font-bold mb-2">Type:</label>
+                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        id="Type"
+                        name="Flower.Type"
+                        asp-for="Flower.Type"
+                        required>
+                    <option value="Rose">Rose</option>
+                    <option value="Tulip">Tulip</option>
+                    <option value="Lily">Lily</option>
+                    <option value="Daisy">Daisy</option>
+                    <option value="Orchid">Orchid</option>
+                    <option value="Sunflower">Sunflower</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="Description" class="block text-gray-700 font-bold mb-2">Description:</label>
+                <input type="text" id="Description" name="Flower.Description" value="@Model.Flower.Description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+            </div>
+
+            <div class="mb-4">
+                <label for="PricePerUnit" class="block text-gray-700 font-bold mb-2">Price per unit:</label>
+                <input type="number" id="PricePerUnit" name="Flower.PricePerUnit" value="@Model.Flower.PricePerUnit" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+            </div>
+
+            <div class="mb-4">
+                <label for="Origin" class="block text-gray-700 font-bold mb-2">Origin:</label>
+                <input type="text" id="Origin" name="Flower.Origin" value="@Model.Flower.Origin" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+            </div>
+
+            <div class="mb-4">
+                <label for="Color" class="block text-gray-700 font-bold mb-2">Color:</label>
+                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        id="Color"
+                        name="Flower.Color"
+                        asp-for="Flower.Color">
+                    <option value="Red">Red</option>
+                    <option value="Yellow">Yellow</option>
+                    <option value="White">White</option>
+                    <option value="Pink">Pink</option>
+                    <option value="Purple">Purple</option>
+                    <option value="Orange">Orange</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="RemainingQuantity" class="block text-gray-700 font-bold mb-2">Remaining Quantity:</label>
+                <input type="number" id="RemainingQuantity" name="Flower.RemainingQuantity" value="@Model.Flower.RemainingQuantity" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+            </div>
+
+            <input type="hidden" asp-for="Flower.BatchId" />
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Current Image:</label>
+                <img src="@Model.Flower.Image" alt="@Model.Flower.Image" class="w-32 h-32 object-cover border rounded mb-2" />
+            </div>
+
+            <div class="mb-4">
+                <label for="ImageFile" class="block text-gray-700 font-bold mb-2">Upload New Image:</label>
+                <input type="file" id="ImageFile" name="ImageFile" accept="image/*" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+            </div>
+
+            <div class="flex justify-between mt-4">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Changes</button>
+                <a href="/FlowerPages/FlowerDetailInBatch?batchId=@Model.Flower.BatchId" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Back to Create Flower
+                </a>
+            </div>
+        </form>
     </div>
-}
-<form method="post" enctype="multipart/form-data">
-    <div>
-        <label for="Name">Flower Name:</label>
-        <input type="text" id="Name" name="Flower.Name" value="@Model.Flower.Name" />
-    </div>
-
-    <div>
-        <label for="Type">Type:</label>
-        <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="Type" name="Flower.Type" required>
-            @if (Model.Flower.Type == "Rose")
-            {
-                <option value="Rose" selected>Rose</option>
-            }
-            else
-            {
-                <option value="Rose">Rose</option>
-            }
-
-            @if (Model.Flower.Type == "Tulip")
-            {
-                <option value="Tulip" selected>Tulip</option>
-            }
-            else
-            {
-                <option value="Tulip">Tulip</option>
-            }
-
-            @if (Model.Flower.Type == "Lily")
-            {
-                <option value="Lily" selected>Lily</option>
-            }
-            else
-            {
-                <option value="Lily">Lily</option>
-            }
-
-            @if (Model.Flower.Type == "Daisy")
-            {
-                <option value="Daisy" selected>Daisy</option>
-            }
-            else
-            {
-                <option value="Daisy">Daisy</option>
-            }
-
-            @if (Model.Flower.Type == "Orchid")
-            {
-                <option value="Orchid" selected>Orchid</option>
-            }
-            else
-            {
-                <option value="Orchid">Orchid</option>
-            }
-
-            @if (Model.Flower.Type == "Sunflower")
-            {
-                <option value="Sunflower" selected>Sunflower</option>
-            }
-            else
-            {
-                <option value="Sunflower">Sunflower</option>
-            }
-        </select>
-    </div>
-
-    <div>
-        <label for="Description">Description:</label>
-        <input type="text" id="Description" name="Flower.Description" value="@Model.Flower.Description" />
-    </div>
-    <div>
-        <label for="PricePerUnit">Price per unit:</label>
-        <input type="number" id="PricePerUnit" name="Flower.PricePerUnit" value="@Model.Flower.PricePerUnit" />
-    </div>
-    <div>
-        <label for="Origin">Origin:</label>
-        <input type="text" id="Origin" name="Flower.Origin" value="@Model.Flower.Origin" />
-    </div>
-    <div>
-        <label for="Color">Color:</label>
-        <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="Color" name="Flower.Color" required>
-            @if (Model.Flower.Color == "Red")
-            {
-                <option value="Red" selected>Red</option>
-            }
-            else
-            {
-                <option value="Red">Red</option>
-            }
-
-            @if (Model.Flower.Color == "Yellow")
-            {
-                <option value="Yellow" selected>Yellow</option>
-            }
-            else
-            {
-                <option value="Yellow">Yellow</option>
-            }
-
-            @if (Model.Flower.Color == "White")
-            {
-                <option value="White" selected>White</option>
-            }
-            else
-            {
-                <option value="White">White</option>
-            }
-
-            @if (Model.Flower.Color == "Pink")
-            {
-                <option value="Pink" selected>Pink</option>
-            }
-            else
-            {
-                <option value="Pink">Pink</option>
-            }
-
-            @if (Model.Flower.Color == "Purple")
-            {
-                <option value="Purple" selected>Purple</option>
-            }
-            else
-            {
-                <option value="Purple">Purple</option>
-            }
-
-            @if (Model.Flower.Color == "Orange")
-            {
-                <option value="Orange" selected>Orange</option>
-            }
-            else
-            {
-                <option value="Orange">Orange</option>
-            }
-        </select>
-    </div>
-    <div>
-        <label for="RemainingQuantity">Remaining Quantity:</label>
-        <input type="number" id="RemainingQuantity" name="Flower.RemainingQuantity" value="@Model.Flower.RemainingQuantity" />
-    </div>
-    <input type="hidden" asp-for="Flower.BatchId" />
-
-    <div>
-        <label>Current Image:</label>
-        <div>
-            <img src="@Model.Flower.Image" alt="@Model.Flower.Image" class="w-12 h-12 object-cover" />
-        </div>
-    </div>
-
-    <div>
-        <label for="ImageFile">Upload New Image:</label>
-        <input type="file" id="ImageFile" name="ImageFile" accept="image/*" />
-    </div>
-
-    <div class="flex justify-between mt-4">
-        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Changes</button>
-        <a href="/FlowerPages/FlowerDetailInBatch?batchId=@Model.Flower.BatchId" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-            Back to Create Flower
-        </a>
-    </div>
-</form>
+</body>
+</html>
