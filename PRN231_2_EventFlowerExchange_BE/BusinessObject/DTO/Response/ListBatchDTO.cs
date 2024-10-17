@@ -21,6 +21,7 @@ namespace BusinessObject.DTO.Response
 
         public int CompanyId { get; set; }
         public string Status { get; set; }
+        public CompanyDTO Company { get; set; }
 
     }
 }

@@ -17,12 +17,12 @@ namespace Repository.Repository
 
         public async Task<List<Flower>> GetAllFlowers()
         {
-            return await _context.Flowers.Include(e => e.Batch).Where(x => x.Status == EnumList.Status.Active).ToListAsync();
+            return await _context.Flowers.Include(e => e.Batch).ThenInclude(b => b.Company).Where(x => x.Status == EnumList.Status.Active).ToListAsync();
         }
 
         public async Task<Flower> GetFlowerById(int id)
         {
-            var existing = await _context.Flowers.Include(e => e.Batch).FirstOrDefaultAsync(e => e.FlowerId == id);
+            var existing = await _context.Flowers.Include(e => e.Batch).ThenInclude(b => b.Company).FirstOrDefaultAsync(e => e.FlowerId == id);
             return existing;
         }
 
