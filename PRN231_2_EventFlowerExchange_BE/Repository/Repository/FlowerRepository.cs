@@ -64,7 +64,7 @@ namespace Repository.Repository
             existing.RemainingQuantity = flower.RemainingQuantity; // This is the new quantity
             existing.Condition = EnumList.FlowerCondition.PartiallyFresh; // Update condition
             existing.FlowerStatus = flower.RemainingQuantity > 0 ? EnumList.FlowerStatus.Available : EnumList.FlowerStatus.SoldOut;
-
+            existing.Status = EnumList.Status.Active;
             // Calculate the difference in quantity
             if (flower.RemainingQuantity > oldRemainingQuantity)
             {

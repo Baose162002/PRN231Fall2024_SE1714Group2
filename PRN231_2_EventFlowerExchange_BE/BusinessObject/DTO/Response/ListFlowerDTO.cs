@@ -18,6 +18,7 @@ namespace BusinessObject.DTO.Response
         public string Color { get; set; }
         public int RemainingQuantity { get; set; } 
         public int BatchId { get; set; }
+        public string Status { get; set; }
         public ListBatchDTO Batch { get; set; }
 
     }
