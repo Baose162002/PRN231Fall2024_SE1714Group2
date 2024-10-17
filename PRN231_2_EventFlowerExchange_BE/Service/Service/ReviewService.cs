@@ -36,9 +36,9 @@ namespace Service.Service
             return _mapper.Map<ListReviewDTO>(review);
         }
 
-        public async Task<List<ListReviewDTO>> GetReviewsByBatchId(int flowerId)
+        public async Task<List<ListReviewDTO>> GetReviewsByFlowerId(int flowerId)  
         {
-            var reviews = await _reviewRepository.GetReviewsByBatchId(flowerId);
+            var reviews = await _reviewRepository.GetReviewsByFlowerId(flowerId);
             return _mapper.Map<List<ListReviewDTO>>(reviews);
         }
 

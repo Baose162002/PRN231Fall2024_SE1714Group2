@@ -11,7 +11,7 @@ namespace Repository.IRepository
     {
         Task<List<Review>> GetAllReviews();
         Task<Review> GetReviewById(int id);
-        Task<List<Review>> GetReviewsByBatchId(int flowerId);
+        Task<List<Review>> GetReviewsByFlowerId(int flowerId);
         Task<List<Review>> GetReviewsByCustomerId(int customerId);
         Task Create(Review review);
         Task Update(Review review);

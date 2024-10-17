@@ -13,7 +13,7 @@ namespace Service.IService
     {
         Task<List<Review>> GetAllReviews();
         Task<ListReviewDTO> GetReviewById(int id);
-        Task<List<ListReviewDTO>> GetReviewsByBatchId(int batchId);
+        Task<List<ListReviewDTO>> GetReviewsByFlowerId(int flowerId);
         Task<List<ListReviewDTO>> GetReviewsByCustomerId(int customerId);
         Task CreateReview(CreateReviewDTO createReviewDTO);
         Task UpdateReview(int id, UpdateReviewDTO updateReviewDTO);
