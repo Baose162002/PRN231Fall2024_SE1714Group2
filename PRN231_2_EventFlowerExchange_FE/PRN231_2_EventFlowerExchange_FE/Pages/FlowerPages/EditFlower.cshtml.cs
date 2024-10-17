@@ -36,16 +36,16 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int id)
         {
             var baseApiUrl = _configuration["ApiSettings:BaseUrl"];
             var jsonContent = JsonSerializer.Serialize(Flower);
             var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"{baseApiUrl}/api/flower/update", content);
+            var response = await _httpClient.PutAsync($"{baseApiUrl}/api/flower/update/{id}", content);
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToPage("/FlowerPages/FlowerDetailInBatch");
+                return RedirectToPage("/FlowerPages/FlowerDetailInBatch", new { batchId = Flower.BatchId });
             }
 
             ModelState.AddModelError(string.Empty, "Error updating flower.");

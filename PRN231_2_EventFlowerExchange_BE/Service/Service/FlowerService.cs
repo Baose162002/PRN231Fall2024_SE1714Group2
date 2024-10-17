@@ -36,7 +36,7 @@ namespace Service.Service
             return flowerDTOs;
         }
 
-        public async Task<ListFlowerDTO> GetFlowerById(int id)
+        public async Task<Flower> GetFlowerById(int id)
         {
             var flower = await _flowerRepository.GetFlowerById(id);
             if (flower == null)
@@ -44,7 +44,7 @@ namespace Service.Service
                 throw new ArgumentException("Flower not found.");
             }
 
-            var flowerDTO = _mapper.Map<ListFlowerDTO>(flower);
+            var flowerDTO = _mapper.Map<Flower>(flower);
             return flowerDTO;
         }
 
@@ -155,6 +155,5 @@ namespace Service.Service
             await _flowerRepository.Delete(id);
         }
 
-        //////jfiwqofiqwf
     }
 }
