@@ -9,9 +9,9 @@ namespace BusinessObject.Dto.Request
 {
     public class LoginUserRequest
     {
-        [Required(ErrorMessage = "Yêu cầu Email"), EmailAddress]
+        [Required(ErrorMessage = "Email Required"), EmailAddress]
         public string Email { get; set; }
-        [Required(ErrorMessage = "Yêu cầu mật khẩu")]
+        [Required(ErrorMessage = "Password Required")]
         public string Password { get; set; }
     }
 }

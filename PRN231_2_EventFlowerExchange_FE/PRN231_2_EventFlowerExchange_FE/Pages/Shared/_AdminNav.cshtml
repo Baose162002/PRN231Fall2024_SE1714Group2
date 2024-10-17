@@ -48,7 +48,7 @@
                         </li>
                         
                     }
-                    @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Seller" || HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Admin")
+                    @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Seller" @* || HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Admin" *@)
                     {
                         <li>
                             <a href="/BatchIndex" class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
