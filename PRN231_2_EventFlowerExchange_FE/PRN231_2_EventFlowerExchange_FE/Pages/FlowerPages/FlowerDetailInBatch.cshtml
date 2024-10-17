@@ -19,6 +19,8 @@
                     <tr>
                         <th class="px-4 py-2">Flower</th>
                         <th class="px-4 py-2">Type</th>
+                        <th class="px-4 py-2">Image</th>
+                        <th class="px-4 py-2">Description</th>
                         <th class="px-4 py-2">Price</th>
                         <th class="px-4 py-2">Remaining Quantity</th>
                         <th class="px-4 py-2">Actions</th> 
@@ -31,6 +33,10 @@
                         <tr>
                             <td class="border px-4 py-2">@flower.Name</td>
                             <td class="border px-4 py-2">@flower.Type</td>
+                            <td class="border px-4 py-2">
+                                <img src="@flower.Image" alt="@flower.Name" class="w-12 h-12 object-cover" />
+                            </td>
+                            <td class="border px-4 py-2">@flower.Description</td>
                             <td class="border px-4 py-2">$@flower.PricePerUnit.ToString("F2")</td>
                             <td class="border px-4 py-2">@flower.RemainingQuantity</td>
                             <td class="border px-4 py-2">
