@@ -122,7 +122,14 @@ namespace Service.Service
             flower.Color = flowerDTO.Color;
             flower.RemainingQuantity = flowerDTO.RemainingQuantity;
             flower.Condition = EnumList.FlowerCondition.Fresh;
-            flower.FlowerStatus = EnumList.FlowerStatus.Available;
+            if (flower.RemainingQuantity > 0)
+            {
+                flower.FlowerStatus = EnumList.FlowerStatus.Available;
+            }
+            else
+            {
+                flower.FlowerStatus = EnumList.FlowerStatus.SoldOut;
+            }
             flower.BatchId = flowerDTO.BatchId;
             flower.Status = Status.Active;
 
@@ -148,6 +155,7 @@ namespace Service.Service
 
             var flower = _mapper.Map<Flower>(flowerDTO);
             await _flowerRepository.Update(flower, id);
+
         }
 
         public async Task Delete(int id)
