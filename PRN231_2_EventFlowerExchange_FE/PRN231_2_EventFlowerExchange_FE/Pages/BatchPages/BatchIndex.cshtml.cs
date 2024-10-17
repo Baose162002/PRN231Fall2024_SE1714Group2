@@ -26,7 +26,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
 
         public List<ListBatchDTO> Batches { get; set; }
         public List<CompanyDTO> Companies { get; set; } // Thêm danh sách công ty
-
+        public string ApiMessage { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
             var token = HttpContext.Session.GetString("JWTToken");
@@ -55,6 +55,22 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                     ModelState.AddModelError(string.Empty, "Unable to retrieve company information.");
                     return Page();
                 }
+            }
+            var reviewResponse = await _httpClient.PostAsync($"{_baseApiUrl}/api/Batch/CheckAndUpdateBatchStatus", null);
+            if (reviewResponse.IsSuccessStatusCode)
+            {
+                var jsonResponse = await reviewResponse.Content.ReadAsStringAsync();
+                var apiResponse = JsonSerializer.Deserialize<ApiResponse>(jsonResponse); 
+
+                if (apiResponse != null)
+                {
+                    ApiMessage = apiResponse.Message; 
+                }
+            }
+            else
+            {
+                var errorContent = await reviewResponse.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, $"Error updating batch status: {errorContent}");
             }
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -107,6 +123,10 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             return Page();
         }
 
+        public class ApiResponse
+        {
+            public string Message { get; set; }
+        }
 
         private async Task<CompanyDTO> GetCompanyByUserIdAsync(string userId)
         {
