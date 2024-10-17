@@ -54,7 +54,8 @@ namespace BusinessObject.Enum
         public enum Status
         {
             Active = 1,
-            Inactive = 2
+            Inactive = 2,
+            NeedsReview = 3
         }
     }
 }

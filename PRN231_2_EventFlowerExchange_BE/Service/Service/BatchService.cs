@@ -124,5 +124,11 @@ namespace Service.Service
         {
             await _batchRepository.Delete(id);
         }
+
+        public async Task CheckAndUpdateBatchStatus()
+        {
+            await _batchRepository.CheckAndUpdateBatchStatus();
+        }
+
     }
 }
