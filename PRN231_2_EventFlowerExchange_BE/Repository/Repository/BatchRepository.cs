@@ -18,7 +18,6 @@ namespace Repository.Repository
             var _context = new FlowerShopContext();
             var batches = await _context.Batches
                .Include(e => e.Company)
-               .Where(e => e.Status == Status.Active)
                .ToListAsync();
             return batches;
         }
@@ -45,20 +44,36 @@ namespace Repository.Repository
 
         public async Task Update(Batch batch, int id)
         {
-            var _context = new FlowerShopContext();
-            var existing = await GetBatchById(id);
-            if(existing != null)
+            using (var _context = new FlowerShopContext())
             {
-                existing.BatchName = batch.BatchName;
-                existing.EventName = batch.EventName;
-                existing.EventDate = batch.EventDate;
-                existing.BatchQuantity = batch.BatchQuantity;
-                existing.RemainingQuantity = batch.RemainingQuantity;
-                existing.Description = batch.Description;
-                existing.EntryDate = batch.EntryDate;
+                var existing = await GetBatchById(id);
+                if (existing != null)
+                {
+                    existing.BatchName = batch.BatchName;
+                    existing.EventName = batch.EventName;
+                    existing.EventDate = batch.EventDate;
+                    existing.BatchQuantity = batch.BatchQuantity;
+                    existing.RemainingQuantity = batch.RemainingQuantity;
+                    existing.Description = batch.Description;
+                    existing.EntryDate = batch.EntryDate;
+                    existing.Status = EnumList.Status.Active;
+
+                    var flowersInBatch = await _context.Flowers.Where(f => f.BatchId == existing.BatchId).ToListAsync();
+
+                    if (flowersInBatch.Any())
+                    {
+                        foreach (var flower in flowersInBatch)
+                        {
+                            flower.Status = EnumList.Status.Active;
+                        }
+
+                        _context.Flowers.UpdateRange(flowersInBatch);
+                    }
+
+                    _context.Batches.Update(existing);
+                    await _context.SaveChangesAsync();
+                }
             }
-            _context.Batches.Update(existing);
-            await _context.SaveChangesAsync();
         }
 
         public async Task Delete(int id)
@@ -115,6 +130,54 @@ namespace Repository.Repository
         }
 
 
+        public async Task CheckAndUpdateBatchStatus()
+        {
+            using (var _context = new FlowerShopContext())
+            {
+                var batches = await _context.Batches.ToListAsync();
+
+                foreach (var batch in batches)
+                {
+                    if ((DateTime.Now - batch.EntryDate).TotalDays > 1)
+                    {
+                        var flowersInBatch = await _context.Flowers.Where(f => f.BatchId == batch.BatchId).ToListAsync();
+
+                        bool hasAvailableFlowers = flowersInBatch.Any(f => f.RemainingQuantity > 0);
+                        bool batchHasRemaining = batch.RemainingQuantity > 0;
+
+                        if (batchHasRemaining && hasAvailableFlowers)
+                        {
+                            batch.Status = Status.NeedsReview;
+
+                            foreach (var flower in flowersInBatch)
+                            {
+                                if (flower.RemainingQuantity > 0)
+                                {
+                                    flower.Status = Status.NeedsReview;
+                                }
+                            }
+
+                            _context.Batches.Update(batch);
+                            _context.Flowers.UpdateRange(flowersInBatch);
+                        }
+                        else if (batchHasRemaining && !hasAvailableFlowers)
+                        {
+                            batch.Status = Status.NeedsReview;
+
+                            foreach (var flower in flowersInBatch)
+                            {
+                                flower.Status = Status.NeedsReview;
+                            }
+
+                            _context.Batches.Update(batch);
+                            _context.Flowers.UpdateRange(flowersInBatch);
+                        }
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+            }
+        }
 
 
         public async Task UpdateBatch(Batch batch)

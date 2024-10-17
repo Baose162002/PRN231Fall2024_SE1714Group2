@@ -67,6 +67,19 @@ namespace WebApi_EventFlowerExchange.Controllers
             }
         }
 
+        [HttpPost("CheckAndUpdateBatchStatus")]
+        public async Task<IActionResult> CheckAndUpdateBatchStatus()
+        {
+            try
+            {
+                await _batchService.CheckAndUpdateBatchStatus();
+                return Ok(new { message = "The batch and flower have expired and need to be reviewed and updated." });
+            }catch
+            {
+                return NotFound("Not update flower and batch");
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBatch(int id)
         {

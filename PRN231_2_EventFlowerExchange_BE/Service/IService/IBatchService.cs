@@ -18,5 +18,7 @@ namespace Service.IService
         Task Create(CreateBatchDTO batch);
         Task Update(UpdateBatchDTO updateBatchDTO, int id);
         Task Delete(int id);
+        Task CheckAndUpdateBatchStatus();
+
     }
 }
