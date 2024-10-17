@@ -17,7 +17,7 @@ namespace BusinessObject.DTO.Request
         public string Feedback { get; set; }
 
         [Required]
-        public int BatchId { get; set; }
+        public int FlowerId { get; set; }
 
         [Required]
         public int CustomerId { get; set; }

@@ -32,11 +32,11 @@ namespace Repository.Repository
         }
 
 
-        public async Task<List<Review>> GetReviewsByBatchId(int flowerId)
+        public async Task<List<Review>> GetReviewsByFlowerId(int flowerId)  
         {
             return await _context.Reviews
                 .Include(r => r.Customer)
-                .Where(r => r.FlowerId == flowerId)
+                .Where(r => r.FlowerId == flowerId)  
                 .ToListAsync();
         }
 
