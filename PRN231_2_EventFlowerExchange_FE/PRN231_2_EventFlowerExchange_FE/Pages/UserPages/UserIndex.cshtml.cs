@@ -23,8 +23,10 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
         public int PageSize { get; set; } = 10;
         public int TotalCount { get; set; }
         public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
+        public string SearchTerm { get; set; }
+        public string SearchColumn { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? pageNumber, int? pageSize)
+        public async Task<IActionResult> OnGetAsync(int? pageNumber, int? pageSize, string searchTerm, string searchColumn)
         {
             var token = HttpContext.Session.GetString("JWTToken");
 
@@ -38,7 +40,36 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
                 PageSize = pageSize.Value;
             }
 
-            string odataQuery = $"/odata/user?$count=true&$skip={(CurrentPage - 1) * PageSize}&$top={PageSize}";
+            SearchTerm = searchTerm;
+            SearchColumn = searchColumn;
+
+            var odataQueryBuilder = new List<string>
+            {
+                "$count=true",
+                $"$skip={(CurrentPage - 1) * PageSize}",
+                $"$top={PageSize}"
+            };
+
+            if (!string.IsNullOrEmpty(SearchTerm))
+            {
+                var filterConditions = new List<string>();
+                if (string.IsNullOrEmpty(SearchColumn) || SearchColumn == "all")
+                {
+                    filterConditions.Add($"contains(FullName, '{SearchTerm}')");
+                    filterConditions.Add($"contains(Email, '{SearchTerm}')");
+                    filterConditions.Add($"contains(Phone, '{SearchTerm}')");
+                    filterConditions.Add($"contains(Address, '{SearchTerm}')");
+                    filterConditions.Add($"contains(Role, '{SearchTerm}')");
+                    filterConditions.Add($"contains(Status, '{SearchTerm}')");
+                }
+                else
+                {
+                    filterConditions.Add($"contains({SearchColumn}, '{SearchTerm}')");
+                }
+                odataQueryBuilder.Add($"$filter={string.Join(" or ", filterConditions)}");
+            }
+
+            string odataQuery = $"/odata/user?{string.Join("&", odataQueryBuilder)}";
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var response = await _httpClient.GetAsync($"{_baseApiUrl}{odataQuery}");

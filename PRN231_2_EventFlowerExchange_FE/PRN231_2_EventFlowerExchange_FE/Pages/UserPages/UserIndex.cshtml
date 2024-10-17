@@ -6,7 +6,7 @@
     ViewData["ShowFooter"] = false;
 }
 
-<div x-data="{ searchTerm: '', searchColumn: 'all' }">
+<div>
     <partial name="_AdminHeader" />
 
     <div class="flex overflow-hidden bg-white pt-16">
@@ -26,23 +26,46 @@
                         </div>
 
                         <!-- Search input and column selector -->
-                        <div class="mb-4 flex space-x-2">
-                            <select x-model="searchColumn"
+                        <form method="get" class="mb-4 flex space-x-2">
+                            <select name="searchColumn"
                                     class="px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300">
-                                <option value="all">All Columns</option>
-                                <option value="id">ID</option>
-                                <option value="fullName">Full Name</option>
-                                <option value="email">Email</option>
-                                <option value="phone">Phone</option>
-                                <option value="address">Address</option>
-                                <option value="role">Role</option>
-                                <option value="status">Status</option>
+                                <option value="all" selected="@(string.IsNullOrEmpty(Model.SearchColumn) || Model.SearchColumn.ToLower() == "all")">
+                                    All Columns
+                                </option>
+                                <option value="FullName" selected="@(Model.SearchColumn?.ToLower() == "fullname")">
+                                    Full Name
+                                </option>
+                                <option value="Email" selected="@(Model.SearchColumn?.ToLower() == "email")">
+                                    Email
+                                </option>
+                                <option value="Phone" selected="@(Model.SearchColumn?.ToLower() == "phone")">
+                                    Phone
+                                </option>
+                                <option value="Address" selected="@(Model.SearchColumn?.ToLower() == "address")">
+                                    Address
+                                </option>
+                                <option value="Role" selected="@(Model.SearchColumn?.ToLower() == "role")">
+                                    Role
+                                </option>
+                                <option value="Status" selected="@(Model.SearchColumn?.ToLower() == "status")">
+                                    Status
+                                </option>
                             </select>
                             <input type="text"
-                                   x-model="searchTerm"
+                                   name="searchTerm"
+                                   value="@Model.SearchTerm"
                                    placeholder="Search users..."
                                    class="flex-1 px-3 py-2 placeholder-gray-300 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300">
-                        </div>
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Search
+                            </button>
+                            @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                            {
+                                <a href="?pageNumber=1" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                    Clear
+                                </a>
+                            }
+                        </form>
 
                         <div class="flex flex-col mt-8">
                             <div class="overflow-x-auto rounded-lg">
