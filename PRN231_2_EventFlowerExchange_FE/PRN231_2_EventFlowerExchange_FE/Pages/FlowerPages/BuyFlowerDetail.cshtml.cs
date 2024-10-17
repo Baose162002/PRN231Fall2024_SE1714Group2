@@ -44,16 +44,20 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
                 return Page();
             }
 
-            // Fetch reviews
-            var reviewResponse = await _httpClient.GetAsync($"{baseApiUrl}/api/review/flower/{id}");
-            if (reviewResponse.IsSuccessStatusCode)
+            // Only fetch reviews if we successfully got the flower
+            if (Flower != null)
             {
-                var jsonContent = await reviewResponse.Content.ReadAsStringAsync();
-                Reviews = JsonSerializer.Deserialize<List<ListReviewDTO>>(jsonContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Failed to load review data.");
+                // Fetch reviews
+                var reviewResponse = await _httpClient.GetAsync($"{baseApiUrl}/api/review/flower/{id}");
+                if (reviewResponse.IsSuccessStatusCode)
+                {
+                    var jsonContent = await reviewResponse.Content.ReadAsStringAsync();
+                    Reviews = JsonSerializer.Deserialize<List<ListReviewDTO>>(jsonContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to load review data.");
+                }
             }
 
             return Page();
@@ -106,6 +110,73 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
                 return Page();
             }
         }
+
+        public async Task<IActionResult> OnPostUpdateReviewAsync(int reviewId, int flowerId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            var baseApiUrl = _configuration["ApiSettings:BaseUrl"];
+
+            var userIdString = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                ModelState.AddModelError(string.Empty, "You must be logged in to update a review.");
+                return Page();
+            }
+
+            var updateReview = new UpdateReviewDTO
+            {
+                Rating = NewReview.Rating,
+                Feedback = NewReview.Feedback,
+                ReviewDate = DateTime.Now
+            };
+
+            var jsonContentReview = JsonSerializer.Serialize(updateReview);
+            var content = new StringContent(jsonContentReview, System.Text.Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"{baseApiUrl}/api/review/{reviewId}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Chuyển hướng sau khi cập nhật thành công
+                return RedirectToPage(new { id = flowerId });
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Failed to update review.");
+                return Page();
+            }
+        }
+
+
+        public async Task<IActionResult> OnPostDeleteReviewAsync(int reviewId, int flowerId)
+        {
+            var baseApiUrl = _configuration["ApiSettings:BaseUrl"];
+
+            // Xóa review
+            var response = await _httpClient.DeleteAsync($"{baseApiUrl}/api/review/{reviewId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Lấy lại thông tin của Flower để đảm bảo không bị null
+                var flowerResponse = await _httpClient.GetAsync($"{baseApiUrl}/api/flower/getby/{flowerId}");
+                if (flowerResponse.IsSuccessStatusCode)
+                {
+                    var jsonContent = await flowerResponse.Content.ReadAsStringAsync();
+                    Flower = JsonSerializer.Deserialize<ListFlowerDTO>(jsonContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                }
+
+                return RedirectToPage(new { id = flowerId });
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Failed to delete review.");
+                return Page();
+            }
+        }
+
 
 
 

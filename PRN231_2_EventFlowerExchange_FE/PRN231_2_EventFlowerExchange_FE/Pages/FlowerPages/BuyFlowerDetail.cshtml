@@ -2,111 +2,209 @@
 @model PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages.BuyFlowerDetailModel
 @{
     ViewData["Title"] = "Flower Details";
-}
+    var currentUserIdString = HttpContext.Session.GetString("UserId");
+    int currentUserId = string.IsNullOrEmpty(currentUserIdString) ? -1 : int.Parse(currentUserIdString);
 
+}
+<style>
+    .carousel-cell {
+        width: 150px;
+        height: 150px;
+        margin-right: 24px;
+        counter-increment: carousel-cell;
+    }
+
+        .carousel-cell:before {
+            display: block;
+            width: 20%;
+        }
+
+    .flickity-slider {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: -260px !important;
+    }
+
+    .flickity-button {
+        position: absolute !important;
+        inset: 0 !important;
+        top: 50% !important;
+        left: 80% !important;
+        background: white;
+        border: 0px;
+        color: #27272a;
+    }
+
+    .flickity-prev-next-button:hover {
+        background-color: #27272a;
+        color: white;
+    }
+
+    .flickity-prev-next-button.previous {
+        visibility: hidden;
+    }
+
+    .flickity-prev-next-button.next {
+        margin-left: 50px;
+        width: 48px;
+        height: 48px;
+        visibility: hidden;
+    }
+
+    .flickity-enabled.is-draggable .flickity-viewport {
+        cursor: none;
+        cursor: default;
+    }
+
+    .flickity-prev-next-button .flickity-button-icon {
+        margin-left: 2px;
+        margin-top: 2px;
+        width: 24px;
+        height: 24px;
+    }
+</style>
 <section class="py-20">
     <div class="container mx-auto px-4">
         <h2 class="text-3xl font-bold text-black mb-8">Flower Details</h2>
 
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden max-w-4xl mx-auto">
-            <div class="md:flex">
-                <!-- Flower Image -->
-                <img src="@Model.Flower.Image" alt="@Model.Flower.Name" class="w-full h-96 object-cover md:w-1/2">
+        @if (Model.Flower != null)
+        {
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden max-w-4xl mx-auto">
+                <div class="md:flex">
+                    <!-- Flower Image -->
+                    <img src="@(Model.Flower.Image )" alt="@(Model.Flower.Name ?? "Flower")" class="w-full h-96 object-cover md:w-1/2">
 
-                <!-- Flower Details -->
-                <div class="p-6 md:w-1/2">
-                    <h3 class="text-2xl font-bold text-black mb-4">@Model.Flower.Name</h3>
-                    <p class="text-gray-700 mb-4">@Model.Flower.Description</p>
+                    <!-- Flower Details -->
+                    <div class="p-6 md:w-1/2">
+                        <h3 class="text-2xl font-bold text-black mb-4">@(Model.Flower.Name ?? "Flower Name Not Available")</h3>
+                        <p class="text-gray-700 mb-4">@(Model.Flower.Description ?? "No description available.")</p>
 
-                    <p><strong>Price per unit:</strong> $@Model.Flower.PricePerUnit</p>
-                    <p><strong>Origin:</strong> @Model.Flower.Origin</p>
-                    <p><strong>Color:</strong> @Model.Flower.Color</p>
+                        <p><strong>Price per unit:</strong> $@(Model.Flower.PricePerUnit)</p>
+                        <p><strong>Origin:</strong> @(Model.Flower.Origin ?? "Unknown")</p>
+                        <p><strong>Color:</strong> @(Model.Flower.Color ?? "Not specified")</p>
 
-                    <!-- Batch Information -->
-                    <h4 class="text-xl font-bold mt-6">Batch Information</h4>
-                    <p><strong>Batch Name:</strong> @Model.Flower.Batch.BatchName</p>
-                    <p><strong>Event Name:</strong> @Model.Flower.Batch.EventName</p>
-                    <p><strong>Company Name:</strong> @Model.Flower.Batch.Company.CompanyName</p>
+                        <!-- Batch Information -->
+                        @if (Model.Flower.Batch != null)
+                        {
+                            <h4 class="text-xl font-bold mt-6">Batch Information</h4>
+                            <p><strong>Batch Name:</strong> @(Model.Flower.Batch.BatchName ?? "N/A")</p>
+                            <p><strong>Event Name:</strong> @(Model.Flower.Batch.EventName ?? "N/A")</p>
+                            <p><strong>Company Name:</strong> @(Model.Flower.Batch.Company?.CompanyName ?? "N/A")</p>
+                        }
 
-                    <!-- Add to Cart Button -->
-                    <div class="mt-6">
-                        <button class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
-                            Buy
-                        </button>
-                        <button class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
-                            Add to Cart
-                        </button>
+                        <!-- Add to Cart Button -->
+                        <div class="mt-6">
+                            <button class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
+                                Buy
+                            </button>
+                            <button class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+                <p class="font-bold">Flower Not Found</p>
+                <p>Sorry, we couldn't find the flower you're looking for. It may have been removed or doesn't exist.</p>
+            </div>
+        }
     </div>
-
-
+</section>
 
 
     <!-- Review -->
-    <!-- Review Section -->
-    <div class="py-20 px-4 md:px-6 2xl:px-0 2xl:container 2xl:mx-auto flex justify-center items-center">
-        <div class="flex flex-col justify-start items-start w-full space-y-8">
-            <div class="flex justify-start items-start">
-                <p class="text-3xl lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800">Reviews</p>
-            </div>
+<!-- Review Section -->
+<div class="bg-gray-100 p-6 max-w-3xl mx-auto">
+    <div class="flex flex-col justify-start items-start w-full space-y-8">
+        <div class="flex justify-start items-start">
+            <p class="text-3xl lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800">Reviews</p>
+        </div>
 
-            @if (Model.Reviews != null && Model.Reviews.Any())
+        @if (Model.Reviews != null && Model.Reviews.Any())
+        {
+            @foreach (var review in Model.Reviews)
             {
-                @foreach (var review in Model.Reviews)
-                {
-                    var timeDifference = DateTime.Now - review.ReviewDate;
+                var timeDifference = DateTime.Now - review.ReviewDate;
 
-                    <div class="w-full flex justify-start items-start flex-col bg-gray-50 p-8">
-                        <div class="flex flex-col md:flex-row justify-between w-full">
-                            <div class="flex flex-row justify-between items-start">
-                                <p class="text-xl md:text-2xl font-medium leading-normal text-gray-800">
-                                    @(!string.IsNullOrEmpty(review.CustomerName) ? review.CustomerName : "Anonymous")
-                                </p>
-                            </div>
-                            <div class="cursor-pointer mt-2 md:mt-0">
-                                @for (int i = 1; i <= 5; i++) 
+                <div class="w-full bg-white p-4 rounded-lg shadow-md relative">
+                    <div class="absolute top-2 right-2 group">
+                        <button class="p-1 rounded-full hover:bg-gray-200 focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                            </svg>
+                        </button>
+
+                        <!-- Dropdown menu -->   
+                        @if (review.CustomerId == currentUserId)
+                        {
+                        <ul class="bg-white border rounded-sm transform scale-0 group-hover:scale-100 absolute transition duration-150 ease-in-out origin-top min-w-32 right-0 mt-2 shadow-lg">
+                         
+                                <li class="rounded-sm px-3 py-1 hover:bg-gray-100">
+                                    <button onclick="showUpdateModal(@review.ReviewId, @review.Rating, '@review.Feedback')" class="w-full text-left ">
+                                        Edit
+                                    </button>
+                                </li>
+                                <li class="rounded-sm px-3 py-1 hover:bg-gray-100">
+                                    <form method="post" asp-page-handler="DeleteReview" asp-route-reviewId="@review.ReviewId" asp-route-flowerId="@Model.Flower.FlowerId">
+                                        <button type="submit" class="w-full text-left">Delete </button>
+                                    </form>
+                                </li>
+
+                            </ul>
+                        }
+                    </div>
+
+                    <div class="flex flex-col md:flex-row justify-between w-full">
+                        <div class="flex flex-col">
+                            <p class="text-xl font-medium leading-normal text-gray-800">
+                                @(!string.IsNullOrEmpty(review.CustomerName) ? review.CustomerName : "Anonymous")
+                            </p>
+                            <div class="flex flex-row mt-1">
+                                @for (int i = 1; i <= 5; i++)
                                 {
-                                    <svg class="inline-block @(i <= review.Rating ? "text-amber-500" : "text-neutral-300")" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+                                    <svg class="w-5 h-5 @(i <= review.Rating ? "text-yellow-400" : "text-gray-300")" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                     </svg>
                                 }
                             </div>
                         </div>
-                        <div class="mt-3">
-                            <p class="text-base leading-normal text-gray-600">@review.Feedback</p>
-                        </div>
-                        <div class="mt-6 flex justify-start items-center flex-row space-x-2.5">
-                            <p class="text-sm leading-none text-gray-600">
-                                Review Date: @review.ReviewDate.ToShortDateString()
-
-                                @if (timeDifference.TotalHours <= 24)
-                                {
-                                    @if (timeDifference.TotalMinutes < 60)
-                                    {
-                                        <span>(Reviewed @Math.Floor(timeDifference.TotalMinutes) minutes ago)</span>
-                                    }
-                                    else
-                                    {
-                                        <span>(Reviewed @Math.Floor(timeDifference.TotalHours) hours ago)</span>
-                                    }
-                                }
-                            </p>
-                        </div>
                     </div>
-                }
+
+                    <div class="mt-3">
+                        <p class="text-base leading-normal text-gray-600">@review.Feedback</p>
+                    </div>
+                    <div class="mt-4 text-sm text-gray-500">
+                        Review Date: @review.ReviewDate.ToShortDateString()
+                        @if (timeDifference.TotalHours <= 24)
+                        {
+                            @if (timeDifference.TotalMinutes < 60)
+                            {
+                                <span>(Reviewed @Math.Floor(timeDifference.TotalMinutes) minutes ago)</span>
+                            }
+                            else
+                            {
+                                <span>(Reviewed @Math.Floor(timeDifference.TotalHours) hours ago)</span>
+                            }
+                        }
+                    </div>
+                </div>
             }
-            else
+        }
+        else
+        {
+            <p class="text-gray-600">No reviews yet for this flower.</p>
+        }
+
+        <!-- New Review Form -->
+        <div class="w-full bg-gray-50 p-8">
+            <h3 class="text-2xl font-bold mb-4">Write a Review</h3>
+            @if (Model?.Flower != null)
             {
-                <p class="text-gray-600">No reviews yet for this flower.</p>
-            }
-
-
-            <!-- New Review Form -->
-            <div class="w-full bg-gray-50 p-8">
-                <h3 class="text-2xl font-bold mb-4">Write a Review</h3>
                 <form asp-page-handler="SubmitReview" asp-route-id="@Model.Flower.FlowerId" method="post" x-data="{ currentVal: 0 }">
                     <input type="hidden" name="FlowerId" value="@Model.Flower.FlowerId" />
                     <div class="mb-4">
@@ -134,108 +232,84 @@
 
                     @if (!string.IsNullOrEmpty(userIdString))
                     {
-                        <!-- Nếu User đã đăng nhập, hiển thị nút "Submit Review" -->
                         <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-bold font-light rounded-md hover:bg-blue-700 transition duration-300">
                             Submit Review
                         </button>
                     }
                     else
                     {
-                        <!-- Nếu User chưa đăng nhập, hiển thị nút "Login to Feedback" -->
                         <button type="button" onclick="window.location.href='/Login';" class="px-4 py-2 font-light bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700 transition duration-300">
                             Login to Feedback
                         </button>
                     }
+                </form>
+            }
+            else
+            {
+                <p class="text-red-600">Unable to submit review. Flower information is not available.</p>
+            }
+        </div>
+    </div>
+</div>
 
+<!-- Update Review Modal -->
+<div id="updateModal" style="display: none;" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" x-data="{ updateVal: 0 }" x-click.self="hideUpdateModal()">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Update Review</h3>
+            <div class="mt-2 px-7 py-3">
+                <form id="updateForm" asp-page-handler="UpdateReview" method="post">
+                    <input type="hidden" id="updateReviewId" name="reviewId">
+                    @if (Model?.Flower != null)
+                    {
+                        <input type="hidden" name="FlowerId" value="@Model.Flower.FlowerId" />
+                    }
+                    <div class="mb-4">
+                        <label for="updateRating" class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                        <div class="flex items-center gap-1">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <label for="update-@i-Stars" class="cursor-pointer transition hover:scale-125">
+                                    <span class="sr-only">@i stars</span>
+                                    <input x-model="updateVal" id="update-@i-Stars" type="radio" class="sr-only" name="Rating" value="@i" required>
+                                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8" :class="updateVal >= @i ? 'text-amber-500' : 'text-neutral-300'">
+                                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+                                    </svg>
+                                </label>
+                            }
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="updateFeedback" class="block text-sm font-medium text-gray-700">Feedback</label>
+                        <textarea id="updateFeedback" name="Feedback" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="flex justify-between items-center px-4 py-3">
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            Update Review
+                        </button>
+                        <button type="button" onclick="hideUpdateModal()" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                            Close
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
-    </div>    <style>
-        .carousel-cell {
-            width: 150px;
-            height: 150px;
-            margin-right: 24px;
-            counter-increment: carousel-cell;
-        }
-
-            .carousel-cell:before {
-                display: block;
-                width: 20%;
-            }
-
-        .flickity-slider {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            left: -260px !important;
-        }
-
-        .flickity-button {
-            position: absolute !important;
-            inset: 0 !important;
-            top: 50% !important;
-            left: 80% !important;
-            background: white;
-            border: 0px;
-            color: #27272a;
-        }
-
-        .flickity-prev-next-button:hover {
-            background-color: #27272a;
-            color: white;
-        }
-
-        .flickity-prev-next-button.previous {
-            visibility: hidden;
-        }
-
-        .flickity-prev-next-button.next {
-            margin-left: 50px;
-            width: 48px;
-            height: 48px;
-            visibility: hidden;
-        }
-
-        .flickity-enabled.is-draggable .flickity-viewport {
-            cursor: none;
-            cursor: default;
-        }
-
-        .flickity-prev-next-button .flickity-button-icon {
-            margin-left: 2px;
-            margin-top: 2px;
-            width: 24px;
-            height: 24px;
-        }
-    </style>
-    <script>
-        let menu = document.getElementById("menu");
-        let closeIcon = document.getElementById("closeIcon");
-        let openIcon = document.getElementById("openIcon");
-        const showMenu = (flag) => {
-            if (flag) {
-                menu.classList.toggle("hidden");
-                closeIcon.classList.toggle("hidden");
-                openIcon.classList.toggle("hidden");
-            }
-        };
-
-        let menu2 = document.getElementById("menu2");
-        let closeIcon2 = document.getElementById("closeIcon2");
-        let openIcon2 = document.getElementById("openIcon2");
-        const showMenu2 = (flag) => {
-            if (flag) {
-                menu2.classList.toggle("hidden");
-                closeIcon2.classList.toggle("hidden");
-                openIcon2.classList.toggle("hidden");
-            }
-        };
-    </script>
-</section>
-
+    </div>
+</div>
 
 @section Scripts {
     <script>
-        // Custom scripts can go here if needed.
+        function showUpdateModal(reviewId, rating, feedback) {
+            document.getElementById('updateReviewId').value = reviewId;
+            document.getElementById('updateFeedback').value = feedback;
+            // Set the rating for Alpine.js
+            Alpine.store('updateVal', rating);
+            // Show the modal
+            document.getElementById('updateModal').style.display = 'block';
+        }
+
+        function hideUpdateModal() {
+            document.getElementById('updateModal').style.display = 'none';
+        }
     </script>
 }

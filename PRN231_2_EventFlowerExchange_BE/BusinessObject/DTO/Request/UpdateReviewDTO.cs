@@ -15,5 +15,7 @@ namespace BusinessObject.DTO.Request
 
         [Required]
         public string Feedback { get; set; }
+        public DateTime ReviewDate { get; set; } = DateTime.Now;
+
     }
 }
