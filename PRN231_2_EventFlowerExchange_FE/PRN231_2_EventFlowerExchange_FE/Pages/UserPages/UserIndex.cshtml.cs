@@ -19,24 +19,60 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
         }
 
         public List<ListUserDTO> Users { get; set; }
+        public int CurrentPage { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+        public int TotalCount { get; set; }
+        public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
+        public string SearchTerm { get; set; }
+        public string SearchColumn { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int? pageNumber, int? pageSize, string searchTerm, string searchColumn)
         {
             var token = HttpContext.Session.GetString("JWTToken");
-            /* var role = HttpContext.Session.GetString("UserRole");
 
-             if (string.IsNullOrEmpty(token) || role != "Admin")
-             {
-                 return RedirectToPage("/Login");
-             }
- */
+            if (pageNumber.HasValue && pageNumber > 0)
+            {
+                CurrentPage = pageNumber.Value;
+            }
 
-            string odataQuery = "/odata/user"; // M?c ??nh cho Admin
+            if (pageSize.HasValue && pageSize > 0)
+            {
+                PageSize = pageSize.Value;
+            }
+
+            SearchTerm = searchTerm;
+            SearchColumn = searchColumn;
+
+            var odataQueryBuilder = new List<string>
+            {
+                "$count=true",
+                $"$skip={(CurrentPage - 1) * PageSize}",
+                $"$top={PageSize}"
+            };
+
+            if (!string.IsNullOrEmpty(SearchTerm))
+            {
+                var filterConditions = new List<string>();
+                if (string.IsNullOrEmpty(SearchColumn) || SearchColumn == "all")
+                {
+                    filterConditions.Add($"contains(FullName, '{SearchTerm}')");
+                    filterConditions.Add($"contains(Email, '{SearchTerm}')");
+                    filterConditions.Add($"contains(Phone, '{SearchTerm}')");
+                    filterConditions.Add($"contains(Address, '{SearchTerm}')");
+                    filterConditions.Add($"contains(Role, '{SearchTerm}')");
+                    filterConditions.Add($"contains(Status, '{SearchTerm}')");
+                }
+                else
+                {
+                    filterConditions.Add($"contains({SearchColumn}, '{SearchTerm}')");
+                }
+                odataQueryBuilder.Add($"$filter={string.Join(" or ", filterConditions)}");
+            }
+
+            string odataQuery = $"/odata/user?{string.Join("&", odataQueryBuilder)}";
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
             var response = await _httpClient.GetAsync($"{_baseApiUrl}{odataQuery}");
-
 
             if (response.IsSuccessStatusCode)
             {
@@ -49,6 +85,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
 
                 var odataResponse = JsonSerializer.Deserialize<ODataResponse<ListUserDTO>>(jsonString, options);
                 Users = odataResponse.Value;
+                TotalCount = odataResponse.Count;
             }
             else
             {
@@ -62,6 +99,10 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
         {
             [JsonPropertyName("@odata.context")]
             public string OdataContext { get; set; }
+
+            [JsonPropertyName("@odata.count")]
+            public int Count { get; set; }
+
             public List<T> Value { get; set; }
         }
     }
