@@ -17,7 +17,7 @@ namespace Repository.Repository
 
         public async Task<List<Flower>> GetAllFlowers()
         {
-            return await _context.Flowers.Include(e => e.Batch).ThenInclude(b => b.Company).Where(x => x.Status == EnumList.Status.Active).ToListAsync();
+            return await _context.Flowers.Include(e => e.Batch).ThenInclude(b => b.Company).ToListAsync();
         }
 
         public async Task<Flower> GetFlowerById(int id)
@@ -34,32 +34,48 @@ namespace Repository.Repository
 
         public async Task Update(Flower flower, int id)
         {
-            //var existingFlower = await _context.Flowers.FindAsync(id);
-            //if (existingFlower != null)
-            //{
-            //    _context.Entry(existingFlower).CurrentValues.SetValues(flower);
-            //    await _context.SaveChangesAsync();
-            //}
-            var _context = new FlowerShopContext();
-            var existing = await GetFlowerById(id);
-            if(existing != null)
+            using (var _context = new FlowerShopContext())
             {
+                var existing = await GetFlowerById(id);
+                if (existing == null)
+                {
+                    throw new ArgumentException("Flower not found.");
+                }
+
+                var batch = await _context.Batches.FindAsync(existing.BatchId);
+                if (batch == null)
+                {
+                    throw new ArgumentException("Batch not found.");
+                }
+
+                int quantityDifference = flower.RemainingQuantity - existing.RemainingQuantity;
+
+                if (batch.RemainingQuantity - quantityDifference < 0)
+                {
+                    throw new ArgumentException("Insufficient batch quantity.");
+                }
+
+                // Cập nhật RemainingQuantity của Batch
+                batch.RemainingQuantity -= quantityDifference;
+
+                // Cập nhật thuộc tính của Flower
                 existing.Name = flower.Name;
                 existing.Type = flower.Type;
                 existing.Image = flower.Image;
                 existing.Description = flower.Description;
-                existing.PricePerUnit = flower.PricePerUnit;    
+                existing.PricePerUnit = flower.PricePerUnit;
                 existing.Origin = flower.Origin;
                 existing.Color = flower.Color;
                 existing.RemainingQuantity = flower.RemainingQuantity;
                 existing.Condition = flower.Condition;
                 existing.FlowerStatus = flower.FlowerStatus;
                 existing.BatchId = flower.BatchId;
-                
+
+                // Không cần gọi _context.Batches.Update(batch);
+                await _context.SaveChangesAsync();
             }
-            _context.Flowers.Update(existing);
-            await _context.SaveChangesAsync();
         }
+
 
         public async Task Delete(int id)
         {
