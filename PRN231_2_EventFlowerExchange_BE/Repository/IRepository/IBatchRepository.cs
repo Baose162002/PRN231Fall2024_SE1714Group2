@@ -19,5 +19,6 @@ namespace Repository.IRepository
         Task<List<Flower>> GetFlowersBySimilarTypeAndColorAndEarliestBatch(int flowerId);
         Task UpdateBatch(Batch batch);
         Task CheckAndUpdateBatchStatus();
+        Task<List<Flower>> GetFlowersBySimilarTypeAndColorAndEarliestBatchAndCompany(int flowerId);
     }
 }
