@@ -30,7 +30,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             }
 
             // Gọi API để lấy danh sách hoa
-            var odataUrl = $"{_baseApiUrl}/odata/Flower?$filter=Status eq 'Active' and (Condition eq 'Fresh' or Condition eq 'PartiallyFresh')";
+            var odataUrl = $"{_baseApiUrl}/odata/Flower?$filter=Status eq 'Active' and (Condition eq 'Fresh')";
             var response = await _httpClient.GetAsync(odataUrl);
             if (response.IsSuccessStatusCode)
             {

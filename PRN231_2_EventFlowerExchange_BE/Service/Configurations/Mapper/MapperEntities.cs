@@ -48,7 +48,10 @@ namespace Service.Configurations.Mapper
             CreateMap<Flower, ListFlowerDTO>();
             CreateMap<ListFlowerDTO, Flower>();
 
-
+            //Payment mapping
+            CreateMap<CreatePaymentDTO, Payment>()
+                .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.PaymentStatus.ToString()));
+            CreateMap<Payment, CreatePaymentDTO>();
             //Delivery mappings
             CreateMap<CreateDeliveryDTO, Delivery>();
             CreateMap<UpdateDeliveryDTO, Delivery>();
@@ -62,6 +65,9 @@ namespace Service.Configurations.Mapper
             CreateMap<User, UserResponseDto>()
 /*                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))  
 */                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));  // Convert enum Status to string
+
+            // Payment mappings
+            CreateMap<CreatePaymentDTO, Payment>();
 
 
             // Company mappings

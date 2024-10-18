@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.DTO.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Service.IService
 {
     public interface IPayService
     {
-        Task CreatePayment(Payment payment);
+        Task Create(Payment payment);
+        Task CreatePayment(CreatePaymentDTO payment);
     }
 }
