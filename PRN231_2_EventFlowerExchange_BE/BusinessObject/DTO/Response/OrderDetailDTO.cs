@@ -2,12 +2,10 @@
 {
     public class OrderDetailDTO
     {
-        public ListBatchDTO Batch { get; set; }
-        public int BatchId { get; set; } // Thêm thuộc tính BatchId
-
         public int QuantityOrdered { get; set; }
-        public decimal Price { get; set; }
-        public decimal TotalPrice => QuantityOrdered * Price;
-        public int OrderId { get; set; }
+        public double Price { get; set; }
+        public double TotalPrice => QuantityOrdered * Price;
+        public int OrderId { get; set; } //mapping
+        public int BatchId { get; set; } // Thêm thuộc tính BatchId
     }
 }

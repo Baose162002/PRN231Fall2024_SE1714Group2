@@ -11,7 +11,7 @@ namespace Service.IService
 {
     public interface IBatchService
     {
-        Task<List<ListBatchDTO>> GetAllBatch();
+        Task<List<Batch>> GetAllBatch();
         Task<List<ListBatchDTO>> GetAvailableBatchesByFlowerId(int id);
 
         Task<ListBatchDTO> GetBatchById(int id);
