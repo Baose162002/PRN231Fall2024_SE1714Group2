@@ -12,7 +12,7 @@ namespace BusinessObject.DTO.Response
         public int Rating { get; set; }
         public string Feedback { get; set; }
         public DateTime ReviewDate { get; set; }
-        public int BatchId { get; set; }
+        public int FlowerId { get; set; }
         public int CustomerId { get; set; }
         public string CustomerName { get; set; }
     }

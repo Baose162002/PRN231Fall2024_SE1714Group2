@@ -45,16 +45,17 @@ namespace WebApi_EventFlowerExchange.Controllers
             return Ok(review);
         }
 
-        [HttpGet("batch/{batchId}")]
-        public async Task<IActionResult> GetReviewsByBatchId(int batchId)
+        [HttpGet("flower/{flowerId}")]
+        public async Task<IActionResult> GetReviewsByFlowerId(int flowerId)
         {
-            var reviews = await _reviewService.GetReviewsByBatchId(batchId);
+            var reviews = await _reviewService.GetReviewsByFlowerId(flowerId); 
             if (reviews == null || reviews.Count == 0)
             {
-                return NotFound("No reviews found for this batch");
+                return NotFound("No reviews found for this flower");
             }
             return Ok(reviews);
         }
+
 
         [HttpGet("customer/{customerId}")]
         public async Task<IActionResult> GetReviewsByCustomerId(int customerId)

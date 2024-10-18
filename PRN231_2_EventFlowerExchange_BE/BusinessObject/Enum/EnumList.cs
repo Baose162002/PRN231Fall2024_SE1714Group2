@@ -41,8 +41,7 @@ namespace BusinessObject.Enum
         public enum FlowerCondition
         {
             Fresh = 1,              // Còn tốt
-            PartiallyFresh = 2,     // Còn tốt 1 nửa
-            Damaged = 3             // Hư hại
+            Damaged = 2             // Hư hại
         }
         public enum DeliveryStatus
         {
@@ -54,7 +53,8 @@ namespace BusinessObject.Enum
         public enum Status
         {
             Active = 1,
-            Inactive = 2
+            Inactive = 2,
+            NeedsReview = 3
         }
     }
 }

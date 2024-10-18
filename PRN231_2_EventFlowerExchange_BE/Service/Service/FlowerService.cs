@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using static BusinessObject.Enum.EnumList;
 using BusinessObject.Enum;
 using Repository.Repository;
+using static System.Net.Mime.MediaTypeNames;
+using System.Drawing;
 
 namespace Service.Service
 {
@@ -34,7 +36,7 @@ namespace Service.Service
             return flowerDTOs;
         }
 
-        public async Task<ListFlowerDTO> GetFlowerById(int id)
+        public async Task<Flower> GetFlowerById(int id)
         {
             var flower = await _flowerRepository.GetFlowerById(id);
             if (flower == null)
@@ -42,7 +44,7 @@ namespace Service.Service
                 throw new ArgumentException("Flower not found.");
             }
 
-            var flowerDTO = _mapper.Map<ListFlowerDTO>(flower);
+            var flowerDTO = _mapper.Map<Flower>(flower);
             return flowerDTO;
         }
 
@@ -103,9 +105,42 @@ namespace Service.Service
             {
                 throw new ArgumentException("Invalid input data.");
             }
+            var batch = await _batchRepository.GetBatchById(flowerDTO.BatchId);
+            if (batch == null)
+            {
+                throw new ArgumentException("Invalid Batch ID.");
+            }
 
             var flower = _mapper.Map<Flower>(flowerDTO);
+
+            flower.Name = flowerDTO.Name;
+            flower.Type = flowerDTO.Type;
+            flower.Image = flowerDTO.Image;
+            flower.Description = flowerDTO.Description;
+            flower.PricePerUnit = flowerDTO.PricePerUnit;
+            flower.Origin = flowerDTO.Origin;
+            flower.Color = flowerDTO.Color;
+            flower.RemainingQuantity = flowerDTO.RemainingQuantity;
+            flower.Condition = EnumList.FlowerCondition.Fresh;
+            if (flower.RemainingQuantity > 0)
+            {
+                flower.FlowerStatus = EnumList.FlowerStatus.Available;
+            }
+            else
+            {
+                flower.FlowerStatus = EnumList.FlowerStatus.SoldOut;
+            }
+            flower.BatchId = flowerDTO.BatchId;
             flower.Status = Status.Active;
+
+            batch.RemainingQuantity -= flowerDTO.RemainingQuantity;
+            if (batch.RemainingQuantity < 0)
+            {
+                throw new ArgumentException("Insufficient batch quantity.");
+            }
+
+            // Step 5: Update the Batch's RemainingQuantity in the database
+            await _batchRepository.UpdateBatch(batch);
             await _flowerRepository.Create(flower);
 
             return flower.FlowerId; // Return the ID of the created flower
@@ -120,11 +155,13 @@ namespace Service.Service
 
             var flower = _mapper.Map<Flower>(flowerDTO);
             await _flowerRepository.Update(flower, id);
+
         }
 
         public async Task Delete(int id)
         {
             await _flowerRepository.Delete(id);
         }
+
     }
 }

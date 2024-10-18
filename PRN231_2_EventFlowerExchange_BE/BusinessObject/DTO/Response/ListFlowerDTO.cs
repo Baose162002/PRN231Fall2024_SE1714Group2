@@ -16,8 +16,10 @@ namespace BusinessObject.DTO.Response
         public decimal PricePerUnit { get; set; }
         public string Origin { get; set; }
         public string Color { get; set; }
-        public int RemainingQuantity { get; set; } // Số lượng còn lại loại hoa này để bán
+        public int RemainingQuantity { get; set; } 
         public int BatchId { get; set; }
+        public string Status { get; set; }
+        public ListBatchDTO Batch { get; set; }
 
     }
 }

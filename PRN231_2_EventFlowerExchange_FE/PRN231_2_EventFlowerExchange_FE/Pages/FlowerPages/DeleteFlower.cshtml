@@ -1,0 +1,55 @@
+﻿@page
+@model PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages.DeleteFlowerModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Flower</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-6">
+        <h2 class="text-3xl font-bold text-black mb-4">Confirm Deletion</h2>
+
+        <div class="bg-white shadow-md rounded-lg p-6 mb-4">
+            <p class="text-lg">Are you sure you want to delete the flower?</p>
+            <div class="mb-4">
+                <strong class="block">Name: </strong> <span>@Model.Flower.Name</span>
+            </div>
+            <div class="mb-4">
+                <strong class="block">Type: </strong> <span>@Model.Flower.Type</span>
+            </div>
+            <div class="mb-4">
+                <strong class="block">Description: </strong> <span>@Model.Flower.Description</span>
+            </div>
+            <div class="mb-4">
+                <strong class="block">Image: </strong>
+                <img src="@Model.Flower.Image" alt="@Model.Flower.Name" class="w-32 h-32 object-cover rounded border" />
+            </div>
+            <div class="mb-4">
+                <strong class="block">Color: </strong> <span>@Model.Flower.Color</span>
+            </div>
+            <div class="mb-4">
+                <strong class="block">Origin: </strong> <span>@Model.Flower.Origin</span>
+            </div>
+            <div class="mb-4">
+                <strong class="block">Remaining Quantity: </strong> <span>@Model.Flower.RemainingQuantity</span>
+            </div>
+        </div>
+
+        <form method="post">
+            <input type="hidden" asp-for="Flower.FlowerId" />
+            <input type="hidden" asp-for="Flower.BatchId" /> 
+            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2">
+                Delete
+            </button>
+            <a asp-page="/FlowerPages/FlowerDetailInBatch?batchId=@Model.Flower.BatchId" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                Cancel
+            </a>
+        </form>
+
+    </div>
+</body>
+</html>

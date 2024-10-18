@@ -12,7 +12,7 @@ namespace Service.IService
     public interface IFlowerService
     {
         Task<List<Flower>> GetAllFlowers();
-        Task<ListFlowerDTO> GetFlowerById(int id);
+        Task<Flower> GetFlowerById(int id);
         Task Create(CreateFlowerDTO flowerDTO);
         Task Update(UpdateFlowerDTO flowerDTO, int id);
         Task Delete(int id);

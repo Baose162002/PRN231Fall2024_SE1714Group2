@@ -9,11 +9,13 @@ namespace BusinessObject.DTO.Request
 {
     public class UpdateReviewDTO
     {
-        [Required]
+           [Required]
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5")]
         public int Rating { get; set; }
 
         [Required]
         public string Feedback { get; set; }
+        public DateTime ReviewDate { get; set; } = DateTime.Now;
+
     }
 }

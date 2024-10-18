@@ -192,8 +192,7 @@ namespace Service.Service
             return _orderRepository.SearchOrders(searchCriteria);
         }
 
-        //Tạo Order bằng cách chọn Flower tùy thuộc vào Batch
-        public async Task CreateOrderByBatch(CreateOrderDTO orderDTO)
+        public async Task CreateOrder(CreateOrderFlowerDTO orderDTO)
         {
             // Lấy thông tin của Flower theo FlowerId
             var selectedFlower = await _flowerRepository.GetFlowerById(orderDTO.FlowerId);
@@ -245,6 +244,7 @@ namespace Service.Service
                     QuantityOrdered = selectedBatch.QuantityOrdered,
                     Price = selectedFlower.PricePerUnit
                 };
+                // Thêm chi tiết đơn hàng vào danh sách
                 orderDetails.Add(orderDetail);
 
                 totalPrice += selectedBatch.QuantityOrdered * selectedFlower.PricePerUnit;
@@ -261,12 +261,19 @@ namespace Service.Service
                 CustomerId = 1, // Replace with actual customer ID
                 OrderDetails = orderDetails
             };
+            
+            // Tạo đơn hàng mới
+            await _orderRepository.Create(newOrder);
 
-            // Save the order to the database
-            await _orderRepository.Create(order);
+            // Cập nhật số lượng còn lại của hoa sau khi đơn hàng được tạo
+            await _flowerRepository.UpdateFlower(flower);
+
+            // Kiểm tra và cập nhật trạng thái hoa
+            if (flower.RemainingQuantity <= 0)
+            {
+                flower.FlowerStatus = EnumList.FlowerStatus.SoldOut; // Cập nhật trạng thái hoa thành SoldOut
+                await _flowerRepository.UpdateFlower(flower); // Cập nhật lại thông tin hoa trong DB
+            }
         }
-
-
-
     }
 }

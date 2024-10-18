@@ -19,8 +19,13 @@
                     <tr>
                         <th class="px-4 py-2">Flower</th>
                         <th class="px-4 py-2">Type</th>
+                        <th class="px-4 py-2">Image</th>
+                        <th class="px-4 py-2">Description</th>
                         <th class="px-4 py-2">Price</th>
                         <th class="px-4 py-2">Remaining Quantity</th>
+                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Actions</th> 
+
                     </tr>
                 </thead>
                 <tbody>
@@ -29,8 +34,29 @@
                         <tr>
                             <td class="border px-4 py-2">@flower.Name</td>
                             <td class="border px-4 py-2">@flower.Type</td>
+                            <td class="border px-4 py-2">
+                                <img src="@flower.Image" alt="@flower.Name" class="w-12 h-12 object-cover" />
+                            </td>
+                            <td class="border px-4 py-2">@flower.Description</td>
                             <td class="border px-4 py-2">$@flower.PricePerUnit.ToString("F2")</td>
                             <td class="border px-4 py-2">@flower.RemainingQuantity</td>
+                            <td class="p-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+        @(flower.Status.ToLower() == "active" ? "bg-green-100 text-green-800"
+        : flower.Status.ToLower() == "inactive" ? "bg-red-100 text-red-800"
+        : flower.Status.ToLower() == "needsreview" ? "bg-yellow-100 text-yellow-800"
+        : "bg-gray-100 text-gray-800")">
+                                    @flower.Status
+                                </span>
+                            </td>
+                            <td class="border px-4 py-2">
+                                <a href="/FlowerPages/EditFlower?id=@flower.FlowerId" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 rounded">
+                                    Edit
+                                </a>
+                                <a href="/FlowerPages/DeleteFlower?id=@flower.FlowerId" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">
+                                    Delete
+                                </a>
+                            </td>
                         </tr>
                     }
                 </tbody>

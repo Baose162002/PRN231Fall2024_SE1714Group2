@@ -17,12 +17,12 @@ namespace Repository.Repository
 
         public async Task<List<Flower>> GetAllFlowers()
         {
-            return await _context.Flowers.Where(x => x.Status == EnumList.Status.Active).ToListAsync();
+            return await _context.Flowers.Include(e => e.Batch).ThenInclude(b => b.Company).ToListAsync();
         }
 
         public async Task<Flower> GetFlowerById(int id)
         {
-            var existing = await _context.Flowers.FirstOrDefaultAsync(e => e.FlowerId == id);
+            var existing = await _context.Flowers.Include(e => e.Batch).ThenInclude(b => b.Company).FirstOrDefaultAsync(e => e.FlowerId == id);
             return existing;
         }
 
@@ -34,32 +34,96 @@ namespace Repository.Repository
 
         public async Task Update(Flower flower, int id)
         {
-            //var existingFlower = await _context.Flowers.FindAsync(id);
-            //if (existingFlower != null)
-            //{
-            //    _context.Entry(existingFlower).CurrentValues.SetValues(flower);
-            //    await _context.SaveChangesAsync();
-            //}
             var _context = new FlowerShopContext();
-            var existing = await GetFlowerById(id);
-            if(existing != null)
+
+            // Fetch the existing flower
+            var existing = await _context.Flowers.FindAsync(id);
+            if (existing == null)
             {
-                existing.Name = flower.Name;
-                existing.Type = flower.Type;
-                existing.Image = flower.Image;
-                existing.Description = flower.Description;
-                existing.PricePerUnit = flower.PricePerUnit;    
-                existing.Origin = flower.Origin;
-                existing.Color = flower.Color;
-                existing.RemainingQuantity = flower.RemainingQuantity;
-                existing.Condition = flower.Condition;
-                existing.FlowerStatus = flower.FlowerStatus;
-                existing.BatchId = flower.BatchId;
-                
+                throw new ArgumentException("Flower not found.");
             }
+
+            // Fetch the associated batch
+            var batch = await _context.Batches.FindAsync(existing.BatchId);
+            if (batch == null)
+            {
+                throw new ArgumentException("Batch not found.");
+            }
+
+            // Store the old remaining quantity before updating
+            int oldRemainingQuantity = existing.RemainingQuantity;
+
+            // Update the flower properties
+            existing.Name = flower.Name;
+            existing.Type = flower.Type;
+            existing.Image = flower.Image;
+            existing.Description = flower.Description;
+            existing.PricePerUnit = flower.PricePerUnit;
+            existing.Origin = flower.Origin;
+            existing.Color = flower.Color;
+            existing.RemainingQuantity = flower.RemainingQuantity; // This is the new quantity
+            existing.Condition = EnumList.FlowerCondition.Fresh; // Update condition
+            existing.FlowerStatus = flower.RemainingQuantity > 0 ? EnumList.FlowerStatus.Available : EnumList.FlowerStatus.SoldOut;
+            existing.Status = EnumList.Status.Active;
+            // Calculate the difference in quantity
+            if (flower.RemainingQuantity > oldRemainingQuantity)
+            {
+                // Adjust batch quantity only if new quantity is greater than old quantity
+                int quantityToAdjust = flower.RemainingQuantity - oldRemainingQuantity;
+
+                // Ensure there is enough quantity in the batch
+                if (batch.RemainingQuantity < quantityToAdjust)
+                {
+                    throw new ArgumentException("Insufficient batch quantity.");
+                }
+
+                // Adjust the batch's remaining quantity
+                batch.RemainingQuantity -= quantityToAdjust;
+
+                // Update the batch in the database
+                _context.Batches.Update(batch);
+            }
+
+            // Update the flower in the database
             _context.Flowers.Update(existing);
             await _context.SaveChangesAsync();
         }
+
+        public async Task AdjustBatchQuantity(Flower flower, int id)
+        {
+            var _context = new FlowerShopContext();
+
+            // Fetch the existing flower
+            var existing = await _context.Flowers.FindAsync(id);
+            if (existing == null)
+            {
+                throw new ArgumentException("Flower not found.");
+            }
+
+            // Fetch the associated batch
+            var batch = await _context.Batches.FindAsync(existing.BatchId);
+            if (batch == null)
+            {
+                throw new ArgumentException("Batch not found.");
+            }
+
+            // Calculate the difference in quantity
+            int quantityDifference = flower.RemainingQuantity;
+
+            // Ensure there is enough quantity in the batch
+            if (batch.RemainingQuantity - quantityDifference < 0)
+            {
+                throw new ArgumentException("Insufficient batch quantity.");
+            }
+
+            // Adjust the batch's remaining quantity
+            batch.RemainingQuantity -= quantityDifference;
+
+            // Update the batch in the database
+            _context.Batches.Update(batch);
+            await _context.SaveChangesAsync();
+        }
+
 
         public async Task Delete(int id)
         {

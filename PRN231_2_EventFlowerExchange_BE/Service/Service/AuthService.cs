@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.Enum;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -26,11 +27,21 @@ namespace Service.Service
 
         public async Task<IActionResult> LoginAsync(User loginUser)
         {
+            // Retrieve user by email
             var user = await _userRepository.GetByEmailAsync(loginUser.Email);
+
+            // Check if user exists or password is incorrect
             if (user == null || user.Password != loginUser.Password)
             {
                 return new UnauthorizedObjectResult(new { Message = "Invalid email or password" });
             }
+
+            // Check if the user's status is inactive
+            if (user.Status == EnumList.Status.Inactive)  
+            {
+                return new UnauthorizedObjectResult(new { Message = "Account does not exist or is inactive" });
+            }
+
 
             var authClaims = new List<Claim>
             {
