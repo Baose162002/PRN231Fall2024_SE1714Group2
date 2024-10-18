@@ -13,7 +13,7 @@ namespace BusinessObject.DTO.Response
         public string OrderStatus { get; set; }
 
         // TotalPrice is calculated as the sum of all OrderDetailDTO TotalPrice values
-        public decimal TotalPrice => OrderDetails != null ? OrderDetails.Sum(od => od.TotalPrice) : 0;
+        public double TotalPrice => OrderDetails != null ? OrderDetails.Sum(od => od.TotalPrice) : 0;
         public decimal TotalQuantity => OrderDetails != null ? OrderDetails.Sum(od => od.QuantityOrdered) : 0;
 
         public string OrderDate { get; set; }

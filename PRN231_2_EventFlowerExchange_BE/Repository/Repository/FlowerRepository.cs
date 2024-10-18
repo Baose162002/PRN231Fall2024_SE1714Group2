@@ -142,5 +142,12 @@ namespace Repository.Repository
             _context.Flowers.Update(flower);
             await _context.SaveChangesAsync();
         }
+        public async Task<List<Flower>> GetFlowersByTypeAndColor(string type, string color)
+        {
+            // Query to get flowers that match the specified type and color
+            return await _context.Flowers
+                                 .Where(f => f.Type == type && f.Color == color)
+                                 .ToListAsync();
+        }
     }
 }

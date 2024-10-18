@@ -192,160 +192,76 @@ namespace Service.Service
             return _orderRepository.SearchOrders(searchCriteria);
         }
 
-        /*  //Tạo Order bằng cách chọn Flower tùy thuộc vào Batch
-          public async Task CreateOrderByBatch(CreateOrderDTO orderDTO)
-          {
-              // Tìm tất cả các Batch có chứa loại hoa này (FlowerId)
-              var availableBatches = await _batchRepository.GetAvailableBatchesByFlowerId(orderDTO.FlowerId);
-
-              // Lấy danh sách BatchId hợp lệ từ FlowerId đã chọn
-              var validBatchIds = availableBatches.Select(b => b.BatchId).ToList();
-
-              // Kiểm tra xem các BatchId được chọn có hợp lệ không
-              foreach (var selectedBatch in orderDTO.SelectedBatches)
-              {
-                  if (!validBatchIds.Contains(selectedBatch.BatchId))
-                  {
-                      throw new ArgumentException($"BatchId {selectedBatch.BatchId} is not valid for FlowerId {orderDTO.FlowerId}");
-                  }
-
-                  // Lấy Batch từ cơ sở dữ liệu
-                  var batch = await _batchRepository.GetBatchById(selectedBatch.BatchId);
-
-                  // Kiểm tra số lượng hoa trong batch có đủ để đặt không
-                  if (batch.BatchQuantity < selectedBatch.QuantityOrdered)
-                  {
-                      throw new ArgumentException($"Insufficient quantity in Batch {selectedBatch.BatchId}. Available: {batch.BatchQuantity}");
-                  }
-
-                  // Cập nhật lại số lượng bông trong Batch
-                  batch.BatchQuantity -= selectedBatch.QuantityOrdered;
-
-                  // Lưu thay đổi vào cơ sở dữ liệu sau khi cập nhật BatchQuantity
-                  await _batchRepository.UpdateBatch(batch);
-              }
-
-              // Tính tổng giá trị đơn hàng (TotalPrice)
-              decimal totalPrice = 0;
-              var orderDetails = new List<OrderDetail>();
-              foreach (var selectedBatch in orderDTO.SelectedBatches)
-              {
-                  var batch = await _batchRepository.GetBatchById(selectedBatch.BatchId);
-                  var orderDetail = new OrderDetail
-                  {
-                      BatchId = selectedBatch.BatchId,
-                      QuantityOrdered = selectedBatch.QuantityOrdered,
-                      Price = batch.PricePerUnit
-                  };
-                  orderDetails.Add(orderDetail);
-
-                  totalPrice += selectedBatch.QuantityOrdered * batch.PricePerUnit;
-              }
-
-              // Tạo đơn hàng (Order)
-              var order = new Order
-              {
-                  OrderStatus = EnumList.OrderStatus.Pending,
-                  TotalPrice = totalPrice,
-                  OrderDate = DateTime.Now,
-                  DeliveryAddress = "Sample Address", // Nhập thông tin từ DTO nếu cần
-                  DeliveryDate = DateTime.Now.AddDays(3), // Giả sử ngày giao hàng sau 3 ngày
-                  CustomerId = 1, // Thay thế bằng ID người dùng thực tế
-                  OrderDetails = orderDetails
-              };
-
-              // Lưu vào DB
-              await _orderRepository.Create(order);
-          }*/
-
         public async Task CreateOrder(CreateOrderFlowerDTO orderDTO)
         {
-            // Kiểm tra các trường bắt buộc
-            if (orderDTO == null || string.IsNullOrEmpty(orderDTO.DeliveryAddress) || orderDTO.CustomerId == 0 || orderDTO.QuantityOrdered <= 0)
+            // Lấy thông tin của Flower theo FlowerId
+            var selectedFlower = await _flowerRepository.GetFlowerById(orderDTO.FlowerId);
+            if (selectedFlower == null)
             {
-                throw new ArgumentException("All required fields must be filled");
+                throw new ArgumentException($"Flower with Id {orderDTO.FlowerId} not found.");
             }
 
-            List<OrderDetail> orderDetails = new List<OrderDetail>();
+            // Lấy thông tin Type và Color của Flower đã chọn
+            var flowerType = selectedFlower.Type;
+            var flowerColor = selectedFlower.Color;
+
+            // Tìm tất cả các hoa có cùng Type và Color
+            var matchingFlowers = await _flowerRepository.GetFlowersByTypeAndColor(flowerType, flowerColor);
+
+            // Lấy tất cả BatchId của các hoa có cùng Type và Color
+            var validBatchIds = matchingFlowers.Select(f => f.BatchId).ToList();
+
+            // Kiểm tra xem các BatchId nhập vào từ Swagger có hợp lệ không
+            foreach (var selectedBatch in orderDTO.SelectedBatches)
+            {
+                if (!validBatchIds.Contains(selectedBatch.BatchId))
+                {
+                    throw new ArgumentException($"BatchId {selectedBatch.BatchId} is not valid for flowers of type {flowerType} and color {flowerColor}.");
+                }
+
+                // Kiểm tra số lượng hoa của batch đó , có đủ để đặt không
+                if (selectedFlower.RemainingQuantity < selectedBatch.QuantityOrdered)
+                {
+                    throw new ArgumentException($"Insufficient quantity in Flower {selectedFlower.FlowerId}. Available: {selectedFlower.RemainingQuantity}");
+                }
+
+                // Cập nhật số lượng bông trong Batch
+                selectedFlower.RemainingQuantity -= selectedBatch.QuantityOrdered;
+
+                // Lưu thay đổi Batch vào cơ sở dữ liệu
+                await _flowerRepository.UpdateFlower(selectedFlower);
+            }
+
+            // Calculate the total price of the order
             double totalPrice = 0;
+            var orderDetails = new List<OrderDetail>();
 
-            // Lấy danh sách các lô hoa theo loại và màu sắc tương tự
-            var flowerBatches = await _batchRepository.GetFlowersBySimilarTypeAndColorAndEarliestBatchAndCompany(orderDTO.FlowerId);
-
-            if (flowerBatches == null || !flowerBatches.Any())
+            foreach (var selectedBatch in orderDTO.SelectedBatches)
             {
-                throw new ArgumentException("No batches available for this flower.");
-            }
-
-            // Lấy thông tin hoa để kiểm tra số lượng và các thuộc tính khác
-            var flower = await _flowerRepository.GetFlowerById(orderDTO.FlowerId);
-
-            if (flower == null)
-            {
-                throw new ArgumentException("Flower not found.");
-            }
-
-            // Kiểm tra số lượng đặt hàng không vượt quá số lượng còn lại của hoa
-            if (orderDTO.QuantityOrdered > flower.RemainingQuantity)
-            {
-                throw new ArgumentException("Order quantity exceeds available quantity of the flower.");
-            }
-
-            // Kiểm tra trạng thái hoa để đảm bảo hoa có thể được đặt
-            if (flower.FlowerStatus != EnumList.FlowerStatus.Available ||
-                (flower.Condition != EnumList.FlowerCondition.Fresh))
-            {
-                throw new ArgumentException("Flower is not available for order.");
-            }
-
-            int remainingQuantity = orderDTO.QuantityOrdered; // Số lượng cần đặt
-
-            // Duyệt qua các lô hoa để tạo OrderDetail cho từng lô hoa
-            foreach (var batch in flowerBatches)
-            {
-                if (remainingQuantity <= 0) break; // Nếu đủ số lượng thì dừng
-
-                // Lấy số lượng hoa từ lô, số lượng lấy không vượt quá số lượng còn lại trong lô
-                int batchQuantityToUse = Math.Min(batch.RemainingQuantity, remainingQuantity);
-
-                // Tạo đối tượng OrderDetail cho lô hoa này
                 var orderDetail = new OrderDetail
                 {
-                    FlowerId = batch.FlowerId,
-                    QuantityOrdered = batchQuantityToUse,
-                    Price = flower.PricePerUnit,
-                    TotalPrice = batchQuantityToUse * flower.PricePerUnit
+                    //BatchId = selectedFlower.BatchId,
+                    QuantityOrdered = selectedBatch.QuantityOrdered,
+                    Price = selectedFlower.PricePerUnit
                 };
-
-                // Cập nhật tổng giá trị đơn hàng
-                totalPrice += orderDetail.TotalPrice;
-                flower.RemainingQuantity -= batchQuantityToUse; // Cập nhật số lượng hoa còn lại trong flower
-
                 // Thêm chi tiết đơn hàng vào danh sách
                 orderDetails.Add(orderDetail);
 
-                // Giảm số lượng còn lại cần đặt
-                remainingQuantity -= batchQuantityToUse;
+                totalPrice += selectedBatch.QuantityOrdered * selectedFlower.PricePerUnit;
             }
 
-            // Nếu vẫn còn số lượng chưa đặt đủ, báo lỗi
-            if (remainingQuantity > 0)
-            {
-                throw new ArgumentException("Not enough stock to fulfill the order.");
-            }
-
-            // Tạo đối tượng Order
-            var newOrder = new Order
+            // Create the order
+            var order = new Order
             {
                 OrderStatus = EnumList.OrderStatus.Pending,
-                OrderDate = orderDTO.OrderDate,
-                DeliveryAddress = orderDTO.DeliveryAddress,
-                DeliveryDate = orderDTO.DeliveryDate,
-                CustomerId = orderDTO.CustomerId,
                 TotalPrice = totalPrice,
+                OrderDate = DateTime.Now,
+                DeliveryAddress = "Sample Address", // Replace with actual address from orderDTO
+                DeliveryDate = DateTime.Now.AddDays(3), // Assume delivery in 3 days
+                CustomerId = 1, // Replace with actual customer ID
                 OrderDetails = orderDetails
             };
-
+            
             // Tạo đơn hàng mới
             await _orderRepository.Create(newOrder);
 
@@ -359,6 +275,5 @@ namespace Service.Service
                 await _flowerRepository.UpdateFlower(flower); // Cập nhật lại thông tin hoa trong DB
             }
         }
-
     }
 }
