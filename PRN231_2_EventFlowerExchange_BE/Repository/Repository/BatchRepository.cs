@@ -129,7 +129,47 @@ namespace Repository.Repository
             }
         }
 
+        public async Task<List<Flower>> GetFlowersBySimilarTypeAndColorAndEarliestBatchAndCompany(int flowerId)
+        {
+            using (var _context = new FlowerShopContext())
+            {
+                // Bước 1: Lấy thông tin của Flower ban đầu
+                var initialFlower = await _context.Flowers
+                    .Include(f => f.Batch) // Bao gồm Batch để truy cập CompanyId
+                    .FirstOrDefaultAsync(f => f.FlowerId == flowerId);
 
+                if (initialFlower == null)
+                {
+                    return new List<Flower>(); // Không tìm thấy Flower với flowerId
+                }
+
+                var flowerType = initialFlower.Type; // Lấy Type của Flower
+                var flowerColor = initialFlower.Color; // Lấy Color của Flower
+                var companyId = initialFlower.Batch.CompanyId; // Lấy CompanyId từ Batch của Flower
+
+                // Bước 2: Lấy tất cả các Batch chứa Flower có Type, Color và cùng CompanyId
+                var similarFlowers = await _context.Flowers
+                    .Include(f => f.Batch) // Bao gồm thông tin Batch
+                    .Where(f => f.Type == flowerType &&
+                                 f.Color == flowerColor &&
+                                 f.RemainingQuantity > 0 &&
+                                 f.FlowerStatus == EnumList.FlowerStatus.Available &&
+                                 f.Condition == EnumList.FlowerCondition.Fresh &&
+                                 f.Batch.CompanyId == companyId) // Chỉ lấy các Batch của cùng Company
+                    .ToListAsync();
+
+                // Bước 3: Lấy Flower với EntryDate nhỏ nhất theo Type và Color trong cùng Company
+                var earliestBatchFlowers = similarFlowers
+                    .GroupBy(f => new { f.Type, f.Color }) // Nhóm theo Type và Color
+                    .Select(g => g
+                        .OrderBy(f => f.Batch.EntryDate) // Sắp xếp theo EntryDate
+                        .FirstOrDefault()) // Lấy Flower có EntryDate nhỏ nhất trong nhóm
+                    .Where(f => f != null) // Lọc bỏ các giá trị null
+                    .ToList();
+
+                return earliestBatchFlowers;
+            }
+        }
         public async Task CheckAndUpdateBatchStatus()
         {
             using (var _context = new FlowerShopContext())

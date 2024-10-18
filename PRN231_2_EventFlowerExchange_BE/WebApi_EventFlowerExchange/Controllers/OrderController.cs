@@ -67,20 +67,33 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return BadRequest(e.Message);
             }
         }
-
-    /*    [HttpPost]
-        public async Task<IActionResult> CreateOrderByBatch([FromBody] CreateOrderDTO createOrderDTO)
+        [HttpPost("order")]
+        public async Task<IActionResult> Create(CreateOrderFlowerDTO createOrderDTO)
         {
             try
             {
-                await _orderService.CreateOrderByBatch(createOrderDTO);
+                await _orderService.CreateOrder(createOrderDTO);
                 return Ok("Order created successfully");
             }
             catch (ArgumentException e)
             {
                 return BadRequest(e.Message);
             }
-        }*/
+        }
+
+        /*    [HttpPost]
+            public async Task<IActionResult> CreateOrderByBatch([FromBody] CreateOrderDTO createOrderDTO)
+            {
+                try
+                {
+                    await _orderService.CreateOrderByBatch(createOrderDTO);
+                    return Ok("Order created successfully");
+                }
+                catch (ArgumentException e)
+                {
+                    return BadRequest(e.Message);
+                }
+            }*/
 
         // PUT: api/Order/id
         [HttpPut("{id}")]
