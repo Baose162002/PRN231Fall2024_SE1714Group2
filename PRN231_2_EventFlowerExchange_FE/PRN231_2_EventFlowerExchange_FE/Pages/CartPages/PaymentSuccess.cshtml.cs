@@ -17,8 +17,10 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
 
         public async Task<IActionResult> OnGet()
         {
+
             try
             {
+                var orderIds = HttpContext.Request.Cookies["OrderId"];
                 var paymentResponse =  _paymentService.PaymentExecute(Request.Query);
 
                 if (paymentResponse.Success)
@@ -40,28 +42,27 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
 
                         if (!response.IsSuccessStatusCode)
                         {
-                            return new JsonResult(new { success = false, message = "Failed to update payment status." });
+                            return RedirectToPage("/OrderPages/OrderFailure");
                         }
                     }
 
                     // Clear cart items only if payment is successful
                     HttpContext.Response.Cookies.Delete("cartItems");
 
-                    return new JsonResult(new { success = true, redirectUrl = Url.Page("/OrderPages/OrderSuccess") });
+                    return RedirectToPage("/OrderPages/OrderSuccess");
                 }
                 else
                 {
                     // Handle payment failure
-                    var orderId = paymentResponse.OrderId;
 
                     // Prepare payment failure request
                     var paymentApiUrl = "http://localhost:5077/api/Payment";
                     var paymentRequest = new
                     {
                         paymentStatus = "Failed",
-                        amountPaid = paymentResponse.Amount,
+                        amountPaid = 0,
                         paymentDate = DateTime.Now,
-                        orderId = orderId
+                        orderId = orderIds
                     };
 
                     using (var client = new HttpClient())
@@ -71,10 +72,10 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
 
                         if (!response.IsSuccessStatusCode)
                         {
-                            return new JsonResult(new { success = false, redirectUrl = Url.Page("/OrderPages/OrderFailure") });
+                            return RedirectToPage("/OrderPages/OrderFailure");
                         }
                     }
-
+                    HttpContext.Response.Cookies.Delete("cartItems");
                     return RedirectToPage("/OrderPages/OrderFailure");
                 }
             }

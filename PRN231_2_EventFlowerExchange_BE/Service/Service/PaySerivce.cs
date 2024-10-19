@@ -39,7 +39,8 @@ namespace Service.Service
             {
                 PaymentDate = payment.PaymentDate,
                 AmountPaid = payment.AmountPaid,
-                PaymentStatus = payment.PaymentStatus
+                PaymentStatus = payment.PaymentStatus,
+                OrderId = payment.OrderId
             };
             await _paymentRepository.CreatePayment(_mapper.Map<Payment>(paymentdto));
            

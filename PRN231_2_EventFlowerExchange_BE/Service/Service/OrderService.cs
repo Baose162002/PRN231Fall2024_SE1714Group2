@@ -261,7 +261,7 @@ namespace Service.Service
         public async Task<int> CreateOrder(CreateOrderFlowerDTO orderDTO)
         {
             // Kiểm tra các trường bắt buộc
-            if (orderDTO == null || string.IsNullOrEmpty(orderDTO.DeliveryAddress) || orderDTO.CustomerId == 0 || !orderDTO.OrderDetails.Any())
+                if (orderDTO == null || string.IsNullOrEmpty(orderDTO.DeliveryAddress) || orderDTO.CustomerId == 0 || !orderDTO.OrderDetails.Any())
             {
                 throw new ArgumentException("All required fields must be filled");
             }
