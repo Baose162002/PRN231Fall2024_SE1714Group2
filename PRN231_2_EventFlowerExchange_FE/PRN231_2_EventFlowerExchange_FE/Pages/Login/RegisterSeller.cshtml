@@ -61,6 +61,21 @@
                     <span asp-validation-for="RegisterRequest.CreateCompany.CompanyAddress" class="text-red-500"></span>
                 </div>
                 <div class="form-group mt-4">
+                    <label class="text-gray-700" asp-for="RegisterRequest.CreateCompany.TaxNumber"></label>
+                    <input asp-for="RegisterRequest.CreateCompany.TaxNumber" class="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none" />
+                    <span asp-validation-for="RegisterRequest.CreateCompany.TaxNumber" class="text-red-500"></span>
+                </div>
+                <div class="form-group mt-4">
+                    <label class="text-gray-700" asp-for="RegisterRequest.CreateCompany.City"></label>
+                    <input asp-for="RegisterRequest.CreateCompany.City" class="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none" />
+                    <span asp-validation-for="RegisterRequest.CreateCompany.City" class="text-red-500"></span>
+                </div>
+                <div class="form-group mt-4">
+                    <label class="text-gray-700" asp-for="RegisterRequest.CreateCompany.PostalCode"></label>
+                    <input asp-for="RegisterRequest.CreateCompany.PostalCode" class="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none" />
+                    <span asp-validation-for="RegisterRequest.CreateCompany.PostalCode" class="text-red-500"></span>
+                </div>
+                <div class="form-group mt-4">
                     <label class="text-gray-700" asp-for="RegisterRequest.CreateCompany.CompanyDescription"></label>
                     <textarea asp-for="RegisterRequest.CreateCompany.CompanyDescription" class="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"></textarea>
                     <span asp-validation-for="RegisterRequest.CreateCompany.CompanyDescription" class="text-red-500"></span>
