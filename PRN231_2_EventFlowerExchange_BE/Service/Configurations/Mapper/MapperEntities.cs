@@ -68,9 +68,7 @@ namespace Service.Configurations.Mapper
             CreateMap<Company, CompanyDTO>();
             CreateMap<CompanyDTO, Company>();
 
-            CreateMap<OrderDetail, OrderDetailDTO>()
-                .ForMember(dest => dest.BatchId, opt => opt.MapFrom(src => src.Flower.BatchId));
-
+            CreateMap<OrderDetail, OrderDetailDTO>();
             CreateMap<OrderDetailDTO, OrderDetail>();
             //CreateMap<UpdateOrderDetailDTO, Order>()
             //    .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
@@ -78,7 +76,6 @@ namespace Service.Configurations.Mapper
             CreateMap<ListOrderDetailDTO, Order>();
             CreateMap<Order, ListOrderDetailDTO>();
 
-            CreateMap<OrderDetailDTO, ListOrderDTO>();
 
             CreateMap<Flower, ListFlowerDTO>();
             CreateMap<ListFlowerDTO, Flower>();
