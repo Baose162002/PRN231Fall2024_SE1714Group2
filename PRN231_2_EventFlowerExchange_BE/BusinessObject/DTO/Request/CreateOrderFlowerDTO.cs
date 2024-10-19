@@ -20,5 +20,4 @@ namespace BusinessObject.DTO.Request
         public int FlowerId { get; set; }
         public int QuantityOrdered { get; set; }
     }
-
 }

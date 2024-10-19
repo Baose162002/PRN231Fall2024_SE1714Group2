@@ -336,6 +336,7 @@ namespace Service.Service
                 {
                     throw new ArgumentException($"Not enough stock to fulfill the order for flower ID {orderDetailDTO.FlowerId}.");
                 }
+
             }
 
             // Tạo đối tượng Order
@@ -369,6 +370,7 @@ namespace Service.Service
 
             // Trả về OrderId
             return newOrder.OrderId;
+
         }
 
     }
