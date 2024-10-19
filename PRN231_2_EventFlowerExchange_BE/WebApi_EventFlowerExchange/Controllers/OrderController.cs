@@ -84,7 +84,11 @@ namespace WebApi_EventFlowerExchange.Controllers
                     OrderId = orderId
                 };
                 return Ok(result);
-
+            }catch(ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
 
 
