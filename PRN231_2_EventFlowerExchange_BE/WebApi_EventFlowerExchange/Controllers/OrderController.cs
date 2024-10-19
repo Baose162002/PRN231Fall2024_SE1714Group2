@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service.IService;
+using Service.Service;
 using static BusinessObject.Enum.EnumList;
 
 namespace WebApi_EventFlowerExchange.Controllers
@@ -68,18 +69,24 @@ namespace WebApi_EventFlowerExchange.Controllers
             }
         }
         [HttpPost("order")]
-        public async Task<IActionResult> Create(CreateOrderFlowerDTO createOrderDTO)
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderFlowerDTO createOrder)
         {
             try
             {
-                await _orderService.CreateOrder(createOrderDTO);
-                return Ok("Order created successfully");
-            }
-            catch (ArgumentException e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+                // Gọi service để tạo đơn hàng và nhận về OrderId
+                var orderId = await _orderService.CreateOrder(createOrder);
+
+                // Trả về kết quả thành công kèm theo OrderId
+                var result = new CreateOrderResponse
+                {
+                    Status = "success",
+                    Message = "Create Order successfully",
+                    OrderId = orderId
+                };
+                return Ok(result);
+
+
+
 
         /*    [HttpPost]
             public async Task<IActionResult> CreateOrderByBatch([FromBody] CreateOrderDTO createOrderDTO)

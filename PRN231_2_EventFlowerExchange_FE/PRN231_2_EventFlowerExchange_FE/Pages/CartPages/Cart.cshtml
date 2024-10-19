@@ -27,25 +27,37 @@
                             <th class="px-4 py-2">Quantity</th>
                             <th class="px-4 py-2">Price</th>
                             <th class="px-4 py-2">Total</th>
+                            <th class="px-4 py-2">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="cart-items">
                         @foreach (var item in Model.CartItems)
                         {
                             var totalPrice = item.PricePerUnit * item.Quantity;
-                            <tr>
+                            <tr data-flower-id="@item.FlowerId">
                                 <td class="border px-4 py-2">@item.Name</td>
                                 <td class="border px-4 py-2">
                                     <input type="number" value="@item.Quantity" min="1"
-                                           onchange="updateQuantity('@item.FlowerId', this.value)"
+                                           onchange="updateQuantity('@item.FlowerId', this.value, @item.PricePerUnit)"
                                            class="w-16 text-center">
-
                                 </td>
                                 <td class="border px-4 py-2">$@item.PricePerUnit.ToString("F2")</td>
-                                <td class="border px-4 py-2">$@totalPrice.ToString("F2")</td>
+                                <td class="border px-4 py-2 item-total">$@totalPrice.ToString("F2")</td>
+                                <td class="border px-4 py-2">
+                                    <button onclick="deleteItem('@item.FlowerId')" class="text-red-600 hover:text-red-800">
+                                        Delete
+                                    </button>
+                                </td>
                             </tr>
                         }
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="border px-4 py-2 text-right font-bold">Cart Total:</td>
+                            <td id="cart-total" class="border px-4 py-2 font-bold"></td>
+                            <td class="border px-4 py-2"></td>
+                        </tr>
+                    </tfoot>
                 </table>
             }
             else
@@ -55,13 +67,35 @@
         </div>
         <div class="mt-6">
             <button id="order-button" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700">
-                Order
+                Proceed to Payment
             </button>
+            <div id="message-box" class="mt-4 text-red-500"></div> <!-- Div để hiển thị thông báo -->
+
         </div>
     </div>
 
     <script>
-        function updateQuantity(flowerId, quantity) {
+        let cartItems = @Html.Raw(Json.Serialize(Model.CartItems));
+
+        // Calculate and update cart total
+        function updateCartTotal() {
+            const totals = document.querySelectorAll('.item-total');
+            let cartTotal = 0;
+
+            totals.forEach(total => {
+                const amount = parseFloat(total.textContent.replace('$', ''));
+                cartTotal += amount;
+            });
+
+            document.getElementById('cart-total').textContent = `$${cartTotal.toFixed(2)}`;
+        }
+
+        // Initialize cart total on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            updateCartTotal();
+        });
+
+        function updateQuantity(flowerId, quantity, pricePerUnit) {
             fetch('@Url.Page("Cart", "UpdateQuantity")', {
                 method: 'POST',
                 headers: {
@@ -73,38 +107,114 @@
                 .then(response => response.json())
                 .then(updatedCart => {
                     cartItems = updatedCart;
-                    renderCart();
-                    saveCartItemsToCookie(cartItems); // Lưu giỏ hàng vào cookie
-                    updateCartCount(); // Cập nhật số lượng giỏ hàng
+
+                    // Update the total price for this item
+                    const row = document.querySelector(`tr[data-flower-id="${flowerId}"]`);
+                    const totalCell = row.querySelector('.item-total');
+                    const newTotal = (quantity * pricePerUnit).toFixed(2);
+                    totalCell.textContent = `$${newTotal}`;
+
+                    // Update the cart total
+                    updateCartTotal();
+
+                    // Save to cookie
+                    saveCartItemsToCookie(cartItems);
                 })
                 .catch(error => console.error('Error updating quantity:', error));
         }
 
+        function deleteItem(flowerId) {
+            if (!confirm('Are you sure you want to remove this item?')) {
+                return;
+            }
+
+            fetch('@Url.Page("Cart", "DeleteItem")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({ flowerId: flowerId })
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        // Remove the item row from the table
+                        const row = document.querySelector(`tr[data-flower-id="${flowerId}"]`);
+                        if (row) {
+                            row.remove();
+                        }
+
+                        // Update cartItems array
+                        cartItems = result.cartItems;
+
+                        // Update the cart total
+                        updateCartTotal();
+
+                        // If cart is empty, show empty message and hide order button
+                        if (!cartItems || cartItems.length === 0) {
+                            document.getElementById('cart-container').innerHTML = '<p>Your cart is empty.</p>';
+                            const orderButton = document.getElementById('order-button');
+                            if (orderButton) {
+                                orderButton.style.display = 'none';
+                            }
+                        }
+
+                        // Refresh the page to ensure everything is synchronized
+                        window.location.reload();
+                    } else {
+                        alert('Failed to remove item: ' + (result.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting item:', error);
+                    alert('An error occurred while removing the item');
+                });
+        }
 
         function saveCartItemsToCookie(cartItems) {
             document.cookie = `cartItems=${encodeURIComponent(JSON.stringify(cartItems))}; path=/`;
         }
 
-        document.getElementById('order-button').addEventListener('click', placeOrder);
+        function deleteCookie(name) {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        }
 
-        function placeOrder() {
-            fetch('@Url.Page("Cart", "Order")', {
+        document.getElementById('order-button').addEventListener('click', function () {
+            const messageBox = document.getElementById('message-box');
+            messageBox.textContent = ''; // Clear previous messages
+            this.disabled = true; // Disable the button to prevent multiple clicks
+
+            fetch('@Url.Page("Cart", "GeneratePaymentUrl")', {
                 method: 'POST',
                 headers: {
+                    'Content-Type': 'application/json',
                     'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
                 }
             })
-                .then(response => {
-                    if (response.ok) {
-                        alert('Order placed successfully!');
-                        // Xóa giỏ hàng sau khi đặt hàng
-                        document.getElementById('cart-container').innerHTML = '<p>Your cart is empty.</p>';
-                    } else {
-                        alert('Failed to place order. Please try again.');
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Nếu URL thanh toán được tạo, chuyển hướng đến đó
+                        window.location.href = data.paymentUrl;
+                    } else if (data.redirectUrl) {
+                        // Nếu cần đăng nhập, chuyển hướng đến trang đăng nhập
+                        window.location.href = data.redirectUrl;
+                    } else if (data.message) {
+                        // Hiển thị thông báo lỗi trong message-box
+                        messageBox.textContent = data.message;
+                        messageBox.classList.remove('text-green-500'); // Remove success color if any
+                        messageBox.classList.add('text-red-500'); // Add error color
+                        document.getElementById('order-button').disabled = false; // Re-enable the button
                     }
                 })
-                .catch(error => console.error('Error placing order:', error));
-        }
+                .catch(error => {
+                    console.error('Error generating payment URL:', error);
+                    messageBox.textContent = 'An error occurred while generating the payment URL. Please try again.';
+                    messageBox.classList.add('text-red-500');
+                    document.getElementById('order-button').disabled = false; // Re-enable the button in case of error
+                });
+        });
     </script>
 </body>
 </html>

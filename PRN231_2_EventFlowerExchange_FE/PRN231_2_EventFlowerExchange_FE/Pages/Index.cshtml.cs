@@ -30,7 +30,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             }
 
             // Gọi API để lấy danh sách hoa
-            var odataUrl = $"{_baseApiUrl}/odata/Flower?$filter=Status eq 'Active' and (Condition eq 'Fresh' or Condition eq 'PartiallyFresh')";
+            var odataUrl = $"{_baseApiUrl}/odata/Flower?$filter=Status eq 'Active' and (Condition eq 'Fresh')";
             var response = await _httpClient.GetAsync(odataUrl);
             if (response.IsSuccessStatusCode)
             {
@@ -112,12 +112,35 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
         public IActionResult OnGetGetCartCount()
         {
             var cartJson = HttpContext.Request.Cookies["cartItems"];
-            if (string.IsNullOrEmpty(cartJson))
-                return new JsonResult(new { count = 0 });
 
-            var cartItems = JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson);
-            return new JsonResult(new { count = cartItems.Sum(item => item.Quantity) });
+            if (string.IsNullOrEmpty(cartJson))
+            {
+                // No cart items in the cookie, return a count of 0
+                return new JsonResult(new { count = 0 });
+            }
+
+            try
+            {
+                // Deserialize with case-insensitive matching for JSON properties
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                // Deserialize the cookie JSON data to List<CartItemDTO>
+                var cartItems = JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson, options);
+
+                // If deserialization is successful, calculate the total quantity
+                return new JsonResult(new { count = cartItems?.Sum(item => item.Quantity) ?? 0 });
+            }
+            catch (JsonException ex)
+            {
+                // Log the error (optional) and return a count of 0 if deserialization fails
+                Console.WriteLine($"Error deserializing cart items: {ex.Message}");
+                return new JsonResult(new { count = 0 });
+            }
         }
+
     }
 
     public class AddToCartRequest
