@@ -261,7 +261,7 @@ namespace Service.Service
         public async Task<int> CreateOrder(CreateOrderFlowerDTO orderDTO)
         {
             // Kiểm tra các trường bắt buộc
-            if (orderDTO == null || string.IsNullOrEmpty(orderDTO.DeliveryAddress) || orderDTO.CustomerId == 0 || !orderDTO.OrderDetails.Any())
+                if (orderDTO == null || string.IsNullOrEmpty(orderDTO.DeliveryAddress) || orderDTO.CustomerId == 0 || !orderDTO.OrderDetails.Any())
             {
                 throw new ArgumentException("All required fields must be filled");
             }
@@ -336,6 +336,7 @@ namespace Service.Service
                 {
                     throw new ArgumentException($"Not enough stock to fulfill the order for flower ID {orderDetailDTO.FlowerId}.");
                 }
+
             }
 
             // Tạo đối tượng Order
@@ -369,6 +370,7 @@ namespace Service.Service
 
             // Trả về OrderId
             return newOrder.OrderId;
+
         }
 
     }

@@ -84,13 +84,12 @@ namespace WebApi_EventFlowerExchange.Controllers
                     OrderId = orderId
                 };
                 return Ok(result);
-            }
-            catch (Exception ex)
+            }catch(ArgumentException e)
             {
-                // Xử lý lỗi và trả về thông báo thất bại
-                return BadRequest(new { Status = "failed", Message = ex.Message });
+                return BadRequest(e.Message);
             }
         }
+
 
 
         /*    [HttpPost]
