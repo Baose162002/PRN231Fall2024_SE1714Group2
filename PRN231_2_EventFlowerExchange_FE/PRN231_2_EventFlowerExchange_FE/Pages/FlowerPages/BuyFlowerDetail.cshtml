@@ -117,22 +117,32 @@
 </section>
 
 
-    <!-- Review -->
 <!-- Review Section -->
-<div class="bg-gray-100 p-6 max-w-3xl mx-auto">
+<div class="bg-gray-100 p-6 max-w-4xl mx-auto">
     <div class="flex flex-col justify-start items-start w-full space-y-8">
-        <div class="flex justify-start items-start">
+        <div class="flex justify-between items-center w-full">
             <p class="text-3xl lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800">Reviews</p>
+            <div class="w-64">
+                <label for="starFilter" class="block text-sm font-medium text-gray-700">Filter by Star Rating:</label>
+                <select id="starFilter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="0">All Ratings</option>
+                    <option value="5">5 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="2">2 Stars</option>
+                    <option value="1">1 Star</option>
+                </select>
+            </div>
         </div>
 
         @if (Model.Reviews != null && Model.Reviews.Any())
         {
-            @foreach (var review in Model.Reviews)
-            {
-                var timeDifference = DateTime.Now - review.ReviewDate;
-
-                <div class="w-full bg-white p-4 rounded-lg shadow-md relative">
-                    <div class="absolute top-2 right-2 group">
+            <div id="reviewsList" class="w-full">
+                @foreach (var review in Model.Reviews)
+                {
+                      var timeDifference = DateTime.Now - review.ReviewDate;
+                    <div class="w-full bg-white p-4 rounded-lg shadow-md relative mb-4" data-rating="@review.Rating">
+                        <div class="absolute top-2 right-2 group">
                         <button class="p-1 rounded-full hover:bg-gray-200 focus:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
@@ -194,6 +204,7 @@
                     </div>
                 </div>
             }
+            </div>
         }
         else
         {
@@ -311,5 +322,18 @@
         function hideUpdateModal() {
             document.getElementById('updateModal').style.display = 'none';
         }
+        document.getElementById('starFilter').addEventListener('change', function () {
+            var selectedRating = this.value;
+            var reviews = document.querySelectorAll('#reviewsList > div');
+
+            reviews.forEach(function (review) {
+                var reviewRating = review.getAttribute('data-rating');
+                if (selectedRating === "0" || reviewRating === selectedRating) {
+                    review.style.display = 'block';
+                } else {
+                    review.style.display = 'none';
+                }
+            });
+        });
     </script>
 }
