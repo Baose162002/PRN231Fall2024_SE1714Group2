@@ -25,6 +25,32 @@ namespace Repository.Repository
             return orders;
         }
 
+        public async Task<List<Order>> GetAllOrdersByUserId(int id)
+        {
+            var _context = new FlowerShopContext();
+            var orders = await _context.Orders
+                .Include(o => o.Customer) // Include related Customer entity
+                .Include(o => o.OrderDetails) // Include OrderDetails
+                .ThenInclude(b => b.Flower) // Include Flower within Batch
+                .Where(r => r.CustomerId == id)
+                .ToListAsync();
+            return orders;
+        }
+
+        // Get orders related to batches of the seller (UserId == 2)
+        public async Task<List<Order>> GetOrdersBySellerBatch(int sellerId)
+        {
+            var _context = new FlowerShopContext();
+            var orders = await _context.Orders
+                .Include(o => o.Customer) // Include related Customer entity
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Flower)
+                .ThenInclude(f => f.Batch)
+                .Where(o => o.OrderDetails.Any(od => od.Flower.Batch.CompanyId == sellerId))
+                .ToListAsync();
+            return orders;
+        }
+
         public async Task<Order> GetOrderById(int id)
         {
             var _context = new FlowerShopContext();
@@ -75,16 +101,16 @@ namespace Repository.Repository
                 throw new ArgumentException("Order is not existed");
             }
             // Kiểm tra trạng thái đơn hàng
-        if (existing.OrderStatus != OrderStatus.Pending)
-        {
-            throw new InvalidOperationException("Cannot delete order that is not pending.");
-        }
+            if (existing.OrderStatus != OrderStatus.Pending)
+            {
+                throw new InvalidOperationException("Cannot delete order that is not pending.");
+            }
 
-        // Kiểm tra xem đơn hàng có chứa OrderDetail hay không
-        if (existing.OrderDetails != null && existing.OrderDetails.Any())
-        {
-            throw new InvalidOperationException("Cannot delete order that contains order details.");
-        }
+            // Kiểm tra xem đơn hàng có chứa OrderDetail hay không
+            if (existing.OrderDetails != null && existing.OrderDetails.Any())
+            {
+                throw new InvalidOperationException("Cannot delete order that contains order details.");
+            }
             _context.Orders.Remove(existing);
             await _context.SaveChangesAsync();
         }
