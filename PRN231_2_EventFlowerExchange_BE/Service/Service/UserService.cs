@@ -83,22 +83,25 @@ namespace Service.Service
         {
             try
             {
+                // Validate input fields (Phone and Email)
                 ValidatePhoneNumber(createUserDTO.Phone);
                 ValidateEmail(createUserDTO.Email);
 
+                // Check if email, phone, or company name already exists in the system
                 if (await CheckEmailExist(createUserDTO.Email))
                 {
-                    throw new Exception("Email đã tồn tại.");
+                    throw new Exception("Email already exists.");
                 }
                 if (await CheckPhoneExist(createUserDTO.Phone))
                 {
-                    throw new Exception("Số điện thoại đã tồn tại.");
+                    throw new Exception("Phone number already exists.");
                 }
                 if (await CheckCompanyNameExist(createSellerDTO.CompanyName))
                 {
-                    throw new Exception("Tên công ty đã tồn tại.");
+                    throw new Exception("Company name already exists.");
                 }
 
+                // Create new User
                 var user = new User
                 {
                     FullName = createUserDTO.FullName,
@@ -106,16 +109,18 @@ namespace Service.Service
                     Phone = createUserDTO.Phone,
                     Address = createUserDTO.Address,
                     Role = EnumList.UserRole.Seller,
-                    Password = createUserDTO.Password,  
+                    Password = createUserDTO.Password, // Ensure password hashing if needed
                     Status = EnumList.Status.Active
                 };
 
-                var success = await _userRepository.AddAsync(user);
-                if (!success)
+                // Save User to database
+                var userSuccess = await _userRepository.AddAsync(user);
+                if (!userSuccess)
                 {
-                    throw new Exception("Không thể tạo người dùng.");
+                    throw new Exception("Failed to create user.");
                 }
 
+                // Create new Company and associate it with the newly created user
                 var company = new Company
                 {
                     CompanyName = createSellerDTO.CompanyName,
@@ -124,20 +129,24 @@ namespace Service.Service
                     TaxNumber = createSellerDTO.TaxNumber,
                     City = createSellerDTO.City,
                     PostalCode = createSellerDTO.PostalCode,
-                    UserId = user.UserId,
+                    UserId = user.UserId, // Associate the company with the user
                     Status = EnumList.Status.Active
                 };
+
+                // Save Company to database
                 var companySuccess = await _companyRepository.AddNew(company);
                 if (!companySuccess)
                 {
-                    throw new Exception("Không thể tạo công ty.");
+                    throw new Exception("Failed to create company.");
                 }
 
+                // Return the user response mapped to a DTO
                 return _mapper.Map<UserResponseDto>(user);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                // Ensure the exception message is logged and handled correctly
+                throw new Exception($"An error occurred: {ex.Message}");
             }
         }
 
