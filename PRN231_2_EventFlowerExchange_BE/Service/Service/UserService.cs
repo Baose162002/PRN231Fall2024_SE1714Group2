@@ -121,6 +121,9 @@ namespace Service.Service
                     CompanyName = createSellerDTO.CompanyName,
                     CompanyAddress = createSellerDTO.CompanyAddress,
                     CompanyDescription = createSellerDTO.CompanyDescription,
+                    TaxNumber = createSellerDTO.TaxNumber,
+                    City = createSellerDTO.City,
+                    PostalCode = createSellerDTO.PostalCode,
                     UserId = user.UserId,
                     Status = EnumList.Status.Active
                 };

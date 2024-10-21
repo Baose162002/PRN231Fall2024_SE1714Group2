@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using BusinessObject.DTO.Response;
-using System.Text.Json;
+﻿using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Text.Json;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages
 {
-    public class DetailsModel : PageModel
+    public class CompanyDetailFromUserModel : PageModel
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseApiUrl;
-        public DetailsModel(HttpClient httpClient, IConfiguration configuration)
+        public CompanyDetailFromUserModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _baseApiUrl = configuration["ApiSettings:BaseUrl"];
@@ -20,7 +20,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             // Gọi API để lấy chi tiết hoa theo id
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/Company/{id}");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/company/user/{id}");
 
             if (response.IsSuccessStatusCode)
             {
