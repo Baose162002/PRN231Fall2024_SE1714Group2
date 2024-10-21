@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Service.Service;
 using Service.IService;
 using BusinessObject.Enum;
+using BusinessObject.DTO.Request;
 
 namespace WebApi_EventFlowerExchange.Controllers
 {
@@ -12,47 +13,25 @@ namespace WebApi_EventFlowerExchange.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
-        private readonly PaymentService _paymentService;
         private readonly IPayService _payService; // Sử dụng để lưu Payment vào database
 
-        public PaymentController(PaymentService paymentService, IPayService payService)
+        public PaymentController(IPayService payService)
         {
-            _paymentService = paymentService;
             _payService = payService;
         }
 
-        // Tạo URL thanh toán
-        [HttpPost("create-payment")]
-        public IActionResult CreatePayment(VnPaymentRequestModel booking)
-        {
-            var paymentUrl = _paymentService.GeneratePaymentUrl(HttpContext, booking);
-            return Ok(new { paymentUrl });
-        }
 
-        // Xử lý phản hồi sau khi thanh toán
-        [HttpGet("payment-callback")]
-        public IActionResult PaymentCallback()
+        [HttpPost]
+        public async Task<IActionResult> Create(CreatePaymentDTO paymentDTO)
         {
-            
-            var paymentResponse = _paymentService.PaymentExecute(Request.Query);
-
-            if (!paymentResponse.Success)
+            try
             {
-                return BadRequest(new { message = "Payment failed", paymentResponse });
+                await _payService.CreatePayment(paymentDTO);
+                return Ok("Payment successfully");
+            }catch(ArgumentException e)
+            {
+                return BadRequest(e.Message);
             }
-
-            // Lưu thông tin thanh toán thành công vào database
-            var payment = new Payment
-            {
-                PaymentStatus = EnumList.PaymentStatus.Completed,
-                AmountPaid = decimal.Parse(paymentResponse.Amount) / 100, 
-                PaymentDate = DateTime.Now,
-                OrderId = int.Parse(paymentResponse.OrderId)
-            };
-
-            _payService.CreatePayment(payment);
-
-            return Ok(new { message = "Payment successful", paymentResponse });
         }
     }
 

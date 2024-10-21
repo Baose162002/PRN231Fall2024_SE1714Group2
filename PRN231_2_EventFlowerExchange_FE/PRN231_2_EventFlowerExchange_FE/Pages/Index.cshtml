@@ -37,7 +37,12 @@
                                 </a>
                                 <p class="text-gray-700 text-base">@flower.Description</p>
                                 <div class="mt-4 flex items-center justify-between">
-                                    <span class="text-gray-700 font-medium">$@flower.PricePerUnit</span>
+                                    @{
+                                        var cultureInfo = new System.Globalization.CultureInfo("vi-VN");
+                                    }
+                                    <span class="text-gray-700 font-medium">
+                                        @flower.PricePerUnit.ToString("C", cultureInfo)
+                                    </span>
                                     <form id="antiforgeryform">
                                         @Html.AntiForgeryToken()
                                     </form>

@@ -1,13 +1,6 @@
 ﻿using BusinessObject.DTO.Response;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Service.Service
+namespace PRN231_2_EventFlowerExchange_FE.Service
 {
     public class PaymentService
     {
@@ -126,7 +119,5 @@ namespace Service.Service
                 Amount = vnp_Amount
             };
         }
-
     }
-
 }

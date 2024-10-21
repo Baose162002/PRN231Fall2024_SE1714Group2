@@ -50,8 +50,7 @@ namespace WebApi_EventFlowerExchange.Extensions
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IPayService, PaySerivce>();
-            services.AddScoped<PaymentService>();
-            services.AddScoped<VnPayLibrary>();
+           
 
 
             services.AddScoped<IDeliveryService, DeliveryService>();
