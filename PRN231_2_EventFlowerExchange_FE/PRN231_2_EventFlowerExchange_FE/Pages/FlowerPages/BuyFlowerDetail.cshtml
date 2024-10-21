@@ -216,10 +216,10 @@
         }
 
         <!-- New Review Form -->
-        <div class="w-full bg-gray-50 p-8">
-            <h3 class="text-2xl font-bold mb-4">Write a Review</h3>
-            @if (Model?.Flower != null)
-            {
+        @if (Model?.Flower != null && Model.Flower.Batch != null && Model.Flower.Batch.CompanyId != currentUserId)
+        {
+            <div class="w-full bg-gray-50 p-8">
+                <h3 class="text-2xl font-bold mb-4">Write a Review</h3>
                 <form asp-page-handler="SubmitReview" asp-route-id="@Model.Flower.FlowerId" method="post" x-data="{ currentVal: 0 }">
                     <input type="hidden" name="FlowerId" value="@Model.Flower.FlowerId" />
                     <div class="mb-4">
@@ -241,11 +241,7 @@
                         <label for="feedback" class="block text-sm font-medium text-gray-700">Feedback</label>
                         <textarea id="feedback" name="Feedback" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required></textarea>
                     </div>
-                    @{
-                        var userIdString = HttpContext.Session.GetString("UserId");
-                    }
-
-                    @if (!string.IsNullOrEmpty(userIdString))
+                    @if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
                     {
                         <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-bold font-light rounded-md hover:bg-blue-700 transition duration-300">
                             Submit Review
@@ -258,12 +254,13 @@
                         </button>
                     }
                 </form>
-            }
-            else
-            {
-                <p class="text-red-600">Unable to submit review. Flower information is not available.</p>
-            }
-        </div>
+            </div>
+        }
+        else
+        {
+            <p class="text-gray-600">You cannot review your own batch.</p>
+        }
+
     </div>
 </div>
 
