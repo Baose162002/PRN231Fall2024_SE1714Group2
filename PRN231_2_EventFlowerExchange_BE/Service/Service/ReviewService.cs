@@ -10,17 +10,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BusinessObject.Enum;
+using Repository.Repository;
 
 namespace Service.Service
 {
     public class ReviewService : IReviewService
     {
         private readonly IReviewRepository _reviewRepository;
+        private readonly IFlowerRepository _flowerRepository; 
+        private readonly IBatchRepository _batchRepository; 
+
         private readonly IMapper _mapper;
 
-        public ReviewService(IReviewRepository reviewRepository, IMapper mapper)
+        public ReviewService(IReviewRepository reviewRepository, IFlowerRepository flowerRepository, IBatchRepository batchRepository, IMapper mapper)
         {
             _reviewRepository = reviewRepository;
+            _flowerRepository = flowerRepository;
+            _batchRepository = batchRepository;
             _mapper = mapper;
         }
 
@@ -50,9 +56,31 @@ namespace Service.Service
 
         public async Task CreateReview(CreateReviewDTO createReviewDTO)
         {
+            // Lấy thông tin về loại hoa
+            var flower = await _flowerRepository.GetFlowerById(createReviewDTO.FlowerId);
+            if (flower == null)
+            {
+                throw new ArgumentException("Flower not found");
+            }
+
+            // Lấy thông tin batch liên quan đến hoa
+            var batch = await _batchRepository.GetBatchById(flower.BatchId);
+            if (batch == null)
+            {
+                throw new ArgumentException("Batch not found");
+            }
+
+            // Kiểm tra nếu user đang tạo review chính là người tạo ra batch này
+            if (batch.CompanyId == createReviewDTO.CustomerId)
+            {
+                throw new ArgumentException("You cannot review a flower from your own batch");
+            }
+
+            // Tạo review 
             var review = _mapper.Map<Review>(createReviewDTO);
             review.ReviewDate = DateTime.Now;
             review.Status = EnumList.Status.Active;
+
             await _reviewRepository.Create(review);
         }
 
