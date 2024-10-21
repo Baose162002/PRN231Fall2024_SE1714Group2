@@ -12,6 +12,9 @@ namespace Repository.IRepository
     public interface IOrderRepository
     {
         Task<List<Order>> GetAllOrders();
+        Task<List<Order>> GetAllOrdersByUserId(int id);
+
+        Task<List<Order>> GetOrdersBySellerBatch(int sellerId);
         Task<Order> GetOrderById(int id);
         Task Create(Order order);
         Task Update(Order order, int id);

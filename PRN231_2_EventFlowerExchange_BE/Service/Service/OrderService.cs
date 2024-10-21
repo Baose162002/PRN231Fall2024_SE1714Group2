@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -25,9 +26,10 @@ namespace Service.Service
         private readonly IUserRepository _userRepository;
         private readonly IBatchRepository _batchRepository;
         private readonly IFlowerRepository _flowerRepository;
+        private readonly ICompanyRepository _companyRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IMapper mapper, IBatchRepository batchRepository, IOrderDetailRepository orderDetailRepository, IFlowerRepository flowerRepository)
+        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IMapper mapper, IBatchRepository batchRepository, IOrderDetailRepository orderDetailRepository, IFlowerRepository flowerRepository, ICompanyRepository companyRepository)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
@@ -35,6 +37,7 @@ namespace Service.Service
             _batchRepository = batchRepository;
             _orderDetailRepository = orderDetailRepository;
             _flowerRepository = flowerRepository;
+            _companyRepository = companyRepository;
         }
 
         public OrderService()
@@ -46,6 +49,28 @@ namespace Service.Service
             var orders = await _orderRepository.GetAllOrders();
             var ordersDTO = _mapper.Map<List<ListOrderDTO>>(orders);
             return ordersDTO;
+        }
+
+        public async Task<List<ListOrderDTO>> GetAllOrdersByUserId(int userId)
+        {
+            // Case 1: Lấy tất cả đơn đã đặt CỦA bản thân
+            if (userId == 3)
+            {
+                var orders = await _orderRepository.GetAllOrdersByUserId(userId);
+                var ordersDTO = _mapper.Map<List<ListOrderDTO>>(orders);
+                return ordersDTO;
+            }
+            // Case 2: Lấy tất cả đơn đã đặt CỦA công ty đó, dựa trên BatchId
+            else if (userId == 2)
+            {
+                var orders = await _orderRepository.GetOrdersBySellerBatch(userId);
+                var ordersDTO = _mapper.Map<List<ListOrderDTO>>(orders);
+                return ordersDTO;
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("User is not allowed to view orders.");
+            }
         }
 
         public async Task<ListOrderDTO> GetOrderById(int orderId)

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service.IService;
+using System.Security.Claims;
 using static BusinessObject.Enum.EnumList;
 
 namespace WebApi_EventFlowerExchange.Controllers
@@ -27,7 +28,7 @@ namespace WebApi_EventFlowerExchange.Controllers
             _batchService = batchService;
         }
 
-        
+
 
         // GET: api/Order
         [HttpGet]
@@ -40,6 +41,31 @@ namespace WebApi_EventFlowerExchange.Controllers
             }
             return Ok(orders);
         }
+
+        // Lấy Order của người dùng đó
+
+        [HttpGet("user")]
+        [Authorize(Roles = "Seller, Buyer")]
+        public async Task<IActionResult> GetAllOrdersByUserId()
+        {
+            string role = User.FindFirstValue(ClaimTypes.Role);
+            if (role == null)
+            {
+                return BadRequest("Please login!");
+            }
+
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Use NameIdentifier for userId
+
+            var orders = await _orderService.GetAllOrdersByUserId(userId);
+
+            if (orders == null || !orders.Any())
+            {
+                return NotFound("You don't have any order!");
+            }
+
+            return Ok(orders);
+        }
+
 
         // GET: api/Order/id
         [HttpGet("{id}")]
