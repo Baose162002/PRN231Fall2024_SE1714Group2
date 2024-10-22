@@ -45,16 +45,16 @@ namespace WebApi_EventFlowerExchange.Controllers
         // Lấy Order của người dùng đó
 
         [HttpGet("user")]
-        [Authorize(Roles = "Seller, Buyer")]
-        public async Task<IActionResult> GetAllOrdersByUserId()
+        //[Authorize(Roles = "Seller, Buyer")]
+        public async Task<IActionResult> GetAllOrdersByUserId(int userId)
         {
-            string role = User.FindFirstValue(ClaimTypes.Role);
-            if (role == null)
-            {
-                return BadRequest("Please login!");
-            }
+            //string role = User.FindFirstValue(ClaimTypes.Role);
+            //if (role == null)
+            //{
+            //    return BadRequest("Please login!");
+            //}
 
-            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Use NameIdentifier for userId
+            //userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Use NameIdentifier for userId
 
             var orders = await _orderService.GetAllOrdersByUserId(userId);
 

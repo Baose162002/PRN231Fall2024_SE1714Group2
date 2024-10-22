@@ -7,5 +7,6 @@
         public double TotalPrice => QuantityOrdered * Price;
         public int OrderId { get; set; } //mapping
         public int BatchId { get; set; } // Thêm thuộc tính BatchId
+        public ListFlowerDTO Flower { get; set; } // Display Flower details
     }
 }
