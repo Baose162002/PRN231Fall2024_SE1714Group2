@@ -96,6 +96,8 @@
         });
 
         function updateQuantity(flowerId, quantity, pricePerUnit) {
+            console.log(`Updating quantity for FlowerId: ${flowerId}, Quantity: ${quantity}`);
+
             fetch('@Url.Page("Cart", "UpdateQuantity")', {
                 method: 'POST',
                 headers: {
@@ -104,23 +106,41 @@
                 },
                 body: JSON.stringify({ flowerId, quantity })
             })
-                .then(response => response.json())
-                .then(updatedCart => {
-                    cartItems = updatedCart;
-
-                    // Update the total price for this item
-                    const row = document.querySelector(`tr[data-flower-id="${flowerId}"]`);
-                    const totalCell = row.querySelector('.item-total');
-                    const newTotal = (quantity * pricePerUnit).toFixed(2);
-                    totalCell.textContent = `$${newTotal}`;
-
-                    // Update the cart total
-                    updateCartTotal();
-
-                    // Save to cookie
-                    saveCartItemsToCookie(cartItems);
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
                 })
-                .catch(error => console.error('Error updating quantity:', error));
+                .then(updatedCart => {
+                    console.log('Updated cart received:', updatedCart);
+
+                    if (updatedCart) {
+                        cartItems = updatedCart;
+
+                        const row = document.querySelector(`tr[data-flower-id="${flowerId}"]`);
+                        const totalCell = row.querySelector('.item-total');
+                        const newTotal = (quantity * pricePerUnit).toFixed(2);
+                        totalCell.textContent = `$${newTotal}`;
+
+                        updateCartTotal();
+                        saveCartItemsToCookie(cartItems);
+                    } else {
+                        console.error('Updated cart is null or undefined');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating quantity:', error);
+                });
+        }
+
+        function saveCartItemsToCookie(cartItems) {
+            // Check if cartItems is not null or undefined
+            if (cartItems) {
+                document.cookie = `cartItems=${encodeURIComponent(JSON.stringify(cartItems))}; path=/; max-age=${30 * 24 * 60 * 60}`; // 30 days
+            } else {
+                console.error('Cart items are null or undefined, cannot save to cookie.');
+            }
         }
 
         function deleteItem(flowerId) {
@@ -171,15 +191,6 @@
                     alert('An error occurred while removing the item');
                 });
         }
-
-        function saveCartItemsToCookie(cartItems) {
-            document.cookie = `cartItems=${encodeURIComponent(JSON.stringify(cartItems))}; path=/`;
-        }
-
-        function deleteCookie(name) {
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        }
-
         document.getElementById('order-button').addEventListener('click', function () {
             const messageBox = document.getElementById('message-box');
             messageBox.textContent = ''; // Clear previous messages

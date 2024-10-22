@@ -19,7 +19,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
         {
             _paymentService = paymentService;
         }
-       
+
 
         private List<CartItemDTO> GetCartItems()
         {
@@ -33,7 +33,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
 
             try
             {
-                // Deserialize using case-insensitive property matching
                 var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
@@ -43,9 +42,9 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
             }
             catch (JsonException ex)
             {
-                // Log the error (optional) and return an empty list if deserialization fails
+                // Log the error (optional)
                 Console.WriteLine($"Error deserializing cart items: {ex.Message}");
-                return new List<CartItemDTO>();
+                return new List<CartItemDTO>(); // Return empty list on error
             }
         }
 
@@ -55,24 +54,40 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
             CartItems = GetCartItems();
         }
 
-        [ValidateAntiForgeryToken]
-        [HttpPost]
         public IActionResult OnPostUpdateQuantity([FromBody] UpdateQuantityRequest request)
         {
             var cartJson = HttpContext.Request.Cookies["cartItems"];
-            var cartItems = string.IsNullOrEmpty(cartJson) ? new List<CartItemDTO>() : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson);
+            var cartItems = string.IsNullOrEmpty(cartJson)
+                            ? new List<CartItemDTO>()
+                            : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            // Log initial state of cart items
+            Console.WriteLine("Initial Cart Items: " + JsonSerializer.Serialize(cartItems));
 
             var item = cartItems.FirstOrDefault(x => x.FlowerId == request.FlowerId);
             if (item != null)
             {
                 item.Quantity = request.Quantity;
+                Console.WriteLine($"Updated item: {item.FlowerId} to quantity: {item.Quantity}");
+            }
+            else
+            {
+                Console.WriteLine($"Item with FlowerId: {request.FlowerId} not found.");
             }
 
             var updatedCartJson = JsonSerializer.Serialize(cartItems);
-            HttpContext.Response.Cookies.Append("cartItems", updatedCartJson, new CookieOptions { Path = "/" });
+            HttpContext.Response.Cookies.Append("cartItems", updatedCartJson, new CookieOptions
+            {
+                Expires = DateTimeOffset.Now.AddDays(30),
+                Path = "/"
+            });
 
-            return new JsonResult(cartItems); 
+            // Log the updated cart items
+            Console.WriteLine("Updated Cart Items: " + updatedCartJson);
+
+            return new JsonResult(cartItems);
         }
+
 
         [ValidateAntiForgeryToken]
         public JsonResult OnPostDeleteItem([FromBody] DeleteItemRequest request)
@@ -215,7 +230,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
             var paymentUrl = _paymentService.GeneratePaymentUrl(HttpContext, paymentRequest);
             HttpContext.Response.Cookies.Append("OrderId", orderId.ToString(), new CookieOptions
             {
-                Expires = DateTimeOffset.UtcNow.AddMinutes(1) // Thay đổi thời gian hết hạn nếu cần
+                Expires = DateTimeOffset.UtcNow.AddMinutes(1) 
             });
 
 

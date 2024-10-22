@@ -128,18 +128,8 @@
         min-width: 8rem
     }
 </style>
-@section Scripts {
-    <script>
-        function updateCartCount() {
-            const cartItemsCookie = document.cookie.split('; ').find(row => row.startsWith('cartItems='));
-            if (cartItemsCookie) {
-                const cartItemsValue = JSON.parse(decodeURIComponent(cartItemsCookie.split('=')[1]));
-                const totalCount = cartItemsValue.reduce((total, item) => total + (item.quantity || 0), 0); // Sử dụng 'quantity' nếu thuộc tính đúng là chữ thường
-                document.getElementById('cart-count').textContent = totalCount;
-            } else {
-                document.getElementById('cart-count').textContent = 0;
-            }
-        }
-        window.onload = updateCartCount;
-    </script>
-}
+
+
+
+
+
