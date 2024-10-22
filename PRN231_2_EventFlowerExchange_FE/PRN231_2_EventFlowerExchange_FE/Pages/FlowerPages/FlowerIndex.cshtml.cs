@@ -28,18 +28,27 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
 
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/Flower/GetAll");
 
+            var odataUrl = $"{_baseApiUrl}/odata/Flower?$filter=Status eq 'Active' and (Condition eq 'Fresh')";
+            var response = await _httpClient.GetAsync(odataUrl);
             if (response.IsSuccessStatusCode)
             {
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                Flowers = await response.Content.ReadFromJsonAsync<List<ListFlowerDTO>>(options);
+                var odataResponse = await response.Content.ReadFromJsonAsync<ODataResponse<ListFlowerDTO>>(options);
+
+                Flowers = odataResponse?.Value ?? new List<ListFlowerDTO>();
             }
+
+           
             else
             {
                 Flowers = new List<ListFlowerDTO>();
                 ModelState.AddModelError(string.Empty, "Not found flower");
             }
+        }
+        public class ODataResponse<T>
+        {
+            public List<T> Value { get; set; }
         }
     }
 }

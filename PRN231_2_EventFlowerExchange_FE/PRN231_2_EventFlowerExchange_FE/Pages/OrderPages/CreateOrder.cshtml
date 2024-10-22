@@ -7,6 +7,15 @@
 <h2>Create Order</h2>
 
 <form method="post">
+    <div>
+        <label for="FlowerId">Select Flower:</label>
+        <select id="FlowerId" name="Input.FlowerId" asp-for="Input.FlowerId" asp-items="@(new SelectList(Model.Flowers, "FlowerId", "Name"))" onchange="fetchBatches()" required>
+            <option value="">-- Select Flower --</option>
+        </select>
+    </div>
+
+    <br />
+
     <div id="batch-container" style="display:none;">
         <h3>Select Batches for the Flower</h3>
         <table>
@@ -50,13 +59,13 @@
                 batches.forEach(batch => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                                        <td>${batch.batchId}</td>
-                                        <td>${batch.batchQuantity}</td>
-                                        <td>
-                                            <input type="number" name="Input.OrderDetails[${batch.batchId}].QuantityOrdered" min="0" max="${batch.batchQuantity}" value="0" />
-                                            <input type="hidden" name="Input.OrderDetails[${batch.batchId}].BatchId" value="${batch.batchId}" />
-                                        </td>
-                                    `;
+                                <td>${batch.batchId}</td>
+                                <td>${batch.batchQuantity}</td>
+                                <td>
+                                    <input type="number" name="Input.OrderDetails[${batch.batchId}].QuantityOrdered" min="0" max="${batch.batchQuantity}" value="0" />
+                                    <input type="hidden" name="Input.OrderDetails[${batch.batchId}].BatchId" value="${batch.batchId}" />
+                                </td>
+                            `;
                     batchList.appendChild(row);
                 });
             } else {

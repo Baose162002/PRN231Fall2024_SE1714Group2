@@ -47,6 +47,9 @@ namespace Service.Service
                 CompanyDescription = company.CompanyDescription,
                 CompanyAddress = company.CompanyAddress,
                 UserId = company.UserId,
+                TaxNumber = company.TaxNumber,
+                PostalCode = company.PostalCode,
+                City = company.City,
                 Status = EnumList.Status.Active
             };
             await _companyRepository.AddNew(newCompany);

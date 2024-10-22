@@ -15,7 +15,7 @@ namespace Repository.Repository
             var _context = new FlowerShopContext();
            
             _context.Payments.Add(payment);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

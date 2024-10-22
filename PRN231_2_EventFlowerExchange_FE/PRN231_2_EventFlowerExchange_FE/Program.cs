@@ -7,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<CloudinaryService>();
+builder.Services.AddScoped<PaymentService>();
+builder.Services.AddScoped<VnPayLibrary>();
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 
