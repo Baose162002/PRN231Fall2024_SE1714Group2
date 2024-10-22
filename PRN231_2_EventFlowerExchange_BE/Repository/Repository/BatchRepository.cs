@@ -52,24 +52,11 @@ namespace Repository.Repository
                     existing.BatchName = batch.BatchName;
                     existing.EventName = batch.EventName;
                     existing.EventDate = batch.EventDate;
-                    existing.BatchQuantity = batch.BatchQuantity;
-                    existing.RemainingQuantity = batch.RemainingQuantity;
+                    existing.BatchQuantity = 0;
+                    existing.RemainingQuantity = 0;
                     existing.Description = batch.Description;
                     existing.EntryDate = batch.EntryDate;
                     existing.Status = EnumList.Status.Active;
-
-                    var flowersInBatch = await _context.Flowers.Where(f => f.BatchId == existing.BatchId).ToListAsync();
-
-                    if (flowersInBatch.Any())
-                    {
-                        foreach (var flower in flowersInBatch)
-                        {
-                            flower.Status = EnumList.Status.Active;
-                        }
-
-                        _context.Flowers.UpdateRange(flowersInBatch);
-                    }
-
                     _context.Batches.Update(existing);
                     await _context.SaveChangesAsync();
                 }
@@ -183,30 +170,29 @@ namespace Repository.Repository
                         var flowersInBatch = await _context.Flowers.Where(f => f.BatchId == batch.BatchId).ToListAsync();
 
                         bool hasAvailableFlowers = flowersInBatch.Any(f => f.RemainingQuantity > 0);
-                        bool batchHasRemaining = batch.RemainingQuantity > 0;
 
-                        if (batchHasRemaining && hasAvailableFlowers)
+                        if (hasAvailableFlowers)
                         {
-                            batch.Status = Status.NeedsReview;
+                            batch.Status = Status.Overdue;
 
                             foreach (var flower in flowersInBatch)
                             {
                                 if (flower.RemainingQuantity > 0)
                                 {
-                                    flower.Status = Status.NeedsReview;
+                                    flower.Status = Status.Overdue;
                                 }
                             }
 
                             _context.Batches.Update(batch);
                             _context.Flowers.UpdateRange(flowersInBatch);
                         }
-                        else if (batchHasRemaining && !hasAvailableFlowers)
+                        else
                         {
-                            batch.Status = Status.NeedsReview;
+                            batch.Status = Status.Overdue;
 
                             foreach (var flower in flowersInBatch)
                             {
-                                flower.Status = Status.NeedsReview;
+                                flower.Status = Status.Overdue;
                             }
 
                             _context.Batches.Update(batch);
@@ -218,6 +204,7 @@ namespace Repository.Repository
                 await _context.SaveChangesAsync();
             }
         }
+
 
 
         public async Task UpdateBatch(Batch batch)

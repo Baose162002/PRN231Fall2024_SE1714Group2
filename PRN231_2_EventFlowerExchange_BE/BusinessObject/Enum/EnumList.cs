@@ -11,7 +11,7 @@ namespace BusinessObject.Enum
         public enum OrderStatus
         {
             Pending = 1,
-            Confirmed = 2,
+            Paid = 2,
             Dispatched = 3,
             Delivered = 4
         }
@@ -54,7 +54,7 @@ namespace BusinessObject.Enum
         {
             Active = 1,
             Inactive = 2,
-            NeedsReview = 3
+            Overdue = 3
         }
     }
 }
