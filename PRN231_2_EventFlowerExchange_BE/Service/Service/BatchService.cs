@@ -50,24 +50,9 @@ namespace Service.Service
         {
             if (batch == null || string.IsNullOrWhiteSpace(batch.BatchName)
               || string.IsNullOrWhiteSpace(batch.Description)
-            || batch.BatchQuantity == null || batch.CompanyId == null)
+                || batch.CompanyId == null)
             {
                 throw new ArgumentException("All fieds must be filled");
-            }
-
-          
-            if (batch.BatchQuantity < 0)
-            {
-                throw new ArgumentException("Quantity minimum must be a positive number");
-            }
-            if (batch.RemainingQuantity < 0)
-            {
-                throw new ArgumentException("RemainingQuantity minimum must be a positive number");
-            }
-
-            if (batch.RemainingQuantity > batch.BatchQuantity)
-            {
-                throw new ArgumentException("RemainingQuantity cannot exceed BatchQuantity.");
             }
 
 
@@ -76,8 +61,8 @@ namespace Service.Service
                 BatchName = batch.BatchName,
                 EventName = batch.EventName,
                 EventDate = batch.EventDate,
-                BatchQuantity = batch.BatchQuantity,
-                RemainingQuantity = batch.RemainingQuantity,
+                BatchQuantity = 0,
+                RemainingQuantity = 0,
                 Description = batch.Description,
                 EntryDate = batch.EntryDate,
                 CompanyId = batch.CompanyId,
@@ -89,26 +74,10 @@ namespace Service.Service
         public async Task Update(UpdateBatchDTO updateBatchDTO, int id)
         {
             if (updateBatchDTO == null || string.IsNullOrWhiteSpace(updateBatchDTO.BatchName)
-             || string.IsNullOrWhiteSpace(updateBatchDTO.Description)
-           || updateBatchDTO.BatchQuantity == null)
+             || string.IsNullOrWhiteSpace(updateBatchDTO.Description))
             {
                 throw new ArgumentException("All fieds must be filled");
             }
-            if (updateBatchDTO.RemainingQuantity > updateBatchDTO.BatchQuantity)
-            {
-                throw new ArgumentException("RemainingQuantity cannot exceed BatchQuantity.");
-            }
-
-
-            if (updateBatchDTO.BatchQuantity < 0)
-            {
-                throw new ArgumentException("Quantity minimum must be a positive number");
-            }
-            if (updateBatchDTO.RemainingQuantity < 0)
-            {
-                throw new ArgumentException("RemainingQuantity minimum must be a positive number");
-            }
-    
             Batch existing = await _batchRepository.GetBatchById(id);
             if(existing == null)
             {

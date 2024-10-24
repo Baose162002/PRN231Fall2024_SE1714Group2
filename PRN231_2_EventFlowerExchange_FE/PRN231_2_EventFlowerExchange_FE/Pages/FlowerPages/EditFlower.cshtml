@@ -54,8 +54,21 @@
 
             <div class="mb-4">
                 <label for="Origin" class="block text-gray-700 font-bold mb-2">Origin:</label>
-                <input type="text" id="Origin" name="Flower.Origin" value="@Model.Flower.Origin" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+                <select id="Origin"
+                        name="Flower.Origin"
+                        asp-for="Flower.Origin"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        required>
+                    <option value="">-- Select Province --</option>
+                    <option value="Đà Lạt">Đà Lạt</option>
+                    <option value="Hà Nội">Hà Nội</option>
+                    <option value="Lào Cai">Lào Cai</option>
+                    <option value="Hải Phòng">Hải Phòng</option>
+                    <option value="Đà Nẵng">Đà Nẵng</option>
+                    <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                </select>
             </div>
+
 
             <div class="mb-4">
                 <label for="Color" class="block text-gray-700 font-bold mb-2">Color:</label>

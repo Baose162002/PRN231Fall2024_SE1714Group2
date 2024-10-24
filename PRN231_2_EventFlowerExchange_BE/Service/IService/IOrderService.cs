@@ -24,5 +24,7 @@ namespace Service.IService
         Task<List<Order>> SearchOrders(OrderSearchDTO searchCriteria);
         Task<int> CreateOrder(CreateOrderFlowerDTO orderDTO);
 
+        Task UpdateStatus(OrderUpdateStatusDTO order, int id);
+
     }
 }

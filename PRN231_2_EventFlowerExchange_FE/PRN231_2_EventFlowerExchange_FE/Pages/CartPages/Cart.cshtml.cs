@@ -19,7 +19,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
         {
             _paymentService = paymentService;
         }
-       
+
 
         private List<CartItemDTO> GetCartItems()
         {
@@ -33,7 +33,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
 
             try
             {
-                // Deserialize using case-insensitive property matching
                 var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
@@ -43,9 +42,9 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
             }
             catch (JsonException ex)
             {
-                // Log the error (optional) and return an empty list if deserialization fails
+                // Log the error (optional)
                 Console.WriteLine($"Error deserializing cart items: {ex.Message}");
-                return new List<CartItemDTO>();
+                return new List<CartItemDTO>(); // Return empty list on error
             }
         }
 
@@ -55,24 +54,40 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
             CartItems = GetCartItems();
         }
 
-        [ValidateAntiForgeryToken]
-        [HttpPost]
         public IActionResult OnPostUpdateQuantity([FromBody] UpdateQuantityRequest request)
         {
             var cartJson = HttpContext.Request.Cookies["cartItems"];
-            var cartItems = string.IsNullOrEmpty(cartJson) ? new List<CartItemDTO>() : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson);
+            var cartItems = string.IsNullOrEmpty(cartJson)
+                            ? new List<CartItemDTO>()
+                            : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            // Log initial state of cart items
+            Console.WriteLine("Initial Cart Items: " + JsonSerializer.Serialize(cartItems));
 
             var item = cartItems.FirstOrDefault(x => x.FlowerId == request.FlowerId);
             if (item != null)
             {
                 item.Quantity = request.Quantity;
+                Console.WriteLine($"Updated item: {item.FlowerId} to quantity: {item.Quantity}");
+            }
+            else
+            {
+                Console.WriteLine($"Item with FlowerId: {request.FlowerId} not found.");
             }
 
             var updatedCartJson = JsonSerializer.Serialize(cartItems);
-            HttpContext.Response.Cookies.Append("cartItems", updatedCartJson, new CookieOptions { Path = "/" });
+            HttpContext.Response.Cookies.Append("cartItems", updatedCartJson, new CookieOptions
+            {
+                Expires = DateTimeOffset.Now.AddDays(30),
+                Path = "/"
+            });
 
-            return new JsonResult(cartItems); 
+            // Log the updated cart items
+            Console.WriteLine("Updated Cart Items: " + updatedCartJson);
+
+            return new JsonResult(cartItems);
         }
+
 
         [ValidateAntiForgeryToken]
         public JsonResult OnPostDeleteItem([FromBody] DeleteItemRequest request)
@@ -144,80 +159,20 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
 
             var totalAmount = (double)cartItems.Sum(item => item.PricePerUnit * item.Quantity);
 
-            // Fetch user details from OData API
-            var userApiUrl = $"http://localhost:5077/odata/User?$filter=UserId eq {customerId}";
-            string address = string.Empty;
-
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                var userResponse = client.GetAsync(userApiUrl).Result;
-
-                if (!userResponse.IsSuccessStatusCode)
-                {
-                    var errorContent = userResponse.Content.ReadAsStringAsync().Result;
-                    return new JsonResult(new { success = false, message = $"Failed to fetch user data: {errorContent}" });
-                }
-
-                var responseContent = userResponse.Content.ReadAsStringAsync().Result;
-                var oDataResponse = JsonSerializer.Deserialize<ODataResponse<ListUserDTO>>(responseContent);
-
-                if (oDataResponse == null || !oDataResponse.Value.Any())
-                {
-                    return new JsonResult(new { success = false, message = "Failed to retrieve user address." });
-                }
-
-                address = oDataResponse.Value.First().Address;
-            }
-
-            var orderRequest = new
-            {
-                orderDate = DateTime.Now,
-                deliveryAddress = address,
-                deliveryDate = DateTime.Now.AddDays(3),
-                customerId = customerId,
-                orderDetails = cartItems.Select(item => new
-                {
-                    flowerId = item.FlowerId,
-                    quantityOrdered = item.Quantity
-                }).ToList()
-            };
-
-            var orderApiUrl = "http://localhost:5077/api/Order/order";
-            int orderId = 0;
-
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                var content = new StringContent(JsonSerializer.Serialize(orderRequest), Encoding.UTF8, "application/json");
-                var response = client.PostAsync(orderApiUrl, content).Result;
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = response.Content.ReadAsStringAsync().Result;
-                    return new JsonResult(new { success = false, message = $"Failed to create order: {errorContent}" });
-                }
-
-                var responseContent = response.Content.ReadAsStringAsync().Result;
-                var orderResponse = JsonSerializer.Deserialize<OrderResponse>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                orderId = orderResponse.OrderId;
-               
-            }
-
+            // Tạo request thanh toán
             var paymentRequest = new VnPaymentRequestModel
             {
-                OrderId = orderId,
+                OrderId = 0,  // Không tạo order ở đây, giữ giá trị mặc định
                 Amount = totalAmount,
                 FullName = userName,
                 Description = "Payment for Flower Orders"
             };
 
             var paymentUrl = _paymentService.GeneratePaymentUrl(HttpContext, paymentRequest);
-            HttpContext.Response.Cookies.Append("OrderId", orderId.ToString(), new CookieOptions
+            HttpContext.Response.Cookies.Append("CartItems", cartJson, new CookieOptions
             {
-                Expires = DateTimeOffset.UtcNow.AddMinutes(1) // Thay đổi thời gian hết hạn nếu cần
+                Expires = DateTimeOffset.UtcNow.AddMinutes(5) // Lưu thông tin giỏ hàng trong thời gian ngắn
             });
-
 
             return new JsonResult(new { success = true, paymentUrl });
         }

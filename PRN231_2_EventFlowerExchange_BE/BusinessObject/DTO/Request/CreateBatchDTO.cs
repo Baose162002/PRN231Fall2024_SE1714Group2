@@ -12,8 +12,6 @@ namespace BusinessObject.DTO.Request
         public string BatchName { get; set; }
         public string EventName { get; set; }
         public DateTime EventDate { get; set; }
-        public int BatchQuantity { get; set; }
-        public int RemainingQuantity { get; set; }
         public string Description { get; set; }
         public DateTime EntryDate { get; set; }
         public int CompanyId { get; set; }

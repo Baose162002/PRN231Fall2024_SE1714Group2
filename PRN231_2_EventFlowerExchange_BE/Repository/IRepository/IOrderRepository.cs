@@ -22,5 +22,6 @@ namespace Repository.IRepository
         Order UpdateOrderStatusAsync(int id);
 
         Task<List<Order>> SearchOrders(OrderSearchDTO searchCriteria);
+        Task UpdateStatus(Order order, int id);
     }
 }

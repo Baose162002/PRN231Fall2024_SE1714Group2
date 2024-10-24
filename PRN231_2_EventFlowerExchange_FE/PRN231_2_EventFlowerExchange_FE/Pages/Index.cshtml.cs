@@ -90,56 +90,38 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             var cartJson = HttpContext.Request.Cookies["cartItems"];
             List<CartItemDTO> cartItems = string.IsNullOrEmpty(cartJson)
                 ? new List<CartItemDTO>()
-                : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson);
+                : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             var existingItem = cartItems.FirstOrDefault(x => x.FlowerId == flower.FlowerId);
             if (existingItem != null)
             {
-                existingItem.Quantity += 1;
+                existingItem.Quantity += 1; // Tăng số lượng của sản phẩm đã tồn tại
             }
             else
             {
-                flower.Quantity = 1;
+                flower.Quantity = 1; // Nếu chưa có thì khởi tạo số lượng là 1
                 cartItems.Add(flower);
             }
 
             var options = new CookieOptions { Expires = DateTimeOffset.Now.AddDays(30) };
             HttpContext.Response.Cookies.Append("cartItems", JsonSerializer.Serialize(cartItems), options);
 
-            return cartItems.Sum(item => item.Quantity);
+            return cartItems.Count; // Trả về số lượng sản phẩm khác nhau trong giỏ hàng
         }
 
-        public IActionResult OnGetGetCartCount()
+
+
+        public JsonResult OnGetGetCartCount()
         {
             var cartJson = HttpContext.Request.Cookies["cartItems"];
+            List<CartItemDTO> cartItems = string.IsNullOrEmpty(cartJson)
+                ? new List<CartItemDTO>()
+                : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            if (string.IsNullOrEmpty(cartJson))
-            {
-                // No cart items in the cookie, return a count of 0
-                return new JsonResult(new { count = 0 });
-            }
-
-            try
-            {
-                // Deserialize with case-insensitive matching for JSON properties
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-
-                // Deserialize the cookie JSON data to List<CartItemDTO>
-                var cartItems = JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson, options);
-
-                // If deserialization is successful, calculate the total quantity
-                return new JsonResult(new { count = cartItems?.Sum(item => item.Quantity) ?? 0 });
-            }
-            catch (JsonException ex)
-            {
-                // Log the error (optional) and return a count of 0 if deserialization fails
-                Console.WriteLine($"Error deserializing cart items: {ex.Message}");
-                return new JsonResult(new { count = 0 });
-            }
+            int cartCount = cartItems.Sum(item => item.Quantity); // Tính tổng số lượng sản phẩm
+            return new JsonResult(new { count = cartCount });
         }
+
 
     }
 

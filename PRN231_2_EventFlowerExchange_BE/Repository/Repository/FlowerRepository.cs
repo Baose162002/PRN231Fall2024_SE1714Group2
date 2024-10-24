@@ -65,64 +65,11 @@ namespace Repository.Repository
             existing.Condition = EnumList.FlowerCondition.Fresh; // Update condition
             existing.FlowerStatus = flower.RemainingQuantity > 0 ? EnumList.FlowerStatus.Available : EnumList.FlowerStatus.SoldOut;
             existing.Status = EnumList.Status.Active;
-            // Calculate the difference in quantity
-            if (flower.RemainingQuantity > oldRemainingQuantity)
-            {
-                // Adjust batch quantity only if new quantity is greater than old quantity
-                int quantityToAdjust = flower.RemainingQuantity - oldRemainingQuantity;
-
-                // Ensure there is enough quantity in the batch
-                if (batch.RemainingQuantity < quantityToAdjust)
-                {
-                    throw new ArgumentException("Insufficient batch quantity.");
-                }
-
-                // Adjust the batch's remaining quantity
-                batch.RemainingQuantity -= quantityToAdjust;
-
-                // Update the batch in the database
-                _context.Batches.Update(batch);
-            }
-
-            // Update the flower in the database
             _context.Flowers.Update(existing);
             await _context.SaveChangesAsync();
         }
 
-        public async Task AdjustBatchQuantity(Flower flower, int id)
-        {
-            var _context = new FlowerShopContext();
-
-            // Fetch the existing flower
-            var existing = await _context.Flowers.FindAsync(id);
-            if (existing == null)
-            {
-                throw new ArgumentException("Flower not found.");
-            }
-
-            // Fetch the associated batch
-            var batch = await _context.Batches.FindAsync(existing.BatchId);
-            if (batch == null)
-            {
-                throw new ArgumentException("Batch not found.");
-            }
-
-            // Calculate the difference in quantity
-            int quantityDifference = flower.RemainingQuantity;
-
-            // Ensure there is enough quantity in the batch
-            if (batch.RemainingQuantity - quantityDifference < 0)
-            {
-                throw new ArgumentException("Insufficient batch quantity.");
-            }
-
-            // Adjust the batch's remaining quantity
-            batch.RemainingQuantity -= quantityDifference;
-
-            // Update the batch in the database
-            _context.Batches.Update(batch);
-            await _context.SaveChangesAsync();
-        }
+      
 
 
         public async Task Delete(int id)

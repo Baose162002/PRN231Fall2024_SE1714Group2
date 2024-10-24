@@ -17,7 +17,7 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SameSite = SameSiteMode.Lax; 
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 builder.Services.AddHttpContextAccessor();

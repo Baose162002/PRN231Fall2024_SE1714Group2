@@ -54,3 +54,43 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<script>
+    // Hàm để lấy số lượng sản phẩm từ cookie
+    function getCartItemCount() {
+        const cartItemsCookie = document.cookie.split('; ').find(row => row.startsWith('cartItems='));
+        if (cartItemsCookie) {
+            const cartItemsValue = JSON.parse(decodeURIComponent(cartItemsCookie.split('=')[1]));
+            return cartItemsValue.length;
+        }
+        return 0;
+    }
+
+    // Hàm cập nhật số lượng hiển thị
+    function updateCartCount() {
+        const count = getCartItemCount();
+        const cartCountElement = document.getElementById('cart-count');
+        if (cartCountElement) {
+            cartCountElement.textContent = count;
+        }
+    }
+
+    // Thiết lập một hàm để lắng nghe sự thay đổi của cookie
+    function setupCartWatcher() {
+        // Cập nhật ban đầu
+        updateCartCount();
+
+        // Kiểm tra định kỳ mỗi giây
+        setInterval(updateCartCount, 1000);
+
+        // Lắng nghe sự kiện storage để cập nhật khi có thay đổi từ tab khác
+        window.addEventListener('storage', function (e) {
+            if (e.key === 'cartItems') {
+                updateCartCount();
+            }
+        });
+    }
+
+    // Khởi tạo watcher khi trang được tải
+    document.addEventListener('DOMContentLoaded', setupCartWatcher);
+</script>
