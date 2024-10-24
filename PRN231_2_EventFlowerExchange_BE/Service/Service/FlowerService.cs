@@ -112,7 +112,7 @@ namespace Service.Service
             flower.Color = flowerDTO.Color;
             flower.RemainingQuantity = flowerDTO.RemainingQuantity;
             flower.Condition = EnumList.FlowerCondition.Fresh;
-         
+            flower.FlowerStatus = EnumList.FlowerStatus.Available;
             flower.BatchId = flowerDTO.BatchId;
             flower.Status = Status.Active;
             await _flowerRepository.Create(flower);

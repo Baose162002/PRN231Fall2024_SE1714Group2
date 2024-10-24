@@ -178,6 +178,25 @@ namespace WebApi_EventFlowerExchange.Controllers
             return Ok(result);
         }
 
+        [HttpPut("update-status-vnpay/{id}")]
+        public async Task<IActionResult> UpdateStatus([FromBody] OrderUpdateStatusDTO order, int id)
+        {
+            try
+            {
+                await _orderService.UpdateStatus(order, id);
+                return Ok("Order status updated successfully");
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Log error here
+                return StatusCode(500, "An error occurred while updating the order status");
+            }
+        }
+
         [HttpGet("search")]
         public async Task<IActionResult> SearchOrders([FromQuery] OrderSearchDTO searchCriteria)
         {

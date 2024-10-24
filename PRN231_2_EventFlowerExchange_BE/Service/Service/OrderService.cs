@@ -300,10 +300,6 @@ namespace Service.Service
                 // Lấy danh sách các lô hoa theo loại và màu sắc tương tự
                 var flowerBatches = await _batchRepository.GetFlowersBySimilarTypeAndColorAndEarliestBatchAndCompany(orderDetailDTO.FlowerId);
 
-                if (flowerBatches == null || !flowerBatches.Any())
-                {
-                    throw new ArgumentException($"No batches available for flower ID {orderDetailDTO.FlowerId}.");
-                }
 
                 // Lấy thông tin hoa để kiểm tra số lượng và các thuộc tính khác
                 var flower = await _flowerRepository.GetFlowerById(orderDetailDTO.FlowerId);
@@ -316,14 +312,14 @@ namespace Service.Service
                 // Kiểm tra số lượng đặt hàng không vượt quá số lượng còn lại của hoa
                 if (orderDetailDTO.QuantityOrdered > flower.RemainingQuantity)
                 {
-                    throw new ArgumentException($"Order quantity for flower ID {orderDetailDTO.FlowerId} exceeds available quantity.");
+                    throw new ArgumentException($"Order quantity for flower exceeds available quantity.");
                 }
 
                 // Kiểm tra trạng thái hoa để đảm bảo hoa có thể được đặt
                 if (flower.FlowerStatus != EnumList.FlowerStatus.Available ||
                     (flower.Condition != EnumList.FlowerCondition.Fresh))
                 {
-                    throw new ArgumentException($"Flower ID {orderDetailDTO.FlowerId} is not available for order.");
+                    throw new ArgumentException($"Flower is not available for order.");
                 }
 
                 int remainingQuantity = orderDetailDTO.QuantityOrdered; // Số lượng cần đặt
@@ -367,7 +363,7 @@ namespace Service.Service
             // Tạo đối tượng Order
             var newOrder = new Order
             {
-                OrderStatus = EnumList.OrderStatus.Pending,
+                OrderStatus = EnumList.OrderStatus.Paid,
                 OrderDate = orderDTO.OrderDate,
                 DeliveryAddress = orderDTO.DeliveryAddress,
                 DeliveryDate = orderDTO.DeliveryDate,
@@ -398,5 +394,10 @@ namespace Service.Service
 
         }
 
+        public async Task UpdateStatus(OrderUpdateStatusDTO order, int id)
+        {
+            var updateOrder = _mapper.Map<Order>(order);
+            await _orderRepository.UpdateStatus(updateOrder, id);
+        }
     }
 }

@@ -160,5 +160,22 @@ namespace Repository.Repository
             return await query.ToListAsync();
         }
 
+
+
+        public async Task UpdateStatus(Order order, int id)
+        {
+            var _context = new FlowerShopContext();
+            var existing = await GetOrderById(id);
+            if (existing != null)
+            {
+                existing.OrderStatus = order.OrderStatus;
+                _context.Orders.Update(existing);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new ArgumentException("Order is not existed");
+            }
+        }
     }
 }
