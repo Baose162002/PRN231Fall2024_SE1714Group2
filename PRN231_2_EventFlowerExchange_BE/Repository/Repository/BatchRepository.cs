@@ -165,15 +165,16 @@ namespace Repository.Repository
 
                 foreach (var batch in batches)
                 {
+                    var flowersInBatch = await _context.Flowers.Where(f => f.BatchId == batch.BatchId).ToListAsync();
+
+                    // Kiểm tra nếu batch đã quá hạn (lớn hơn 1 ngày)
                     if ((DateTime.Now - batch.EntryDate).TotalDays > 1)
                     {
-                        var flowersInBatch = await _context.Flowers.Where(f => f.BatchId == batch.BatchId).ToListAsync();
-
                         bool hasAvailableFlowers = flowersInBatch.Any(f => f.RemainingQuantity > 0);
 
                         if (hasAvailableFlowers)
                         {
-                            batch.Status = Status.Overdue;
+                            batch.Status = Status.Overdue; // Batch đã quá hạn
 
                             foreach (var flower in flowersInBatch)
                             {
@@ -182,9 +183,6 @@ namespace Repository.Repository
                                     flower.Status = Status.Overdue;
                                 }
                             }
-
-                            _context.Batches.Update(batch);
-                            _context.Flowers.UpdateRange(flowersInBatch);
                         }
                         else
                         {
@@ -194,11 +192,21 @@ namespace Repository.Repository
                             {
                                 flower.Status = Status.Overdue;
                             }
+                        }
 
-                            _context.Batches.Update(batch);
-                            _context.Flowers.UpdateRange(flowersInBatch);
+                        _context.Batches.Update(batch);
+                    }
+
+                    foreach (var flower in flowersInBatch)
+                    {
+                        if (flower.RemainingQuantity == 0)
+                        {
+                            flower.FlowerStatus = FlowerStatus.SoldOut;
+                            flower.Status = Status.Inactive;
                         }
                     }
+
+                    _context.Flowers.UpdateRange(flowersInBatch);
                 }
 
                 await _context.SaveChangesAsync();

@@ -2,8 +2,10 @@
 using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR.Protocol;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using static PRN231_2_EventFlowerExchange_FE.Pages.BatchPages.BatchIndexModel;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages
 {
@@ -19,6 +21,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
         }
 
         public List<ListFlowerDTO> Flowers { get; set; }
+        public string ApiMessage { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -28,9 +31,24 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
+            var reviewResponse = await _httpClient.PostAsync($"{_baseApiUrl}/api/Batch/CheckAndUpdateBatchStatus", null);
+            if (reviewResponse.IsSuccessStatusCode)
+            {
+                var jsonResponse = await reviewResponse.Content.ReadAsStringAsync();
+                var apiResponse = JsonSerializer.Deserialize<ApiResponse>(jsonResponse);
 
+                if (apiResponse != null)
+                {
+                    ApiMessage = apiResponse.Message;
+                }
+            }
+            else
+            {
+                var errorContent = await reviewResponse.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, $"Error updating batch status: {errorContent}");
+            }
             // Gọi API để lấy danh sách hoa
-            var odataUrl = $"{_baseApiUrl}/odata/Flower?$filter=Status eq 'Active' and (Condition eq 'Fresh')";
+            var odataUrl = $"{_baseApiUrl}/odata/Flower?$filter=Status eq 'Active' and Condition eq 'Fresh' and FlowerStatus eq 'Available'";
             var response = await _httpClient.GetAsync(odataUrl);
             if (response.IsSuccessStatusCode)
             {
@@ -44,6 +62,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
                 Flowers = new List<ListFlowerDTO>();
                 ModelState.AddModelError(string.Empty, "Not found flower");
             }
+           
         }
 
         public class ODataResponse<T>
@@ -51,7 +70,10 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             public List<T> Value { get; set; }
         }
 
-
+        public class ApiResponse
+        {
+            public string Message { get; set; }
+        }
 
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostAddToCartAsync([FromBody] AddToCartRequest request)
