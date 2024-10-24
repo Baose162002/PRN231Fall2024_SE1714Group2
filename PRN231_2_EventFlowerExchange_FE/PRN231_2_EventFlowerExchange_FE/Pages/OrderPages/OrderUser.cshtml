@@ -1,41 +1,54 @@
 ﻿@page "/OrderHistory/{id:int}"
 @model PRN231_2_EventFlowerExchange_FE.Pages.OrderPages.OrderUser
 @{
-    ViewData["Title"] = "Order Details";
+    ViewData["Title"] = "Order History";
 }
 
+<div class="bg-gradient-to-r from-blue-100 to-indigo-100 p-6 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Order History</h1>
 
-<div class="bg-white p-6 rounded-lg shadow-md">
-    <h1 class="text-2xl font-bold mb-4">Order Details</h1>
-
-    @if (Model.Order != null)
+    @if (Model.Orders != null && Model.Orders.Any())
     {
-        <div class="mb-4">
-            <p><strong>Order Date:</strong> @Model.Order.OrderDate</p>
-            <p><strong>Total Price:</strong> @Model.Order.TotalPrice.ToString("C")</p>
-            <p><strong>Delivery Address:</strong> @Model.Order.DeliveryAddress</p>
-            <p><strong>Delivery Date:</strong> @Model.Order.DeliveryDate</p>
-            <p><strong>Status:</strong> @Model.Order.OrderStatus</p>
-        </div>
-
-        <h2 class="text-xl font-semibold mb-3">Order Items:</h2>
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+        <table class="min-w-full divide-y divide-gray-300 table-auto shadow-lg">
+            <thead class="bg-indigo-500">
                 <tr>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batch ID</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity Ordered</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Price</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">Order Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">Total Price</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">Total Quantity</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">Delivery Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">Order Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">Flower Name</th>
+                    @if (Model.UsersIds == 2) // Check if the user is a Seller (id = 2)
+                    {
+                        <th class="px-6 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">Customer Email</th>
+                    }
                 </tr>
             </thead>
+
             <tbody class="bg-white divide-y divide-gray-200">
-                @foreach (var item in Model.Order.OrderDetails)
+                @foreach (var order in Model.Orders)
                 {
-                    <tr>
-                        <td class="px-4 py-2 text-sm">@item.BatchId</td>
-                        <td class="px-4 py-2 text-sm">@item.QuantityOrdered</td>
-                        <td class="px-4 py-2 text-sm">@item.Price.ToString("C")</td>
-                        <td class="px-4 py-2 text-sm">@item.TotalPrice.ToString("C")</td>
+                    <tr class="hover:bg-indigo-50 transition ease-in-out duration-150">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@order.OrderDate</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@order.TotalPrice.ToString("C")</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@order.TotalQuantity</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@order.DeliveryDate</td>
+                        <td class="px-6 py-4 text-sm font-medium">
+                            <span class="inline-block px-3 py-1 rounded-full @Model.GetOrderStatusClass(order.OrderStatus)">
+                                    @order.OrderStatus
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                            @foreach (var item in order.OrderDetails)
+                            {
+                                <p class="truncate">@item.Flower.Name</p>
+                            }
+                        </td>
+                        @if (Model.UsersIds == 2) // Show customer email if the user is a Seller
+                        {
+                            <td class="px-6 py-4 text-sm text-gray-600">@order.Customer.Email</td>
+                        }
                     </tr>
                 }
             </tbody>
@@ -43,6 +56,6 @@
     }
     else
     {
-        <p class="text-red-500">Order not found.</p>
+        <p class="text-red-500">No orders found.</p>
     }
 </div>

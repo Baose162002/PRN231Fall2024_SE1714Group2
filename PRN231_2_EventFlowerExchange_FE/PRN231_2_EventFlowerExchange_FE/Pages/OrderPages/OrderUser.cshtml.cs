@@ -18,21 +18,37 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
             _baseApiUrl = configuration["ApiSettings:BaseUrl"];
         }
 
-        public ListOrderDTO Order { get; set; }
+        public List<ListOrderDTO> Orders { get; set; }
+        public int UsersIds { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/order/{id}");
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/order/user?userId={id}");
+
             if (response.IsSuccessStatusCode)
             {
-                Order = await response.Content.ReadFromJsonAsync<ListOrderDTO>();
+                UsersIds = id;
+                Orders = await response.Content.ReadFromJsonAsync<List<ListOrderDTO>>(); // Deserialize as a list of orders
             }
             else
             {
-                return NotFound("Order not found.");
+                return NotFound("Orders not found.");
             }
 
             return Page();
         }
+
+        public string GetOrderStatusClass(string status)
+        {
+            return status switch
+            {
+                "Pending" => "bg-yellow-100 text-yellow-800",
+                "Confirmed" => "bg-blue-100 text-blue-800",
+                "Dispatched" => "bg-purple-100 text-purple-800",
+                "Delivered" => "bg-green-100 text-green-800",
+                _ => "bg-gray-100 text-gray-800"
+            };
+        }
+
     }
 }
