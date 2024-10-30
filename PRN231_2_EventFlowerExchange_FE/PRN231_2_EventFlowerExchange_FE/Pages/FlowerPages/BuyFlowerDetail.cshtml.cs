@@ -178,7 +178,83 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
         }
 
 
+         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OnPostAddToCartAsync([FromBody] AddToCartRequest request)
+        {
+            var flower = await GetFlowerById(request.FlowerId);
+            if (flower != null)
+            {
+                var cartItem = new CartItemDTO
+                {
+                    FlowerId = flower.FlowerId.ToString(),
+                    Name = flower.Name,
+                    Description = flower.Description,
+                    PricePerUnit = flower.PricePerUnit,
+                    Image = flower.Image,
+                    Quantity = 1
+                };
+                var cartCount = AddToCart(cartItem);
+                return new JsonResult(new { success = true, cartCount = cartCount });
+            }
+            return new JsonResult(new { success = false, message = "Flower not found" });
+        }
+
+        private async Task<ListFlowerDTO> GetFlowerById(string flowerId)
+        {
+            var baseApiUrl = _configuration["ApiSettings:BaseUrl"];
+
+            var response = await _httpClient.GetAsync($"{baseApiUrl}/api/Flower/GetBy/{flowerId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                return await response.Content.ReadFromJsonAsync<ListFlowerDTO>(options);
+            }
+            return null;
+        }
+
+        private int AddToCart(CartItemDTO flower)
+        {
+            var cartJson = HttpContext.Request.Cookies["cartItems"];
+            List<CartItemDTO> cartItems = string.IsNullOrEmpty(cartJson)
+                ? new List<CartItemDTO>()
+                : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            var existingItem = cartItems.FirstOrDefault(x => x.FlowerId == flower.FlowerId);
+            if (existingItem != null)
+            {
+                existingItem.Quantity += 1; // Tăng số lượng của sản phẩm đã tồn tại
+            }
+            else
+            {
+                flower.Quantity = 1; // Nếu chưa có thì khởi tạo số lượng là 1
+                cartItems.Add(flower);
+            }
+
+            var options = new CookieOptions { Expires = DateTimeOffset.Now.AddDays(30) };
+            HttpContext.Response.Cookies.Append("cartItems", JsonSerializer.Serialize(cartItems), options);
+
+            return cartItems.Count; // Trả về số lượng sản phẩm khác nhau trong giỏ hàng
+        }
+
+
+
+        public JsonResult OnGetGetCartCount()
+        {
+            var cartJson = HttpContext.Request.Cookies["cartItems"];
+            List<CartItemDTO> cartItems = string.IsNullOrEmpty(cartJson)
+                ? new List<CartItemDTO>()
+                : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            int cartCount = cartItems.Sum(item => item.Quantity); // Tính tổng số lượng sản phẩm
+            return new JsonResult(new { count = cartCount });
+        }
 
 
     }
+
+    public class AddToCartRequest
+    {
+        public string FlowerId { get; set; }
+    }
+
 }
