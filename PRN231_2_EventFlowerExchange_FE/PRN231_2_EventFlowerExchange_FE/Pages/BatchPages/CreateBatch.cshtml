@@ -54,12 +54,12 @@
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.EventDate">Event Date</label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.EventDate" type="date">
+                                    <input id="eventDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.EventDate" type="date">
                                     <span asp-validation-for="Input.EventDate" class="text-red-500 text-xs italic"></span>
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.EntryDate">Entry Date</label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.EntryDate" type="date">
+                                    <input id="entryDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.EntryDate" type="date">
                                     <span asp-validation-for="Input.EntryDate" class="text-red-500 text-xs italic"></span>
                                 </div>
                             </div>
@@ -79,3 +79,14 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date().toISOString().split("T")[0];
+
+        document.getElementById("eventDate").value = today;
+        document.getElementById("eventDate").setAttribute("min", today);
+
+        document.getElementById("entryDate").value = today;
+        document.getElementById("entryDate").setAttribute("min", today);
+    });
+</script>

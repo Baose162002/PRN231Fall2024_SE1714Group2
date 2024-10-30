@@ -51,7 +51,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="pricePerUnit" class="block text-sm font-medium text-gray-700">Price Per Unit</label>
-                            <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="pricePerUnit" asp-for="FlowerInput.PricePerUnit" required />
+                            <input type="number" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="pricePerUnit" asp-for="FlowerInput.PricePerUnit" required />
                         </div>
 
                         <div>
@@ -89,8 +89,8 @@
                         </div>
                     </div>
                     <div>
-                        <label for="RemainingQuantity" class="block text-sm font-medium text-gray-700">Remaining Quantity</label>
-                        <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="remainingQuantity" asp-for="FlowerInput.RemainingQuantity" required />
+                        <label for="remainingQuantity" class="block text-sm font-medium text-gray-700">Remaining Quantity</label>
+                        <input type="number" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="remainingQuantity" asp-for="FlowerInput.RemainingQuantity" required />
                     </div>
                     <div>
                         <label for="imageFile" class="block text-sm font-medium text-gray-700">Upload Image</label>
