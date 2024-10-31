@@ -99,17 +99,19 @@
 
                         <!-- Add to Cart Button -->
                         <div class="mt-6 flex items-center space-x-4">
-                            <form id="antiforgeryform">
+                                <form method="post" asp-page-handler="GeneratePaymentUrl">
+                                    <button type="submit" class="btn btn-primary">Buy</button>
+                                    <input type="hidden" name="flowerId" value="@Model.Flower.FlowerId" />
+                                </form>
+
+
+                            <form id="antiforgeryform" onsubmit="return false;">
                                 @Html.AntiForgeryToken()
-                                <button class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
-                                    Buy
+                                <button onclick="addToCart('@Model.Flower.FlowerId', '@Model.Flower.Name', '@Model.Flower.PricePerUnit')"
+                                        class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
+                                    Add to cart
                                 </button>
                             </form>
-
-                            <button onclick="addToCart('@Model.Flower.FlowerId')"
-                                    class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
-                                Add to cart
-                            </button>
                         </div>
 
                     </div>
@@ -346,10 +348,13 @@
 
 
         function addToCart(flowerId, name, pricePerUnit) {
+            // Ngăn chặn reload trang
+            event.preventDefault();
+
             // Lấy token từ form
             var token = document.querySelector('#antiforgeryform input[name="__RequestVerificationToken"]').value;
 
-            fetch('/Index?handler=AddToCart', {
+            fetch(`/BuyFlowerDetail?handler=AddToCart&flowerId=${flowerId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -386,5 +391,7 @@
                 .then(data => updateCartCount(data.count))
                 .catch(error => console.error('Error:', error));
         };
+
+
     </script>
 }
