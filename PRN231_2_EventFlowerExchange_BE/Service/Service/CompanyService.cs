@@ -61,10 +61,10 @@ namespace Service.Service
             await _companyRepository.Delete(id);
         }
 
-        public async Task<List<Company>> GetCompanies()
+        public async Task<List<CompanyDTO>> GetCompanies()
         {
             var companies = await _companyRepository.GetCompanies();
-            var dtoCompanies = _mapper.Map<List<Company>>(companies);
+            var dtoCompanies = _mapper.Map<List<CompanyDTO>>(companies);
             return dtoCompanies;
         }
 
