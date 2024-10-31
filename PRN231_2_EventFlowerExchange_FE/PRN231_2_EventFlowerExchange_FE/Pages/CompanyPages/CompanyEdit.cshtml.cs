@@ -1,77 +1,134 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BusinessObject.Dto.Response;
+using BusinessObject.DTO.Request;
+using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using BusinessObject;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages
 {
     public class EditModel : PageModel
     {
-        private readonly BusinessObject.FlowerShopContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly string _baseApiUrl;
 
-        public EditModel(BusinessObject.FlowerShopContext context)
+        public EditModel(HttpClient httpClient, IConfiguration configuration)
         {
-            _context = context;
+            _httpClient = httpClient;
+            _baseApiUrl = configuration["ApiSettings:BaseUrl"];
         }
 
         [BindProperty]
-        public Company Company { get; set; } = default!;
+        public UpdateCompanyDTO UpdateCompanyDTO { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
+            var token = HttpContext.Session.GetString("JWTToken");
+
+            if (string.IsNullOrEmpty(token))
             {
-                return NotFound();
+                return RedirectToPage("/Login/Login");
             }
 
-            var company =  await _context.Companies.FirstOrDefaultAsync(m => m.CompanyId == id);
-            if (company == null)
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/company/{id}");
+
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                var company = await response.Content.ReadFromJsonAsync<CompanyDTO>();
+                UpdateCompanyDTO = new UpdateCompanyDTO
+                {
+                    CompanyName = company.CompanyName,
+                    CompanyAddress = company.CompanyAddress,
+                    CompanyDescription = company.CompanyDescription,
+                    TaxNumber = company.TaxNumber,
+                    PostalCode = company.PostalCode,
+                    City = company.City,
+                    UserId = company.UserId,
+                    Status = Enum.TryParse<BusinessObject.Enum.EnumList.Status>(company.Status, out var status)
+                        ? status
+                        : BusinessObject.Enum.EnumList.Status.Active // Use a default or fallback value here
+                };
             }
-            Company = company;
-           ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Address");
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
+                return RedirectToPage("/Login/Login");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, $"Error loading company: {response.ReasonPhrase}");
+                return RedirectToPage("/CompanyPages/Index");
+            }
+
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+
+        public async Task<IActionResult> OnPostAsync(int id)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Attach(Company).State = EntityState.Modified;
+            var token = HttpContext.Session.GetString("JWTToken");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToPage("/Login/Login");
+            }
+
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CompanyExists(Company.CompanyId))
+                var response = await _httpClient.PutAsJsonAsync($"{_baseApiUrl}/api/company/{id}", UpdateCompanyDTO);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    return NotFound();
+                    TempData["SuccessMessage"] = "Company information updated successfully!";
+                    return RedirectToPage("/CompanyPages/CompanyEdit", new { id });
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
+                    return RedirectToPage("/Login/Login");
                 }
                 else
                 {
-                    throw;
+                    var responseContent = await response.Content.ReadAsStringAsync();
+
+                    if (!string.IsNullOrEmpty(responseContent) &&
+                        (responseContent.Trim().StartsWith("{") || responseContent.Trim().StartsWith("[")))
+                    {
+                        var jsonDocument = JsonDocument.Parse(responseContent);
+                        if (jsonDocument.RootElement.TryGetProperty("message", out var messageElement))
+                        {
+                            ModelState.AddModelError(string.Empty, messageElement.GetString());
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "An error occurred while updating the company.");
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, $"Error: {responseContent}");
+                    }
+
+                    return Page();
                 }
             }
-
-            return RedirectToPage("./Index");
-        }
-
-        private bool CompanyExists(int id)
-        {
-            return _context.Companies.Any(e => e.CompanyId == id);
+            catch (HttpRequestException e)
+            {
+                ModelState.AddModelError(string.Empty, $"Error connecting to the server: {e.Message}");
+                return Page();
+            }
         }
     }
 }

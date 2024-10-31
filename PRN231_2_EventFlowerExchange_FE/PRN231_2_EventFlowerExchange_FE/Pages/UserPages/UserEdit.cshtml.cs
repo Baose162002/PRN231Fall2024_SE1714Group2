@@ -94,8 +94,28 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
                 }
                 else
                 {
+                    // Check if response content is JSON before parsing
                     var responseContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseContent);
+
+                    // Attempt to parse JSON only if it starts with '{' or '['
+                    if (!string.IsNullOrEmpty(responseContent) &&
+                        (responseContent.Trim().StartsWith("{") || responseContent.Trim().StartsWith("[")))
+                    {
+                        var jsonDocument = JsonDocument.Parse(responseContent);
+                        if (jsonDocument.RootElement.TryGetProperty("message", out var messageElement))
+                        {
+                            ModelState.AddModelError(string.Empty, messageElement.GetString());
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "An error occurred while updating the user.");
+                        }
+                    }
+                    else
+                    {
+                        // Fallback if response is not JSON
+                        ModelState.AddModelError(string.Empty, $"Error: {responseContent}");
+                    }
 
                     return Page();
                 }
@@ -106,6 +126,5 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
                 return Page();
             }
         }
-
     }
 }

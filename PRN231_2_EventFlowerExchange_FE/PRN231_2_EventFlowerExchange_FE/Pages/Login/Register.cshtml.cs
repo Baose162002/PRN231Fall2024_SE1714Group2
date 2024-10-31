@@ -45,26 +45,25 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                 if (response.IsSuccessStatusCode)
                 {
                     SuccessMessage = "Registration successful! You can now log in.";
-                    return RedirectToPage("/Index");
+                    return Page();
                 }
                 else
                 {
+                    // Đọc thông báo lỗi từ phản hồi JSON
                     var errorMessage = await response.Content.ReadAsStringAsync();
                     var apiError = JsonSerializer.Deserialize<Dictionary<string, string>>(errorMessage);
 
-                    if (apiError != null && apiError.TryGetValue("message", out var message))
-                    {
-                        ModelState.AddModelError(string.Empty, message);
-                    }
-
-                    return RedirectToPage("/Index");
+                    // Thêm lỗi trực tiếp vào ModelState nếu có lỗi
+                    ModelState.AddModelError(string.Empty, apiError?.Values.FirstOrDefault() ?? "Unknown error occurred.");
+                    return Page();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "An error occurred while processing your request.");
                 return Page();
             }
         }
+
     }
 }
