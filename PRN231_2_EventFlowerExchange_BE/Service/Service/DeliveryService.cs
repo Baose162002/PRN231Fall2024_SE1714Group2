@@ -3,6 +3,7 @@ using BusinessObject;
 using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using Repository.IRepository;
+using Repository.Repository;
 using Service.IService;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,37 @@ namespace Service.Service
         public async Task DeleteDelivery(int id)
         {
             await _deliveryRepository.Delete(id);
+        }
+
+
+        public async Task<List<ListOrderForDeliveryDTO>> GetAllOrdersAsync()
+        {
+            // Call the repository to get all orders
+            var orders = await _deliveryRepository.GetAllOrderForDelivery();
+
+            // Map to DTOs
+            return orders.Select(o => new ListOrderForDeliveryDTO
+            {
+                OrderId = o.OrderId,
+                CustomerName = o.Customer?.FullName, // Assuming Customer has a Name property
+                TotalPrice = o.TotalPrice,
+                OrderDate = o.OrderDate,
+                DeliveryAddress = o.DeliveryAddress,
+                DeliveryDate = o.DeliveryDate,
+                OrderDetails = o.OrderDetails.Select(od => new OrderDetailForDeliveryDTO
+                {
+                    OrderDetailId = od.OrderDetailId,
+                    QuantityOrdered = od.QuantityOrdered,
+                    Price = od.Price,
+                    TotalPrice = od.TotalPrice,
+                    Flower = new FlowerDTO // Assuming you want to include Flower details
+                    {
+                        FlowerId = od.Flower.FlowerId,
+                        Name = od.Flower.Name,
+                        PricePerUnit = od.Flower.PricePerUnit // Include other properties as needed
+                    }
+                }).ToList()
+            }).ToList();
         }
     }
 }

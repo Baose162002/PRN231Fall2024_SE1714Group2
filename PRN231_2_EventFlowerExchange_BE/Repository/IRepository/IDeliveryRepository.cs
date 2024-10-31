@@ -14,5 +14,6 @@ namespace Repository.IRepository
         Task Create(Delivery delivery);
         Task Update(Delivery delivery, int id);
         Task Delete(int id);
+        Task<List<Order>> GetAllOrderForDelivery();
     }
 }
