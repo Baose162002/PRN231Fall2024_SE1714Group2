@@ -8,7 +8,7 @@ namespace Service.IService
     {
         Task<bool> AddNew(CreateCompanyDTO company);
         Task<CompanyDTO> GetCompanyByID(int id);
-        Task<List<CompanyDTO>> GetCompanies();
+        Task<List<Company>> GetCompanies();
         Task Update(int id, CreateCompanyDTO updateCompany);
         Task Delete(int id);
         Task<CompanyDTO> GetCompanyByIdUser(int id);
