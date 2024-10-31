@@ -105,3 +105,30 @@
         </div>
     </div>
 </div>
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <!-- Modal thông báo đăng ký thành công -->
+    <div id="successModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-lg max-w-sm w-full p-6">
+            <div class="text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5 3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h2 class="text-2xl font-semibold mt-4">Đăng ký thành công!</h2>
+                <p class="text-gray-600 mt-2">@Model.SuccessMessage</p>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button onclick="closeModal()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function closeModal() {
+            document.getElementById("successModal").style.display = "none";
+        }
+    </script>
+}
