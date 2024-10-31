@@ -1,8 +1,40 @@
 ﻿@page
 @model PRN231_2_EventFlowerExchange_FE.Pages.OrderPages.OrderFailureModel
 @{
-    Layout = null; // Nếu không sử dụng layout chung, bạn có thể điều chỉnh cái này
+  /*   Layout = null; */ // Nếu không sử dụng layout chung, bạn có thể điều chỉnh cái này
 }
 
-<h2>Order Failure</h2>
+
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="w-96 bg-white rounded-lg shadow-md p-8">
+        <!-- Điều chỉnh width cố định và padding -->
+        <!-- Green checkmark icon - đã giảm kích thước -->
+        <div class="w-16 h-16 mx-auto mb-6">
+            <!-- Giảm kích thước icon -->
+            <svg viewBox="0 0 24 24" class="text-green-500 w-full h-full">
+                <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="2" />
+                <path fill="#FF0000" d="M12,0A12,12,0,1,0,24,12,12.014,12.014,0,0,0,12,0Zm4.95,15.536a1,1,0,0,1-1.414,1.414L12,13.414,8.464,16.95a1,1,0,0,1-1.414-1.414L10.586,12,7.05,8.464A1,1,0,0,1,8.464,7.05L12,10.586l3.536-3.536a1,1,0,1,1,1.414,1.414L13.414,12Z" />
+
+            </svg>
+        </div>
+
+        <div class="text-center">
+            <h3 class="text-2xl font-semibold text-gray-900 mb-3">
+                Order Failure!
+            </h3>
+            <p class="text-gray-600 mb-6">
+                Please check your payment again, thank you.
+            </p>
+
+            <!-- Button lớn hơn -->
+            <a href="/Index"
+               class="inline-block px-8 py-3 rounded-md bg-indigo-600 text-white text-lg font-medium
+                      hover:bg-indigo-500 transition-colors duration-200
+                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                Back to home
+            </a>
+        </div>
+    </div>
+</div>
+
 <p>@Model.ErrorMessage</p>
