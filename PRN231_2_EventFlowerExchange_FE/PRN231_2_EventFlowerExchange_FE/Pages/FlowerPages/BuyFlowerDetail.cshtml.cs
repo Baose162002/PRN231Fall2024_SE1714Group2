@@ -1,8 +1,10 @@
-﻿using BusinessObject;
+﻿using Azure.Core;
+using BusinessObject;
 using BusinessObject.DTO.Request;
 using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using PRN231_2_EventFlowerExchange_FE.Service;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -12,11 +14,13 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
     {
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
+        private readonly PaymentService _paymentService;
 
-        public BuyFlowerDetailModel(IConfiguration configuration, HttpClient httpClient)
+        public BuyFlowerDetailModel(IConfiguration configuration, HttpClient httpClient, PaymentService paymentService)
         {
             _configuration = configuration;
             _httpClient = httpClient;
+            _paymentService = paymentService;
         }
 
         public ListFlowerDTO Flower { get; set; }
@@ -247,6 +251,56 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
 
             int cartCount = cartItems.Sum(item => item.Quantity); // Tính tổng số lượng sản phẩm
             return new JsonResult(new { count = cartCount });
+        }
+
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OnPostGeneratePaymentUrl(int flowerId)
+        {
+            var customerId = HttpContext.Session.GetString("UserId");
+            var userName = HttpContext.Session.GetString("UserName");
+            var token = HttpContext.Session.GetString("JWTToken");
+            var baseApiUrl = _configuration["ApiSettings:BaseUrl"];
+            HttpContext.Session.SetString("FlowerId", flowerId.ToString());
+
+            if (token == null)
+            {
+                // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+                TempData["ReturnUrl"] = Url.Page("/FlowerDetails");
+                return new JsonResult(new { success = false, redirectUrl = Url.Page("/Login/Login") });
+            }
+
+            // Gọi API để lấy thông tin sản phẩm dựa vào flowerId
+            var flowerResponse = await _httpClient.GetAsync($"{baseApiUrl}/api/flower/getby/{flowerId}");
+
+            if (!flowerResponse.IsSuccessStatusCode)
+            {
+                // Trường hợp không thành công, trả về thông báo lỗi
+                return new JsonResult(new { success = false, message = "Failed to retrieve flower details." });
+            }
+
+            var flowerContent = await flowerResponse.Content.ReadAsStringAsync();
+            var flower = JsonSerializer.Deserialize<ListFlowerDTO>(flowerContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (flower == null)
+            {
+                return new JsonResult(new { success = false, message = "Flower not found." });
+            }
+
+            // Tính tổng tiền cho số lượng 1
+            double totalAmount = (double)(flower.PricePerUnit * 1); // Số lượng mặc định là 1
+
+            // Tạo request thanh toán cho VNPAY
+            var paymentRequest = new VnPaymentRequestModel
+            {
+                OrderId = flowerId,  // Sử dụng flowerId hoặc tạo mã hóa đơn riêng
+                Amount = totalAmount,
+                FullName = userName,
+                Description = $"Payment for {flower.Name} (1 item)"
+            };
+
+            var paymentUrl = _paymentService.GeneratePaymentUrl(HttpContext, paymentRequest);
+
+            return Redirect(paymentUrl);
         }
 
 
