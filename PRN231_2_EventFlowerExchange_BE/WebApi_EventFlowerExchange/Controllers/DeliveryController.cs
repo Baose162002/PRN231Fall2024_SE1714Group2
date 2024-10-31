@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessObject.DTO.Request;
+using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
 using Service.Service;
@@ -56,6 +57,21 @@ namespace WebApi_EventFlowerExchange.Controllers
         {
             _deliveryService.DeleteDelivery(id);
             return NoContent();
+        }
+
+        [HttpGet("order")]
+        public async Task<ActionResult<List<ListOrderForDeliveryDTO>>> GetAllOrdersForDelivery()
+        {
+            try
+            {
+                var orders = await _deliveryService.GetAllOrdersAsync();
+                return Ok(orders); // Returns 200 OK with the list of orders
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                return StatusCode(500, $"Internal server error: {ex.Message}"); // Returns 500 Internal Server Error
+            }
         }
     }
 }

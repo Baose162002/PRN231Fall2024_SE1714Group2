@@ -38,7 +38,6 @@ namespace Repository.Repository
         {
             return await _context.Deliveries.ToListAsync();
         }
-
         public async Task<Delivery> GetDeliveryById(int id)
         {
             return await _context.Deliveries.FindAsync(id);
@@ -53,5 +52,15 @@ namespace Repository.Repository
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<List<Order>> GetAllOrderForDelivery()
+        {
+            return await _context.Orders
+                .Include(o => o.Customer) // Include User (Customer) information
+                .Include(o => o.OrderDetails) // Include OrderDetails
+                    .ThenInclude(od => od.Flower) // Include Flower information
+                .ToListAsync();
+        }
+
     }
 }
