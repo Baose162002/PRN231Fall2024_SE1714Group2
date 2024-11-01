@@ -34,6 +34,7 @@ namespace Service.Configurations.Mapper
             //Order mappings
             CreateMap<Order, CreateOrderDTO>();
             CreateMap<Order, OrderUpdateStatusDTO>();
+            CreateMap<Order, OrderResponse>();
             CreateMap<Order, UpdateOrderDTO>()
                 .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()));
             CreateMap<OrderUpdateStatusDTO, Order>()

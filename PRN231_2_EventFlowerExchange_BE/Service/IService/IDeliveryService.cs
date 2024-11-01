@@ -11,9 +11,10 @@ namespace Service.IService
     public interface IDeliveryService
     {
         Task<List<ListDeliveryDTO>> GetAllDeliveries();
-        Task<ListDeliveryDTO> GetDeliveryById(int id);
+        Task<List<ListDeliveryDTO>> GetDeliveryById(int id);
         Task CreateDelivery(CreateDeliveryDTO createDeliveryDTO);
         Task UpdateDelivery(UpdateDeliveryDTO updateDeliveryDTO, int id);
         Task DeleteDelivery(int id);
+        Task<List<ListOrderForDeliveryDTO>> GetAllOrdersAsync();
     }
 }

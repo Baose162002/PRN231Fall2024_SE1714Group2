@@ -98,14 +98,22 @@
                         }
 
                         <!-- Add to Cart Button -->
-                        <div class="mt-6">
-                            <button class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
-                                Buy
-                            </button>
-                            <button class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
-                                Add to Cart
-                            </button>
+                        <div class="mt-6 flex items-center space-x-4">
+                                <form method="post" asp-page-handler="GeneratePaymentUrl">
+                                    <button type="submit" class="btn btn-primary">Buy</button>
+                                    <input type="hidden" name="flowerId" value="@Model.Flower.FlowerId" />
+                                </form>
+
+
+                            <form id="antiforgeryform" onsubmit="return false;">
+                                @Html.AntiForgeryToken()
+                                <button onclick="addToCart('@Model.Flower.FlowerId', '@Model.Flower.Name', '@Model.Flower.PricePerUnit')"
+                                        class="px-6 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-300">
+                                    Add to cart
+                                </button>
+                            </form>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -336,5 +344,54 @@
                 }
             });
         });
+
+
+
+        function addToCart(flowerId, name, pricePerUnit) {
+            // Ngăn chặn reload trang
+            event.preventDefault();
+
+            // Lấy token từ form
+            var token = document.querySelector('#antiforgeryform input[name="__RequestVerificationToken"]').value;
+
+            fetch(`/BuyFlowerDetail?handler=AddToCart&flowerId=${flowerId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({ flowerId: flowerId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateCartCount(data.cartCount);
+                        alert('Item added to cart!');
+                    } else {
+                        alert('Failed to add item to cart. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while adding the item to cart.');
+                });
+        }
+
+        function updateCartCount(count) {
+            var cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = count;
+            }
+        }
+
+        // Call this function when the page loads to update the cart count
+        window.onload = function () {
+            fetch('/Index?handler=GetCartCount')
+                .then(response => response.json())
+                .then(data => updateCartCount(data.count))
+                .catch(error => console.error('Error:', error));
+        };
+
+
     </script>
 }

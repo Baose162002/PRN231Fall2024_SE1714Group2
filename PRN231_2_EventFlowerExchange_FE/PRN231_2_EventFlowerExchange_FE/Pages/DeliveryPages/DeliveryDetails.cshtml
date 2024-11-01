@@ -2,60 +2,98 @@
 @model PRN231_2_EventFlowerExchange_FE.Pages.DeliveryPages.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Delivery Details";
 }
 
-<h1>Details</h1>
+<h1 class="text-3xl font-bold text-center text-blue-600 my-8">Delivery Details</h1>
 
-<div>
-    <h4>Delivery</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Delivery.DeliveryStatus)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Delivery.DeliveryStatus)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Delivery.ReasonNote)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Delivery.ReasonNote)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Delivery.PickupTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Delivery.PickupTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Delivery.DeliveryTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Delivery.DeliveryTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Delivery.Order)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Delivery.Order.DeliveryAddress)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Delivery.DeliveryPersonnel)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Delivery.DeliveryPersonnel.Address)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Delivery.Status)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Delivery.Status)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.Delivery.DeliveryId">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
-</div>
+@if (Model.Deliveries.Any())
+{
+    <div class="container mx-auto px-4">
+        @foreach (var delivery in Model.Deliveries)
+        {
+            <div class="bg-white shadow-lg rounded-lg mb-6">
+                <div class="bg-blue-600 text-white rounded-t-lg p-4">
+                    <h5 class="font-semibold">Delivery ID: @delivery.DeliveryId</h5>
+                </div>
+                <div class="p-6">
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <dt class="font-semibold text-green-600">Delivery Status</dt>
+                            <dd class="text-green-800">@Html.DisplayFor(model => delivery.DeliveryStatus)</dd>
+                        </div>
+
+                        <div>
+                            <dt class="font-semibold">Reason Note</dt>
+                            <dd>@Html.DisplayFor(model => delivery.ReasonNote)</dd>
+                        </div>
+
+                        <div>
+                            <dt class="font-semibold">Pickup Time</dt>
+                            <dd>@delivery.PickupTime.ToString("yyyy-MM-dd HH:mm")</dd>
+                        </div>
+
+                        <div>
+                            <dt class="font-semibold">Delivery Time</dt>
+                            <dd>@delivery.DeliveryTime.ToString("yyyy-MM-dd HH:mm")</dd>
+                        </div>
+
+                        <div>
+                            <dt class="font-semibold">Order ID</dt>
+                            <dd>@delivery.Order.OrderId</dd>
+                        </div>
+
+                        <div>
+                            <dt class="font-semibold">Delivery Address</dt>
+                            <dd>@delivery.Order.DeliveryAddress</dd>
+                        </div>
+
+                        <div>
+                            <dt class="font-semibold text-blue-600">Order Status</dt>
+                            <dd class="text-blue-800">@delivery.Order.OrderStatus</dd>
+                        </div>
+
+                        <div>
+                            <dt class="font-semibold">Total Price</dt>
+                            <dd class="text-green-600">@delivery.Order.TotalPrice.ToString("C")</dd>
+                        </div>
+
+                        <div>
+                            <dt class="font-semibold">Order Date</dt>
+                            <dd>@delivery.Order.OrderDate.ToString("yyyy-MM-dd HH:mm")</dd>
+                        </div>
+
+                        <!-- Customer Information -->
+                        <div>
+                            <dt class="font-semibold">Customer Name</dt>
+                            <dd>@delivery.Order.Customer.FullName</dd>
+                        </div>
+
+                        <div>
+                            <dt class="font-semibold">Customer Email</dt>
+                            <dd>@delivery.Order.Customer.Email</dd>
+                        </div>
+
+                        <div>
+                            <dt class="font-semibold">Customer Phone</dt>
+                            <dd>@delivery.Order.Customer.Phone</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="p-4 border-t border-gray-200 flex justify-end">
+                    <a asp-page="./Edit" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mr-2">Edit Delivery</a>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="bg-yellow-100 text-yellow-700 p-4 rounded-lg text-center" role="alert">
+        No deliveries found for this user.
+    </div>
+}
+
+<style>
+    /* Additional custom styles can be added here if needed */
+</style>

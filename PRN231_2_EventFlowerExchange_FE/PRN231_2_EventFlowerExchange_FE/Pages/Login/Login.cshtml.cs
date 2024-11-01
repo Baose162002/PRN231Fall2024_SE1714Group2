@@ -77,8 +77,18 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Login
                 var errorContent = await response.Content.ReadAsStringAsync();
                 if (!string.IsNullOrEmpty(errorContent))
                 {
-                    // Display the error message from the API to the user
-                    ModelState.AddModelError(string.Empty, errorContent);
+                    // Deserialize the JSON to extract the message
+                    var jsonDocument = JsonDocument.Parse(errorContent);
+                    if (jsonDocument.RootElement.TryGetProperty("message", out var messageElement))
+                    {
+                        // Display the extracted error message from the API to the user
+                        ModelState.AddModelError(string.Empty, messageElement.GetString());
+                    }
+                    else
+                    {
+                        // Fallback if the message property is not present
+                        ModelState.AddModelError(string.Empty, "An unknown error occurred.");
+                    }
                 }
                 else
                 {

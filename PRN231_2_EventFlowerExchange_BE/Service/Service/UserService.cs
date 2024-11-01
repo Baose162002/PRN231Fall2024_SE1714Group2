@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using AutoMapper;
 using BusinessObject;
 using BusinessObject.Dto.Response;
@@ -42,17 +43,9 @@ namespace Service.Service
         {
             try
             {
-          /*      ValidatePhoneNumber(createUserDTO.Phone);*/
-                ValidateEmail(createUserDTO.Email);
-
-                if (await CheckEmailExist(createUserDTO.Email))
-                {
-                    throw new Exception("Email đã tồn tại.");
-                }
-                if (await CheckPhoneExist(createUserDTO.Phone))
-                {
-                    throw new Exception("Số điện thoại đã tồn tại.");
-                }
+                ValidateInputs(createUserDTO);
+                if (await CheckEmailExist(createUserDTO.Email)) throw new Exception("Email exist.");
+                if (await CheckPhoneExist(createUserDTO.Phone)) throw new Exception("Phone exist.");
 
                 var user = new User
                 {
@@ -61,16 +54,11 @@ namespace Service.Service
                     Phone = createUserDTO.Phone,
                     Address = createUserDTO.Address,
                     Role = EnumList.UserRole.Buyer,
-                    Password = createUserDTO.Password, 
-                    Status = EnumList.Status.Active 
+                    Password = createUserDTO.Password, // Ensure password hashing if needed
+                    Status = EnumList.Status.Active
                 };
 
-                var success = await _userRepository.AddAsync(user);
-                if (!success)
-                {
-                    throw new Exception("Unable to create user.");
-                }
-
+                if (!await _userRepository.AddAsync(user)) throw new Exception("Unable to create user.");
                 return _mapper.Map<UserResponseDto>(user);
             }
             catch (Exception ex)
@@ -83,25 +71,11 @@ namespace Service.Service
         {
             try
             {
-                // Validate input fields (Phone and Email)
-                ValidatePhoneNumber(createUserDTO.Phone);
-                ValidateEmail(createUserDTO.Email);
+                ValidateInputs(createUserDTO, createSellerDTO);
+                if (await CheckEmailExist(createUserDTO.Email)) throw new Exception("Email already exists.");
+                if (await CheckPhoneExist(createUserDTO.Phone)) throw new Exception("Phone number already exists.");
+                if (await CheckCompanyNameExist(createSellerDTO.CompanyName)) throw new Exception("Company name already exists.");
 
-                // Check if email, phone, or company name already exists in the system
-                if (await CheckEmailExist(createUserDTO.Email))
-                {
-                    throw new Exception("Email already exists.");
-                }
-                if (await CheckPhoneExist(createUserDTO.Phone))
-                {
-                    throw new Exception("Phone number already exists.");
-                }
-                if (await CheckCompanyNameExist(createSellerDTO.CompanyName))
-                {
-                    throw new Exception("Company name already exists.");
-                }
-
-                // Create new User
                 var user = new User
                 {
                     FullName = createUserDTO.FullName,
@@ -109,18 +83,11 @@ namespace Service.Service
                     Phone = createUserDTO.Phone,
                     Address = createUserDTO.Address,
                     Role = EnumList.UserRole.Seller,
-                    Password = createUserDTO.Password, // Ensure password hashing if needed
+                    Password = createUserDTO.Password,
                     Status = EnumList.Status.Active
                 };
+                if (!await _userRepository.AddAsync(user)) throw new Exception("Failed to create user.");
 
-                // Save User to database
-                var userSuccess = await _userRepository.AddAsync(user);
-                if (!userSuccess)
-                {
-                    throw new Exception("Failed to create user.");
-                }
-
-                // Create new Company and associate it with the newly created user
                 var company = new Company
                 {
                     CompanyName = createSellerDTO.CompanyName,
@@ -129,49 +96,37 @@ namespace Service.Service
                     TaxNumber = createSellerDTO.TaxNumber,
                     City = createSellerDTO.City,
                     PostalCode = createSellerDTO.PostalCode,
-                    UserId = user.UserId, // Associate the company with the user
+                    UserId = user.UserId,
                     Status = EnumList.Status.Active
                 };
+                if (!await _companyRepository.AddNew(company)) throw new Exception("Failed to create company.");
 
-                // Save Company to database
-                var companySuccess = await _companyRepository.AddNew(company);
-                if (!companySuccess)
-                {
-                    throw new Exception("Failed to create company.");
-                }
-
-                // Return the user response mapped to a DTO
                 return _mapper.Map<UserResponseDto>(user);
             }
             catch (Exception ex)
             {
-                // Ensure the exception message is logged and handled correctly
                 throw new Exception($"An error occurred: {ex.Message}");
             }
         }
 
         public async Task<bool> UpdateUser(int id, UpdateUserDTO updateUserDTO)
         {
-            if (updateUserDTO == null)
-                throw new ArgumentNullException(nameof(updateUserDTO));
+            if (updateUserDTO == null) throw new ArgumentNullException(nameof(updateUserDTO));
+
+            ValidateUpdateInputs(updateUserDTO);
 
             var existingUser = await _userRepository.GetUserById(id);
-            if (existingUser == null)
-                throw new ArgumentException("User not found");
+            if (existingUser == null) throw new ArgumentException("User not found");
 
-            // Update user fields from DTO
             existingUser.FullName = updateUserDTO.FullName;
             existingUser.Email = updateUserDTO.Email;
             existingUser.Phone = updateUserDTO.Phone;
             existingUser.Address = updateUserDTO.Address;
             existingUser.Role = updateUserDTO.Role;
-
-            // Always set status to Active
             existingUser.Status = EnumList.Status.Active;
 
             return await _userRepository.UpdateAsync(existingUser);
         }
-
 
         public async Task<bool> DeleteUser(int id)
         {
@@ -196,20 +151,62 @@ namespace Service.Service
             return companies.Any(c => c.CompanyName == companyName);
         }
 
+        private void ValidateInputs(CreateUserDTO createUserDTO, CreateSellerDTO createSellerDTO = null)
+        {
+            ValidatePhoneNumber(createUserDTO.Phone);
+            ValidateEmail(createUserDTO.Email);
+            ValidateFullName(createUserDTO.FullName);
+            ValidatePassword(createUserDTO.Password);
+
+            if (createSellerDTO != null)
+            {
+                ValidateTaxNumber(createSellerDTO.TaxNumber);
+                ValidatePostalCode(createSellerDTO.PostalCode);
+            }
+        }
+
+        private void ValidateUpdateInputs(UpdateUserDTO updateUserDTO)
+        {
+            ValidatePhoneNumber(updateUserDTO.Phone);
+            ValidateEmail(updateUserDTO.Email);
+            ValidateFullName(updateUserDTO.FullName);
+        }
+
         private void ValidatePhoneNumber(string phone)
         {
-            if (!Regex.IsMatch(phone, @"^\d{10}$"))
-            {
-                throw new Exception("Số điện thoại phải có đúng 10 chữ số.");
-            }
+            if (!Regex.IsMatch(phone, @"^0\d{9}$"))
+                throw new Exception("Phone number must start with 0 and contain exactly 10 digits.");
         }
 
         private void ValidateEmail(string email)
         {
-            if (!email.EndsWith("@gmail.com", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new Exception("Email phải có đuôi @gmail.com.");
-            }
+            if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                throw new Exception("Invalid email format.");
+        }
+
+        private void ValidateFullName(string fullName)
+        {
+            if (string.IsNullOrWhiteSpace(fullName) || fullName.Length > 100)
+                throw new Exception("Full name cannot be empty and must be under 100 characters.");
+        }
+
+        private void ValidatePassword(string password)
+        {
+            if (password.Length < 8 || !Regex.IsMatch(password, @"[A-Z]") || !Regex.IsMatch(password, @"[a-z]") ||
+                !Regex.IsMatch(password, @"\d") || !Regex.IsMatch(password, @"[\W_]"))
+                throw new Exception("Password must be at least 8 characters long and include uppercase, lowercase, numeric, and special characters.");
+        }
+
+        private void ValidateTaxNumber(string taxNumber)
+        {
+            if (!Regex.IsMatch(taxNumber, @"^\d{10}$"))
+                throw new Exception("Tax number must contain exactly 10 digits.");
+        }
+
+        private void ValidatePostalCode(string postalCode)
+        {
+            if (!Regex.IsMatch(postalCode, @"^\d{5,6}$"))
+                throw new Exception("Postal code must contain 5 or 6 digits.");
         }
     }
 }
