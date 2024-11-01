@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service.IService;
 using System.Security.Claims;
-using Service.Service;
 using static BusinessObject.Enum.EnumList;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Formatter;
 
 namespace WebApi_EventFlowerExchange.Controllers
 {
@@ -31,9 +32,10 @@ namespace WebApi_EventFlowerExchange.Controllers
 
 
 
-        // GET: api/Order
+        // GET: odata/Order
         [HttpGet]
-        public async Task<IActionResult> GetAllOrders()
+        [EnableQuery]
+        public async Task<IActionResult> Get()
         {
             var orders = await _orderService.GetAllOrder();
             if (orders == null || !orders.Any())
@@ -44,19 +46,12 @@ namespace WebApi_EventFlowerExchange.Controllers
         }
 
         // Lấy Order của người dùng đó
-
         [HttpGet("user")]
+        //[EnableQuery]
         //[Authorize(Roles = "Seller, Buyer")]
         public async Task<IActionResult> GetAllOrdersByUserId(int userId)
         {
-            //string role = User.FindFirstValue(ClaimTypes.Role);
-            //if (role == null)
-            //{
-            //    return BadRequest("Please login!");
-            //}
-
-            //userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Use NameIdentifier for userId
-
+            //var orders = await _orderService.GetAllOrder();
             var orders = await _orderService.GetAllOrdersByUserId(userId);
 
             if (orders == null || !orders.Any())
