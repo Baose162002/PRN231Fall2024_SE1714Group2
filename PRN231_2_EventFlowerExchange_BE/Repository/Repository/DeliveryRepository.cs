@@ -39,10 +39,15 @@ namespace Repository.Repository
         {
             return await _context.Deliveries.ToListAsync();
         }
-        public async Task<Delivery> GetDeliveryById(int id)
+        public async Task<List<Delivery>> GetDeliveriesByPersonnelId(int id)
         {
-            return await _context.Deliveries.FindAsync(id);
+            return await _context.Deliveries
+                                 .Include(d => d.Order)               // Include the Order related to each Delivery
+                                 .ThenInclude(o => o.Customer)           // Include the User related to each Order
+                                 .Where(d => d.DeliveryPersonnelId == id)
+                                 .ToListAsync();
         }
+
 
         public async Task Update(Delivery delivery, int id)
         {

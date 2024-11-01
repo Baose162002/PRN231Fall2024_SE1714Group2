@@ -21,21 +21,23 @@ namespace WebApi_EventFlowerExchange.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllDeliveries()
+        public async Task<IActionResult> GetAllDeliveries()
         {
-            var deliveries = _deliveryService.GetAllDeliveries();
+            var deliveries = await _deliveryService.GetAllDeliveries();
             return Ok(deliveries);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetDeliveryById(int id)
+        public async Task<IActionResult> GetDeliveryById(int id)
         {
-            var delivery = _deliveryService.GetDeliveryById(id);
-            if (delivery == null)
+            try
             {
-                return NotFound();
+                var delivery = await _deliveryService.GetDeliveryById(id);
+                return Ok(delivery);
+            }catch(ArgumentException e)
+            {
+                return BadRequest(e.Message);
             }
-            return Ok(delivery);
         }
 
         [HttpPost]

@@ -30,19 +30,20 @@ namespace Service.Service
             return deliveryDTOs;
         }
 
-        public async Task<ListDeliveryDTO> GetDeliveryById(int id)
+        public async Task<List<ListDeliveryDTO>> GetDeliveryById(int id)
         {
-            var delivery = await _deliveryRepository.GetDeliveryById(id);
-            if (delivery == null)
+            var deliveries = await _deliveryRepository.GetDeliveriesByPersonnelId(id);
+            if (deliveries == null || !deliveries.Any())
             {
-                throw new ArgumentException("Delivery not found.");
+                throw new ArgumentException("No deliveries found for the given personnel ID.");
             }
 
-            var deliveryDTO = _mapper.Map<ListDeliveryDTO>(delivery);
-            return deliveryDTO;
+            // Map the list of deliveries to ListDeliveryDTO
+            var deliveryDTOs = _mapper.Map<List<ListDeliveryDTO>>(deliveries);
+            return deliveryDTOs;
         }
 
-        public async Task CreateDelivery(CreateDeliveryDTO deliveryDTO)
+            public async Task CreateDelivery(CreateDeliveryDTO deliveryDTO)
         {
             if (deliveryDTO == null)
             {
