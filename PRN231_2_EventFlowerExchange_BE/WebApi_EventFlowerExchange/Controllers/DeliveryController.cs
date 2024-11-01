@@ -54,11 +54,19 @@ namespace WebApi_EventFlowerExchange.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult UpdateDelivery([FromBody] UpdateDeliveryDTO updateDeliveryDTO, int id)
+        [HttpPut("/updatestatus")]
+        public async Task<IActionResult> CompleteDelivery(int deliveryId, int orderId)
         {
-            _deliveryService.UpdateDelivery(updateDeliveryDTO, id);
-            return NoContent();
+            try
+            {
+                await _deliveryService.UpdateDeliveryStatus(deliveryId, orderId);
+                return Ok("Delivery status updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions appropriately (logging, returning error response, etc.)
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
