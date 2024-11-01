@@ -11,7 +11,7 @@ namespace Repository.IRepository
     public interface IDeliveryRepository
     {
         Task<List<Delivery>> GetAllDeliveries();
-        Task<Delivery> GetDeliveryById(int id);
+        Task<List<Delivery>> GetDeliveriesByPersonnelId(int id);
         Task Create(Delivery delivery);
         Task Update(Delivery delivery, int id);
         Task Delete(int id);
