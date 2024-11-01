@@ -12,8 +12,8 @@ namespace BusinessObject.Enum
         {
             Pending = 1,
             Paid = 2,
-            Dispatched = 3,
-            Delivered = 4
+            InTransit = 3,
+            ShippingCompleted = 4
         }
 
         public enum PaymentStatus
@@ -45,9 +45,8 @@ namespace BusinessObject.Enum
         }
         public enum DeliveryStatus
         {
-            Pending = 1,
-            OnRoute = 2,
-            Delivered = 3
+            InTransit = 1,
+            Complete = 2
         }
 
         public enum Status

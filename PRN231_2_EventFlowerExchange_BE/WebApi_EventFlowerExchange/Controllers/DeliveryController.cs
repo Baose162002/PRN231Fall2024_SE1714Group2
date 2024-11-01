@@ -39,10 +39,17 @@ namespace WebApi_EventFlowerExchange.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateDelivery([FromBody] CreateDeliveryDTO createDeliveryDTO)
+        public async Task<IActionResult> CreateDelivery([FromBody] CreateDeliveryDTO createDeliveryDTO)
         {
-            _deliveryService.CreateDelivery(createDeliveryDTO);
-            return CreatedAtAction(nameof(GetDeliveryById), new { id = createDeliveryDTO.OrderId }, createDeliveryDTO);
+            try
+            {
+                await _deliveryService.CreateDelivery(createDeliveryDTO);
+                return Ok(createDeliveryDTO);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message); 
+            }
         }
 
         [HttpPut("{id}")]

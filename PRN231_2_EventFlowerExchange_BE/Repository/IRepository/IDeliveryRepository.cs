@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BusinessObject.Enum.EnumList;
 
 namespace Repository.IRepository
 {
@@ -15,5 +16,10 @@ namespace Repository.IRepository
         Task Update(Delivery delivery, int id);
         Task Delete(int id);
         Task<List<Order>> GetAllOrderForDelivery();
+        Task<bool> ExistsOrder(int orderId);
+        Task<bool> ExistsUser(int deliveryPersonnelId);
+        Task UpdateOrderStatus(int orderId);
+        Task<bool> ExistsDeliveryForOrder(int orderId);
+
     }
 }

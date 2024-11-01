@@ -8,6 +8,7 @@ using Service.IService;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static BusinessObject.Enum.EnumList;
 
 namespace Service.Service
 {
@@ -48,9 +49,40 @@ namespace Service.Service
                 throw new ArgumentException("Invalid input data.");
             }
 
+            // Validate that the OrderId exists
+            var orderExists = await _deliveryRepository.ExistsOrder(deliveryDTO.OrderId);
+            if (!orderExists)
+            {
+                throw new ArgumentException($"Order with ID {deliveryDTO.OrderId} does not exist.");
+            }
+
+            // Check if the OrderId already has an existing delivery
+            var deliveryExists = await _deliveryRepository.ExistsDeliveryForOrder(deliveryDTO.OrderId);
+            if (deliveryExists)
+            {
+                throw new ArgumentException($"Delivery for Order ID {deliveryDTO.OrderId} already exists.");
+            }
+
+            // Validate that the DeliveryPersonnelId exists
+            var deliveryPersonnelExists = await _deliveryRepository.ExistsUser(deliveryDTO.DeliveryPersonnelId);
+            if (!deliveryPersonnelExists)
+            {
+                throw new ArgumentException($"Delivery personnel with ID {deliveryDTO.DeliveryPersonnelId} does not exist.");
+            }
+
+            // Map deliveryDTO to the Delivery entity
             var delivery = _mapper.Map<Delivery>(deliveryDTO);
+
+            // Set default values for DeliveryStatus and Status
+            delivery.DeliveryStatus = DeliveryStatus.InTransit; // Assuming "InTransit" is a value in the DeliveryStatus enum
+            delivery.Status = Status.Active; // Assuming "Active" is a value in the Status enum
+
+            // Save the delivery
             await _deliveryRepository.Create(delivery);
+            await _deliveryRepository.UpdateOrderStatus(deliveryDTO.OrderId);
         }
+
+
 
         public async Task UpdateDelivery(UpdateDeliveryDTO deliveryDTO, int id)
         {

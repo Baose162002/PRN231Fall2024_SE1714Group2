@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BusinessObject.Enum.EnumList;
 
 namespace Repository.Repository
 {
@@ -59,7 +60,41 @@ namespace Repository.Repository
                 .Include(o => o.Customer) // Include User (Customer) information
                 .Include(o => o.OrderDetails) // Include OrderDetails
                     .ThenInclude(od => od.Flower) // Include Flower information
+                .Where(o => o.OrderStatus == OrderStatus.Paid) // Filter for orders with status 'Paid'
                 .ToListAsync();
+        }
+
+        public async Task<bool> ExistsOrder(int orderId)
+        {
+            return await _context.Orders.AnyAsync(o => o.OrderId == orderId);
+        }
+        public async Task<bool> ExistsUser(int deliveryPersonnelId)
+        {
+            return await _context.Users.AnyAsync(u => u.UserId == deliveryPersonnelId);
+        }
+
+        public async Task UpdateOrderStatus(int orderId)
+        {
+            // Fetch the order from the context using its ID
+            var order = await _context.Orders.FindAsync(orderId); // Replace Orders with the actual DbSet for your orders
+
+            // Check if the order exists
+            if (order == null)
+            {
+                throw new ArgumentException($"Order with ID {orderId} does not exist.");
+            }
+
+            // Update the order status
+            order.OrderStatus = OrderStatus.InTransit;
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> ExistsDeliveryForOrder(int orderId)
+        {
+            return await _context.Deliveries
+                .AnyAsync(d => d.OrderId == orderId);
         }
 
     }

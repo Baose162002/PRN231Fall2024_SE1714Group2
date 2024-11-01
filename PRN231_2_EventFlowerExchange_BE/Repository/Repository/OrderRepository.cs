@@ -119,7 +119,7 @@ namespace Repository.Repository
         {
             var _context = new FlowerShopContext();
             var order = _context.Orders.Find(orderId);
-            if (order == null || order.OrderStatus == OrderStatus.Delivered)
+            if (order == null || order.OrderStatus == OrderStatus.ShippingCompleted)
             {
                 return null; // Trả về null nếu không tìm thấy hoặc đã đến trạng thái cuối cùng
             }
