@@ -27,6 +27,7 @@ namespace BusinessObject
         public Enum.EnumList.Status Status { get; set; }
 
         public Batch Batch { get; set; }
+        [JsonIgnore]
         public ICollection<OrderDetail> OrderDetails { get; set; }
         public ICollection<Review> Reviews { get; set; }
 
