@@ -16,5 +16,6 @@ namespace Service.IService
         Task UpdateDelivery(UpdateDeliveryDTO updateDeliveryDTO, int id);
         Task DeleteDelivery(int id);
         Task<List<ListOrderForDeliveryDTO>> GetAllOrdersAsync();
+        Task UpdateDeliveryStatus(int deliveryId, int orderId);
     }
 }

@@ -20,6 +20,6 @@ namespace Repository.IRepository
         Task<bool> ExistsUser(int deliveryPersonnelId);
         Task UpdateOrderStatus(int orderId);
         Task<bool> ExistsDeliveryForOrder(int orderId);
-
+        Task UpdateDeliveryStatus(int deliveryId, int orderId);
     }
 }

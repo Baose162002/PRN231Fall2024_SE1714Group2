@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.Enum;
 using Microsoft.EntityFrameworkCore;
 using Repository.IRepository;
 using System;
@@ -101,6 +102,33 @@ namespace Repository.Repository
             return await _context.Deliveries
                 .AnyAsync(d => d.OrderId == orderId);
         }
+        public async Task UpdateDeliveryStatus(int deliveryId, int orderId)
+        {
+            // Retrieve the delivery and order based on the provided IDs
+            var delivery = await _context.Deliveries.FindAsync(deliveryId);
+            var order = await _context.Orders.FindAsync(orderId);
 
+            // Check if both entities exist
+            if (delivery == null)
+            {
+                throw new ArgumentException("Delivery not found.");
+            }
+
+            if (order == null)
+            {
+                throw new ArgumentException("Order not found.");
+            }
+
+            // Update the statuses
+            order.OrderStatus = EnumList.OrderStatus.ShippingCompleted;
+            delivery.DeliveryStatus = EnumList.DeliveryStatus.Complete;
+
+            // Update the entities in the context
+            _context.Orders.Update(order);
+            _context.Deliveries.Update(delivery);
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+        }
     }
 }
