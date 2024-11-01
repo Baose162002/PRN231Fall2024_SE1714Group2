@@ -69,7 +69,12 @@ namespace Repository.Repository
             await _context.SaveChangesAsync();
         }
 
-      
+
+        public async Task<Flower> GetFlowerByNameColorType(string name, string color, string type)
+        {
+            return await _context.Flowers
+                                 .FirstOrDefaultAsync(f => f.Name == name && f.Color == color && f.Type == type);
+        }
 
 
         public async Task Delete(int id)
