@@ -13,7 +13,8 @@ namespace BusinessObject.Enum
             Pending = 1,
             Paid = 2,
             InTransit = 3,
-            ShippingCompleted = 4
+            ShippingCompleted = 4,
+                            Cancel = 5,
         }
 
         public enum PaymentStatus
@@ -46,7 +47,8 @@ namespace BusinessObject.Enum
         public enum DeliveryStatus
         {
             InTransit = 1,
-            Complete = 2
+            Complete = 2,
+            Cancel = 3,
         }
 
         public enum Status

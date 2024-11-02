@@ -1,62 +1,79 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using BusinessObject;
+using BusinessObject.DTO.Response;
+using System.Net.Http.Headers;
+using System.Net;
+using System.Text.Json;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages
 {
     public class DeleteModel : PageModel
     {
-        private readonly BusinessObject.FlowerShopContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly string _baseApiUrl;
 
-        public DeleteModel(BusinessObject.FlowerShopContext context)
+        public DeleteModel(HttpClient httpClient, IConfiguration configuration)
         {
-            _context = context;
+            _httpClient = httpClient;
+            _baseApiUrl = configuration["ApiSettings:BaseUrl"];
         }
 
         [BindProperty]
-        public Company Company { get; set; } = default!;
+        public CompanyDTO Company { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
+            var token = HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
             {
-                return NotFound();
+                return RedirectToPage("/Login/Login");
             }
 
-            var company = await _context.Companies.FirstOrDefaultAsync(m => m.CompanyId == id);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/Company/{id}");
 
-            if (company == null)
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                Company = await response.Content.ReadFromJsonAsync<CompanyDTO>(options);
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
+                return RedirectToPage("/Login/Login");
             }
             else
             {
-                Company = company;
+                ModelState.AddModelError(string.Empty, $"Error loading company details: {response.ReasonPhrase}");
+                return RedirectToPage("/CompanyPages/Index");
             }
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int id)
         {
-            if (id == null)
+            var token = HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
             {
-                return NotFound();
+                return RedirectToPage("/Login/Login");
             }
 
-            var company = await _context.Companies.FindAsync(id);
-            if (company != null)
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.DeleteAsync($"{_baseApiUrl}/api/Company/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                Company = company;
-                _context.Companies.Remove(Company);
-                await _context.SaveChangesAsync();
+                return RedirectToPage("/CompanyPages/CompanyIndex");
             }
-
-            return RedirectToPage("./Index");
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
+                return RedirectToPage("/Login/Login");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, $"Error deleting company: {response.ReasonPhrase}");
+                return Page();
+            }
         }
     }
 }

@@ -71,6 +71,40 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.DeliveryPages
 
             return Page();
         }
+
+
+        public async Task<IActionResult> OnPostUpdateStatusAsync(int deliveryId, int orderId)
+        {
+            // Retrieve JWT token from session
+            var token = HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                ModelState.AddModelError(string.Empty, "Unauthorized access.");
+                return RedirectToPage("/Login/Login");
+            }
+
+            // Set Authorization header with Bearer token
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Construct the API URL
+            string apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/updatestatus?deliveryId={deliveryId}&orderId={orderId}";
+
+            // Send PUT request to the API
+            var response = await _httpClient.PutAsync(apiUrl, null); // No content needed since you're just updating status
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["SuccessMessage"] = "Status updated successfully!";
+                return RedirectToPage("/DeliveryPages/DeliveryDetails");
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, $"Error updating status: {errorContent}");
+                return Page();
+            }
+        }
+
         public class DeliveryStatusConverter : JsonConverter<DeliveryStatus>
         {
             public override DeliveryStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

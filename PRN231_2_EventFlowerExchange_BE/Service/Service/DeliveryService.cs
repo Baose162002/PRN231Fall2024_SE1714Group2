@@ -131,5 +131,9 @@ namespace Service.Service
                 }).ToList()
             }).ToList();
         }
+        public async Task UpdateDeliveryStatus(int deliveryId, int orderId)
+        {
+            await _deliveryRepository.UpdateDeliveryStatus(deliveryId, orderId);
+        }
     }
 }

@@ -44,11 +44,12 @@ namespace Service.Service
         {
         }
 
-        public async Task<List<ListOrderDTO>> GetAllOrder()
+        public async Task<List<Order>> GetAllOrder()
         {
             var orders = await _orderRepository.GetAllOrders();
-            var ordersDTO = _mapper.Map<List<ListOrderDTO>>(orders);
-            return ordersDTO;
+            return orders;
+            //var ordersDTO = _mapper.Map<List<ListOrderDTO>>(orders);
+            //return ordersDTO;
         }
 
         public async Task<List<ListOrderDTO>> GetAllOrdersByUserId(int userId)

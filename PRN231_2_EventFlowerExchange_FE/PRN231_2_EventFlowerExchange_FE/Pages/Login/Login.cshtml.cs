@@ -68,25 +68,27 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Login
                         HttpContext.Session.SetString("UserName", "User");
                     }
 
+                    // Điều hướng đến Delivery Index nếu role là DeliveryPersonnel
+                    if (loginResult.Role == "DeliveryPersonnel")
+                    {
+                        return RedirectToPage("/DeliveryPages/DeliveryIndex");
+                    }
+
                     return RedirectToPage("/Index");
                 }
             }
             else
             {
-                // Handle the error from the API
                 var errorContent = await response.Content.ReadAsStringAsync();
                 if (!string.IsNullOrEmpty(errorContent))
                 {
-                    // Deserialize the JSON to extract the message
                     var jsonDocument = JsonDocument.Parse(errorContent);
                     if (jsonDocument.RootElement.TryGetProperty("message", out var messageElement))
                     {
-                        // Display the extracted error message from the API to the user
                         ModelState.AddModelError(string.Empty, messageElement.GetString());
                     }
                     else
                     {
-                        // Fallback if the message property is not present
                         ModelState.AddModelError(string.Empty, "An unknown error occurred.");
                     }
                 }
