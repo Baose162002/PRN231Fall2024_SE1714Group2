@@ -68,7 +68,7 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        
         [HttpDelete("{id}")]
         public IActionResult DeleteDelivery(int id)
         {

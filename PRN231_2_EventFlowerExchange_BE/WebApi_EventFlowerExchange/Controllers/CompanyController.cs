@@ -1,6 +1,7 @@
 ﻿using BusinessObject.DTO.Request;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Service.IService;
 
 namespace WebApi_EventFlowerExchange.Controllers
@@ -16,7 +17,8 @@ namespace WebApi_EventFlowerExchange.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCompanies()
+        [EnableQuery]
+        public async Task<IActionResult> Get()
         {
             var companies = await _companyService.GetCompanies();
             if (companies == null || !companies.Any())
