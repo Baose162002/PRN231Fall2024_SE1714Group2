@@ -78,7 +78,6 @@ namespace WebApi_EventFlowerExchange.Controllers
         }
 
 
-
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO updateUserDTO)
         {
@@ -91,11 +90,14 @@ namespace WebApi_EventFlowerExchange.Controllers
                 }
                 return BadRequest("Failed to update user");
             }
-            catch (ArgumentException e)
+            catch (Exception e)
             {
-                return BadRequest(e.Message);
+                // Return only the exception message without the stack trace
+                return BadRequest(new { message = e.Message });
             }
         }
+
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)

@@ -108,7 +108,6 @@ namespace Service.Service
                 throw new Exception($"An error occurred: {ex.Message}");
             }
         }
-
         public async Task<bool> UpdateUser(int id, UpdateUserDTO updateUserDTO)
         {
             if (updateUserDTO == null) throw new ArgumentNullException(nameof(updateUserDTO));
@@ -116,7 +115,11 @@ namespace Service.Service
             ValidateUpdateInputs(updateUserDTO);
 
             var existingUser = await _userRepository.GetUserById(id);
-            if (existingUser == null) throw new ArgumentException("User not found");
+            if (existingUser == null) throw new ArgumentException("User does not exist.");
+
+            // Check if the new email is already in use by another user
+            if (existingUser.Email != updateUserDTO.Email && await CheckEmailExist(updateUserDTO.Email))
+                throw new Exception("The email already exists. Please use a different email.");
 
             existingUser.FullName = updateUserDTO.FullName;
             existingUser.Email = updateUserDTO.Email;
@@ -127,6 +130,8 @@ namespace Service.Service
 
             return await _userRepository.UpdateAsync(existingUser);
         }
+
+
 
         public async Task<bool> DeleteUser(int id)
         {
@@ -172,11 +177,14 @@ namespace Service.Service
             ValidateFullName(updateUserDTO.FullName);
         }
 
+
         private void ValidatePhoneNumber(string phone)
         {
             if (!Regex.IsMatch(phone, @"^0\d{9}$"))
-                throw new Exception("Phone number must start with 0 and contain exactly 10 digits.");
+                throw new ArgumentException("Phone number must start with 0 and contain exactly 10 digits.");
         }
+
+
 
         private void ValidateEmail(string email)
         {
