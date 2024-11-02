@@ -5,101 +5,138 @@
     ViewData["Title"] = "Delivery Details";
 }
 
-<h1 class="text-3xl font-bold text-center text-blue-600 my-8">Delivery Details</h1>
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-12">Delivery Details</h1>
 
-@if (Model.Deliveries.Any())
-{
-    <div class="container mx-auto px-4">
-        @foreach (var delivery in Model.Deliveries)
+        @if (Model.Deliveries.Any())
         {
-            <div class="bg-white shadow-lg rounded-lg mb-6">
-                <div class="bg-blue-600 text-white rounded-t-lg p-4">
-                    <h5 class="font-semibold">Delivery ID: @delivery.DeliveryId</h5>
+            foreach (var delivery in Model.Deliveries)
+            {
+                <div class="bg-white shadow-xl rounded-lg overflow-hidden mb-8">
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                        <h2 class="text-xl font-semibold text-white flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                            </svg>
+                            Delivery ID: @delivery.DeliveryId
+                        </h2>
+                    </div>
+
+                    <!-- Status Badges -->
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex flex-wrap gap-4">
+                            <span class="px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                Delivery Status: @delivery.DeliveryStatus
+                            </span>
+                            <span class="px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                Order Status: @delivery.Order.OrderStatus
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Content Grid -->
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Delivery Information -->
+                            <div class="space-y-6">
+                                <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">
+                                    Delivery Information
+                                </h3>
+                                <dl class="space-y-4">
+                                    <div class="flex flex-col">
+                                        <dt class="text-sm font-medium text-gray-500">Reason Note</dt>
+                                        <dd class="mt-1 text-gray-900">@delivery.ReasonNote</dd>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <dt class="text-sm font-medium text-gray-500">Pickup Time</dt>
+                                        <dd class="mt-1 text-gray-900">@delivery.PickupTime.ToString("yyyy-MM-dd HH:mm")</dd>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <dt class="text-sm font-medium text-gray-500">Delivery Time</dt>
+                                        <dd class="mt-1 text-gray-900">@delivery.DeliveryTime.ToString("yyyy-MM-dd HH:mm")</dd>
+                                    </div>
+                                </dl>
+                            </div>
+
+                            <!-- Order Information -->
+                            <div class="space-y-6">
+                                <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">
+                                    Order Information
+                                </h3>
+                                <dl class="space-y-4">
+                                    <div class="flex flex-col">
+                                        <dt class="text-sm font-medium text-gray-500">Order ID</dt>
+                                        <dd class="mt-1 text-gray-900">#@delivery.Order.OrderId</dd>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <dt class="text-sm font-medium text-gray-500">Delivery Address</dt>
+                                        <dd class="mt-1 text-gray-900">@delivery.Order.DeliveryAddress</dd>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <dt class="text-sm font-medium text-gray-500">Total Price</dt>
+                                        <dd class="mt-1 text-lg font-semibold text-green-600">@delivery.Order.TotalPrice.ToString("C")</dd>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <dt class="text-sm font-medium text-gray-500">Order Date</dt>
+                                        <dd class="mt-1 text-gray-900">@delivery.Order.OrderDate.ToString("yyyy-MM-dd HH:mm")</dd>
+                                    </div>
+                                </dl>
+                            </div>
+
+                            <!-- Customer Information -->
+                            <div class="space-y-6 lg:col-span-2">
+                                <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">
+                                    Customer Information
+                                </h3>
+                                <dl class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="flex flex-col">
+                                        <dt class="text-sm font-medium text-gray-500">Customer Name</dt>
+                                        <dd class="mt-1 text-gray-900">@delivery.Order.Customer.FullName</dd>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <dt class="text-sm font-medium text-gray-500">Email</dt>
+                                        <dd class="mt-1 text-gray-900">@delivery.Order.Customer.Email</dd>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <dt class="text-sm font-medium text-gray-500">Phone</dt>
+                                        <dd class="mt-1 text-gray-900">@delivery.Order.Customer.Phone</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="mt-8 border-t pt-6">
+                            <form method="post" asp-page-handler="UpdateStatus" class="flex justify-end">
+                                <input type="hidden" name="deliveryId" value="@delivery.DeliveryId" />
+                                <input type="hidden" name="orderId" value="@delivery.Order.OrderId" />
+                                <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                                    Update Status
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="p-6">
-                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <dt class="font-semibold text-green-600">Delivery Status</dt>
-                            <dd class="text-green-800">@Html.DisplayFor(model => delivery.DeliveryStatus)</dd>
-                        </div>
-
-                        <div>
-                            <dt class="font-semibold">Reason Note</dt>
-                            <dd>@Html.DisplayFor(model => delivery.ReasonNote)</dd>
-                        </div>
-
-                        <div>
-                            <dt class="font-semibold">Pickup Time</dt>
-                            <dd>@delivery.PickupTime.ToString("yyyy-MM-dd HH:mm")</dd>
-                        </div>
-
-                        <div>
-                            <dt class="font-semibold">Delivery Time</dt>
-                            <dd>@delivery.DeliveryTime.ToString("yyyy-MM-dd HH:mm")</dd>
-                        </div>
-
-                        <div>
-                            <dt class="font-semibold">Order ID</dt>
-                            <dd>@delivery.Order.OrderId</dd>
-                        </div>
-
-                        <div>
-                            <dt class="font-semibold">Delivery Address</dt>
-                            <dd>@delivery.Order.DeliveryAddress</dd>
-                        </div>
-
-                        <div>
-                            <dt class="font-semibold text-blue-600">Order Status</dt>
-                            <dd class="text-blue-800">@delivery.Order.OrderStatus</dd>
-                        </div>
-
-                        <div>
-                            <dt class="font-semibold">Total Price</dt>
-                            <dd class="text-green-600">@delivery.Order.TotalPrice.ToString("C")</dd>
-                        </div>
-
-                        <div>
-                            <dt class="font-semibold">Order Date</dt>
-                            <dd>@delivery.Order.OrderDate.ToString("yyyy-MM-dd HH:mm")</dd>
-                        </div>
-
-                        <!-- Customer Information -->
-                        <div>
-                            <dt class="font-semibold">Customer Name</dt>
-                            <dd>@delivery.Order.Customer.FullName</dd>
-                        </div>
-
-                        <div>
-                            <dt class="font-semibold">Customer Email</dt>
-                            <dd>@delivery.Order.Customer.Email</dd>
-                        </div>
-
-                        <div>
-                            <dt class="font-semibold">Customer Phone</dt>
-                            <dd>@delivery.Order.Customer.Phone</dd>
-                        </div>
-                    </dl>
+            }
+        }
+        else
+        {
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">
+                            No deliveries found for this user.
+                        </p>
+                    </div>
                 </div>
-                <!-- Form for updating statuses -->
-                <form method="post" asp-page-handler="UpdateStatus" class="mt-4">
-                    <input type="hidden" name="deliveryId" value="@delivery.DeliveryId" />
-                    <input type="hidden" name="orderId" value="@delivery.Order.OrderId" />
-
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded mt-2">
-                        Update Status
-                    </button>
-                </form>
             </div>
         }
     </div>
-}
-else
-{
-    <div class="bg-yellow-100 text-yellow-700 p-4 rounded-lg text-center" role="alert">
-        No deliveries found for this user.
-    </div>
-}
-
-<style>
-    /* Additional custom styles can be added here if needed */
-</style>
+</div>
