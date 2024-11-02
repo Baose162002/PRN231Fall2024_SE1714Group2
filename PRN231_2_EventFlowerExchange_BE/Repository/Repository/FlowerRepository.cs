@@ -70,11 +70,17 @@ namespace Repository.Repository
         }
 
 
-        public async Task<Flower> GetFlowerByNameColorType(string name, string color, string type)
+        public async Task<Flower> GetFlowerByNameColorTypeAndBatchId(string name, string color, string type, int batchId)
         {
             return await _context.Flowers
-                                 .FirstOrDefaultAsync(f => f.Name == name && f.Color == color && f.Type == type);
+                                 .FirstOrDefaultAsync(f => f.Name == name
+                                                         && f.Color == color
+                                                         && f.Type == type
+                                                         && f.BatchId == batchId
+                                                         && f.Status == EnumList.Status.Active);
         }
+
+
 
 
         public async Task Delete(int id)
