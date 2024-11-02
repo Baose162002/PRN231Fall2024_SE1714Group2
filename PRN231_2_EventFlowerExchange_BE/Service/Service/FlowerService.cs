@@ -108,7 +108,7 @@ namespace Service.Service
             }
 
             // Check if a flower with the same name, color, and type already exists
-            var existingFlower = await _flowerRepository.GetFlowerByNameColorType(flowerDTO.Name, flowerDTO.Color, flowerDTO.Type);
+            var existingFlower = await _flowerRepository.GetFlowerByNameColorTypeAndBatchId(flowerDTO.Name, flowerDTO.Color, flowerDTO.Type, flowerDTO.BatchId);
 
             if (existingFlower != null)
             {
