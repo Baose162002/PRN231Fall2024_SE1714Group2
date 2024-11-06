@@ -7,6 +7,30 @@
 <div class="bg-gradient-to-r from-blue-100 to-indigo-100 p-6 rounded-lg shadow-md">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Order History</h1>
 
+    <!-- Date Filter Form -->
+    <form method="get" class="mb-4 flex space-x-4" onsubmit="return validateDates()">
+        <input type="hidden" name="id" value="@Model.UsersIds" />
+
+        <div>
+            <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+            <input type="date" id="startDate" name="startDate"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                   value="@Request.Query["startDate"]" max="@DateTime.Today.ToString("yyyy-MM-dd")">
+        </div>
+
+        <div>
+            <label for="endDate" class="block text-sm font-medium text-gray-700">End Date</label>
+            <input type="date" id="endDate" name="endDate"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                   value="@Request.Query["endDate"]" min="@Request.Query["startDate"]">
+        </div>
+
+        <div class="flex items-end">
+            <button type="submit" class="px-4 py-2 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400">Filter</button>
+        </div>
+    </form>
+
+
     @if (Model.Orders != null && Model.Orders.Any())
     {
         <table class="min-w-full divide-y divide-gray-300 table-auto shadow-lg">
@@ -29,13 +53,13 @@
                 @foreach (var order in Model.Orders)
                 {
                     <tr class="hover:bg-indigo-50 transition ease-in-out duration-150">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@order.OrderDate</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@DateTime.Parse(order.OrderDate).ToString("dd-MM-yyyy")</td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">@order.TotalPrice.ToString("C")</td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">@order.TotalQuantity</td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@order.DeliveryDate</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@DateTime.Parse(order.DeliveryDate).ToString("dd-MM-yyyy")</td>
                         <td class="px-6 py-4 text-sm font-medium">
                             <span class="inline-block px-3 py-1 rounded-full @Model.GetOrderStatusClass(order.OrderStatus)">
-                                    @order.OrderStatus
+                                @order.OrderStatus
                             </span>
                         </td>
 
@@ -45,6 +69,7 @@
                                 <p class="truncate">@item.Flower.Name</p>
                             }
                         </td>
+
                         @if (Model.UsersIds == 2) // Show customer email if the user is a Seller
                         {
                             <td class="px-6 py-4 text-sm text-gray-600">@order.Customer.Email</td>
@@ -56,6 +81,42 @@
     }
     else
     {
-        <p class="text-red-500">No orders found.</p>
+        <div class="p-4 mt-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            <p class="font-bold">No Orders Found</p>
+            <p>It looks like you don't have any orders to display. Please check back later or try a different date range.</p>
+        </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        function validateDates() {
+            const startDate = new Date(document.getElementById("startDate").value);
+            const endDate = new Date(document.getElementById("endDate").value);
+            const today = new Date();
+
+            // Set time to 00:00:00 for comparison
+            today.setHours(0, 0, 0, 0);
+
+            // Start date should not be in the future
+            if (startDate > today) {
+                alert("Start date cannot be in the future.");
+                return false;
+            }
+
+            // End date should not be in the past compared to start date
+            if (endDate < startDate) {
+                alert("End date cannot be earlier than start date.");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Set min date for endDate based on startDate
+        document.getElementById("startDate").addEventListener("change", function () {
+            const startDate = this.value;
+            document.getElementById("endDate").min = startDate;
+        });
+    </script>
+}

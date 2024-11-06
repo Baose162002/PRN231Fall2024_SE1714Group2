@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using BusinessObject.DTO.Response;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
 {
@@ -21,22 +23,79 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
         public List<ListOrderDTO> Orders { get; set; }
         public int UsersIds { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int id, DateTime? startDate, DateTime? endDate)
         {
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/order/user?userId={id}");
+            var userRole = HttpContext.Session.GetString("UserRole");
+            string odataQuery;
 
-            if (response.IsSuccessStatusCode)
+            if (userRole == "Seller") // If UserRole is 2, use the seller-specific filter
             {
-                UsersIds = id;
-                Orders = await response.Content.ReadFromJsonAsync<List<ListOrderDTO>>(); // Deserialize as a list of orders
+                // Query to filter by `Batch.CompanyId` for seller
+                var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/order/user?userId={id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    UsersIds = id;
+                    Orders = await response.Content.ReadFromJsonAsync<List<ListOrderDTO>>(); // Deserialize as a list of orders
+                }
+
+                // Apply date filter after fetching orders if needed
+                if (startDate.HasValue || endDate.HasValue)
+                {
+                    var filteredOrders = Orders
+                        .Where(order =>
+                        {
+                            DateTime orderDate = DateTime.Parse(order.OrderDate).Date;
+                            return (!startDate.HasValue || orderDate >= startDate.Value.Date) &&
+                                   (!endDate.HasValue || orderDate <= endDate.Value.Date);
+                        })
+                        .ToList();
+
+                    Orders = filteredOrders;
+                }
             }
             else
             {
-                return NotFound("Orders not found.");
+                // Standard query for regular user
+                odataQuery = $"/odata/order?$filter=CustomerId eq {id} &$expand=Customer,OrderDetails($expand=Flower),Payments,Delivery";
+
+
+                // Send the request with OData query
+                var response = await _httpClient.GetAsync($"{_baseApiUrl}{odataQuery}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var orderOptions = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                    };
+
+                    UsersIds = id;
+                    var odataResponse = JsonSerializer.Deserialize<ODataResponse<ListOrderDTO>>(jsonString, orderOptions);
+                    Orders = odataResponse.Value;
+
+                    // Apply date filter after fetching orders if needed
+                    if (startDate.HasValue || endDate.HasValue)
+                    {
+                        var filteredOrders = Orders
+                            .Where(order =>
+                            {
+                                DateTime orderDate = DateTime.Parse(order.OrderDate).Date;
+                                return (!startDate.HasValue || orderDate >= startDate.Value.Date) &&
+                                       (!endDate.HasValue || orderDate <= endDate.Value.Date);
+                            })
+                            .ToList();
+
+                        Orders = filteredOrders;
+                    }
+                }
             }
 
             return Page();
         }
+
 
         public string GetOrderStatusClass(string status)
         {
@@ -48,6 +107,13 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
                 "Delivered" => "bg-green-100 text-green-800",
                 _ => "bg-gray-100 text-gray-800"
             };
+        }
+
+        public class ODataResponse<T>
+        {
+            [JsonPropertyName("@odata.context")]
+            public string OdataContext { get; set; }
+            public List<T> Value { get; set; }
         }
 
     }
