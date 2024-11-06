@@ -9,6 +9,6 @@ namespace BusinessObject.DTO.Request
     public class RegisterSellerDTO
     {
         public CreateSellerDTO CreateCompany { get; set; }
-        public CreateUserDTO CreateUser { get; set; }
+        public CreateUserSellerDTO CreateUserSeller { get; set; }
     }
 }
