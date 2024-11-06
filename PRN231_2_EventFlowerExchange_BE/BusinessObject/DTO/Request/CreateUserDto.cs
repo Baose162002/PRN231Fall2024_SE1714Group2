@@ -19,5 +19,5 @@ public class CreateUserDTO
     public string Address { get; set; }
 
     [Required(ErrorMessage = "Role is required")]
-    public string Role { get; set; } // Role input as "Buyer" or "Personal"
+    public string Role { get; set; } 
 }

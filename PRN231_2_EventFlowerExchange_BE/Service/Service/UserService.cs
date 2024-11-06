@@ -27,6 +27,8 @@ namespace Service.Service
             _mapper = mapper;
         }
 
+        // ========== User CRUD Operations ==========
+
         public async Task<List<User>> GetAllUsers()
         {
             var users = await _userRepository.GetAllUsers();
@@ -47,18 +49,10 @@ namespace Service.Service
 
                 if (await CheckEmailExist(createUserDTO.Email))
                     throw new Exception("Email exists.");
-
                 if (await CheckPhoneExist(createUserDTO.Phone))
                     throw new Exception("Phone exists.");
 
-                // Map role input to enum, restrict to Buyer or Personal
-                EnumList.UserRole userRole;
-                if (createUserDTO.Role.Equals("Buyer", StringComparison.OrdinalIgnoreCase))
-                    userRole = EnumList.UserRole.Buyer;
-                else if (createUserDTO.Role.Equals("Personal", StringComparison.OrdinalIgnoreCase))
-                    userRole = EnumList.UserRole.DeliveryPersonnel; // Placeholder for Personal
-                else
-                    throw new Exception("Invalid role. Only 'Buyer' or 'Personal' roles are allowed.");
+                EnumList.UserRole userRole = GetUserRole(createUserDTO.Role);
 
                 var user = new User
                 {
@@ -67,7 +61,7 @@ namespace Service.Service
                     Phone = createUserDTO.Phone,
                     Address = createUserDTO.Address,
                     Role = userRole,
-                    Password = createUserDTO.Password, // Ensure password hashing if needed
+                    Password = createUserDTO.Password,
                     Status = EnumList.Status.Active
                 };
 
@@ -82,27 +76,32 @@ namespace Service.Service
             }
         }
 
-
-        public async Task<UserResponseDto> CreateSeller(CreateSellerDTO createSellerDTO, CreateUserDTO createUserDTO)
+        public async Task<UserResponseDto> CreateSeller(CreateSellerDTO createSellerDTO, CreateUserSellerDTO createUserSellerDTO)
         {
             try
             {
-                ValidateInputs(createUserDTO, createSellerDTO);
-                if (await CheckEmailExist(createUserDTO.Email)) throw new Exception("Email already exists.");
-                if (await CheckPhoneExist(createUserDTO.Phone)) throw new Exception("Phone number already exists.");
-                if (await CheckCompanyNameExist(createSellerDTO.CompanyName)) throw new Exception("Company name already exists.");
+                ValidateInputs(createUserSellerDTO, createSellerDTO);
+
+                if (await CheckEmailExist(createUserSellerDTO.Email))
+                    throw new Exception("Email already exists.");
+                if (await CheckPhoneExist(createUserSellerDTO.Phone))
+                    throw new Exception("Phone number already exists.");
+                if (await CheckCompanyNameExist(createSellerDTO.CompanyName))
+                    throw new Exception("Company name already exists.");
 
                 var user = new User
                 {
-                    FullName = createUserDTO.FullName,
-                    Email = createUserDTO.Email,
-                    Phone = createUserDTO.Phone,
-                    Address = createUserDTO.Address,
+                    FullName = createUserSellerDTO.FullName,
+                    Email = createUserSellerDTO.Email,
+                    Phone = createUserSellerDTO.Phone,
+                    Address = createUserSellerDTO.Address,
                     Role = EnumList.UserRole.Seller,
-                    Password = createUserDTO.Password,
+                    Password = createUserSellerDTO.Password,
                     Status = EnumList.Status.Active
                 };
-                if (!await _userRepository.AddAsync(user)) throw new Exception("Failed to create user.");
+
+                if (!await _userRepository.AddAsync(user))
+                    throw new Exception("Failed to create user.");
 
                 var company = new Company
                 {
@@ -115,7 +114,9 @@ namespace Service.Service
                     UserId = user.UserId,
                     Status = EnumList.Status.Active
                 };
-                if (!await _companyRepository.AddNew(company)) throw new Exception("Failed to create company.");
+
+                if (!await _companyRepository.AddNew(company))
+                    throw new Exception("Failed to create company.");
 
                 return _mapper.Map<UserResponseDto>(user);
             }
@@ -124,6 +125,7 @@ namespace Service.Service
                 throw new Exception($"An error occurred: {ex.Message}");
             }
         }
+
         public async Task<bool> UpdateUser(int id, UpdateUserDTO updateUserDTO)
         {
             if (updateUserDTO == null) throw new ArgumentNullException(nameof(updateUserDTO));
@@ -133,7 +135,6 @@ namespace Service.Service
             var existingUser = await _userRepository.GetUserById(id);
             if (existingUser == null) throw new ArgumentException("User does not exist.");
 
-            // Check if the new email is already in use by another user
             if (existingUser.Email != updateUserDTO.Email && await CheckEmailExist(updateUserDTO.Email))
                 throw new Exception("The email already exists. Please use a different email.");
 
@@ -147,11 +148,20 @@ namespace Service.Service
             return await _userRepository.UpdateAsync(existingUser);
         }
 
-
-
         public async Task<bool> DeleteUser(int id)
         {
             return await _userRepository.DeleteAsync(id);
+        }
+
+        private EnumList.UserRole GetUserRole(string role)
+        {
+            return role.Equals("Buyer", StringComparison.OrdinalIgnoreCase)
+                ? EnumList.UserRole.Buyer
+                : role.Equals("Personal", StringComparison.OrdinalIgnoreCase)
+                    ? EnumList.UserRole.DeliveryPersonnel
+                    : throw new Exception("Invalid role. Only 'Buyer' or 'Personal' roles are allowed.");
+
+
         }
 
         private async Task<bool> CheckEmailExist(string email)
@@ -172,12 +182,14 @@ namespace Service.Service
             return companies.Any(c => c.CompanyName == companyName);
         }
 
-        private void ValidateInputs(CreateUserDTO createUserDTO, CreateSellerDTO createSellerDTO = null)
+        private void ValidateInputs(CreateUserDTO createUserDTO)
         {
-            ValidatePhoneNumber(createUserDTO.Phone);
-            ValidateEmail(createUserDTO.Email);
-            ValidateFullName(createUserDTO.FullName);
-            ValidatePassword(createUserDTO.Password);
+            ValidateCommonInputs(createUserDTO.Phone, createUserDTO.Email, createUserDTO.FullName, createUserDTO.Password);
+        }
+
+        private void ValidateInputs(CreateUserSellerDTO createUserSellerDTO, CreateSellerDTO createSellerDTO = null)
+        {
+            ValidateCommonInputs(createUserSellerDTO.Phone, createUserSellerDTO.Email, createUserSellerDTO.FullName, createUserSellerDTO.Password);
 
             if (createSellerDTO != null)
             {
@@ -193,14 +205,19 @@ namespace Service.Service
             ValidateFullName(updateUserDTO.FullName);
         }
 
+        private void ValidateCommonInputs(string phone, string email, string fullName, string password)
+        {
+            ValidatePhoneNumber(phone);
+            ValidateEmail(email);
+            ValidateFullName(fullName);
+            ValidatePassword(password);
+        }
 
         private void ValidatePhoneNumber(string phone)
         {
             if (!Regex.IsMatch(phone, @"^0\d{9}$"))
                 throw new ArgumentException("Phone number must start with 0 and contain exactly 10 digits.");
         }
-
-
 
         private void ValidateEmail(string email)
         {

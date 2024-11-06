@@ -12,6 +12,7 @@ namespace BusinessObject.Dto.Response
         public string Role { get; set; } = string.Empty;
         public string Token { get; set; } = string.Empty;
         public string Status { get; set; }
+        public int? CompanyId { get; set; }
 
     }
 }

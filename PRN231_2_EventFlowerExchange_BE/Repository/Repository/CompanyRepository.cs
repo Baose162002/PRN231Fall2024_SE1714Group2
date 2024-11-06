@@ -69,5 +69,7 @@ namespace Repository.Repository
             var user = await flowerShopContext.Companies.Include(x => x.Batches).FirstOrDefaultAsync(x => x.UserId == id);
             return user;
         } 
+
+
     }
 }
