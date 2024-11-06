@@ -52,10 +52,10 @@
                 @foreach (var order in Model.Orders)
                 {
                     <tr class="hover:bg-indigo-50 transition ease-in-out duration-150">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@DateTime.Parse(order.OrderDate).ToString("yyyy-MM-dd")</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@DateTime.Parse(order.OrderDate).ToString("dd-MM-yyyy")</td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">@order.TotalPrice.ToString("C")</td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">@order.TotalQuantity</td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@DateTime.Parse(order.DeliveryDate).ToString("yyyy-MM-dd")</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">@DateTime.Parse(order.DeliveryDate).ToString("dd-MM-yyyy")</td>
                         <td class="px-6 py-4 text-sm font-medium">
                             <span class="inline-block px-3 py-1 rounded-full @Model.GetOrderStatusClass(order.OrderStatus)">
                                 @order.OrderStatus
@@ -119,4 +119,3 @@
         });
     </script>
 }
-

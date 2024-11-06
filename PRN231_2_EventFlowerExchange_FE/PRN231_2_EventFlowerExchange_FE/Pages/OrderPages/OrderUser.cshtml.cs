@@ -26,23 +26,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
         public List<ListOrderDTO> Orders { get; set; }
         public int UsersIds { get; set; }
 
-        //public async Task<IActionResult> OnGetAsync(int id)
-        //{
-        //    var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/order/user?userId={id}");
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        UsersIds = id;
-        //        Orders = await response.Content.ReadFromJsonAsync<List<ListOrderDTO>>(); // Deserialize as a list of orders
-        //    }
-        //    else
-        //    {
-        //        return NotFound("Orders not found.");
-        //    }
-
-        //    return Page();
-        //}
-
         public async Task<IActionResult> OnGetAsync(int id, DateTime? startDate, DateTime? endDate)
         {
             var userRole = HttpContext.Session.GetString("UserRole");
@@ -50,10 +33,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
 
             if (userRole == "Seller") // If UserRole is 2, use the seller-specific filter
             {
-                // Query to filter by `Batch.CompanyId` for seller
-                //odataQuery = $"/odata/order?$filter=OrderDetails/any(od: od/Flower/Batch/CompanyId eq {id})&$expand=Customer,OrderDetails($expand=Flower($expand=Batch)),Payments,Delivery";
-                //odataQuery = $"/odata/order?$filter=OrderDetails/any(od: od/Flower/Batch/CompanyId eq {id})&$expand=Customer,OrderDetails($expand=Flower)&$expand=Payments,Delivery";
-
                 var response1 = await _httpClient.GetAsync($"{_baseApiUrl}/api/order/user?userId={id}");
 
                 if (response1.IsSuccessStatusCode)
@@ -116,7 +95,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
 
                         Orders = filteredOrders;
                     }
-
                 }
                 else
                 {
@@ -126,6 +104,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
 
             return Page();
         }
+
 
         public string GetOrderStatusClass(string status)
         {
