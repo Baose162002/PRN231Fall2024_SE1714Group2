@@ -4,8 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using BusinessObject.DTO.Response;
+using BusinessObject;
+using System.Globalization;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
 {
@@ -30,28 +33,30 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
 
             if (userRole == "Seller") // If UserRole is 2, use the seller-specific filter
             {
-                // Query to filter by `Batch.CompanyId` for seller
-                var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/order/user?userId={id}");
+                var response1 = await _httpClient.GetAsync($"{_baseApiUrl}/api/order/user?userId={id}");
 
-                if (response.IsSuccessStatusCode)
+                if (response1.IsSuccessStatusCode)
                 {
                     UsersIds = id;
-                    Orders = await response.Content.ReadFromJsonAsync<List<ListOrderDTO>>(); // Deserialize as a list of orders
+                    Orders = await response1.Content.ReadFromJsonAsync<List<ListOrderDTO>>(); // Deserialize as a list of orders
+                                                                                              // Apply date filter after fetching orders if needed
+                    if (startDate.HasValue || endDate.HasValue)
+                    {
+                        var filteredOrders = Orders
+                            .Where(order =>
+                            {
+                                DateTime orderDate = DateTime.Parse(order.OrderDate).Date;
+                                return (!startDate.HasValue || orderDate >= startDate.Value.Date) &&
+                                       (!endDate.HasValue || orderDate <= endDate.Value.Date);
+                            })
+                            .ToList();
+
+                        Orders = filteredOrders;
+                    }
                 }
-
-                // Apply date filter after fetching orders if needed
-                if (startDate.HasValue || endDate.HasValue)
+                else
                 {
-                    var filteredOrders = Orders
-                        .Where(order =>
-                        {
-                            DateTime orderDate = DateTime.Parse(order.OrderDate).Date;
-                            return (!startDate.HasValue || orderDate >= startDate.Value.Date) &&
-                                   (!endDate.HasValue || orderDate <= endDate.Value.Date);
-                        })
-                        .ToList();
-
-                    Orders = filteredOrders;
+                    return NotFound("Orders not found.");
                 }
             }
             else
@@ -91,6 +96,10 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
                         Orders = filteredOrders;
                     }
                 }
+                else
+                {
+                    return NotFound("Orders not found.");
+                }
             }
 
             return Page();
@@ -115,6 +124,5 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.OrderPages
             public string OdataContext { get; set; }
             public List<T> Value { get; set; }
         }
-
     }
 }

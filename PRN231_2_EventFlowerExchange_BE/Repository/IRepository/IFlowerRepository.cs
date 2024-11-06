@@ -15,6 +15,8 @@ namespace Repository.IRepository
         Task Update(Flower flower, int id);
         Task Delete(int id);
         Task UpdateFlower(Flower flower);
-        Task AdjustBatchQuantity(Flower flower, int id);
+        Task<Flower> GetFlowerByNameColorTypeAndBatchId(string name, string color, string type, int batchId);
+
+
     }
 }

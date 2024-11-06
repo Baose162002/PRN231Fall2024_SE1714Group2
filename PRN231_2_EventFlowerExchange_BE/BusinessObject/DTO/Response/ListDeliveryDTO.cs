@@ -14,7 +14,7 @@ namespace BusinessObject.DTO.Response
         public string ReasonNote { get; set; }
         public DateTime PickupTime { get; set; }
         public DateTime DeliveryTime { get; set; }
-        public int OrderId { get; set; }
+        public OrderResponse Order { get; set; }
         public int DeliveryPersonnelId { get; set; }
     }
 }

@@ -11,9 +11,10 @@ namespace BusinessObject.Enum
         public enum OrderStatus
         {
             Pending = 1,
-            Confirmed = 2,
-            Dispatched = 3,
-            Delivered = 4
+            Paid = 2,
+            InTransit = 3,
+            ShippingCompleted = 4,
+                            Cancel = 5,
         }
 
         public enum PaymentStatus
@@ -45,16 +46,16 @@ namespace BusinessObject.Enum
         }
         public enum DeliveryStatus
         {
-            Pending = 1,
-            OnRoute = 2,
-            Delivered = 3
+            InTransit = 1,
+            Complete = 2,
+            Cancel = 3,
         }
 
         public enum Status
         {
             Active = 1,
             Inactive = 2,
-            NeedsReview = 3
+            Overdue = 3
         }
     }
 }

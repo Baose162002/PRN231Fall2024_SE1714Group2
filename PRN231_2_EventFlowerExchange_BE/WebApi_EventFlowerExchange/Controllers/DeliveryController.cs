@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessObject.DTO.Request;
+using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
 using Service.Service;
@@ -20,42 +21,74 @@ namespace WebApi_EventFlowerExchange.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllDeliveries()
+        public async Task<IActionResult> GetAllDeliveries()
         {
-            var deliveries = _deliveryService.GetAllDeliveries();
+            var deliveries = await _deliveryService.GetAllDeliveries();
             return Ok(deliveries);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetDeliveryById(int id)
+        public async Task<IActionResult> GetDeliveryById(int id)
         {
-            var delivery = _deliveryService.GetDeliveryById(id);
-            if (delivery == null)
+            try
             {
-                return NotFound();
+                var delivery = await _deliveryService.GetDeliveryById(id);
+                return Ok(delivery);
+            }catch(ArgumentException e)
+            {
+                return BadRequest(e.Message);
             }
-            return Ok(delivery);
         }
 
         [HttpPost]
-        public IActionResult CreateDelivery([FromBody] CreateDeliveryDTO createDeliveryDTO)
+        public async Task<IActionResult> CreateDelivery([FromBody] CreateDeliveryDTO createDeliveryDTO)
         {
-            _deliveryService.CreateDelivery(createDeliveryDTO);
-            return CreatedAtAction(nameof(GetDeliveryById), new { id = createDeliveryDTO.OrderId }, createDeliveryDTO);
+            try
+            {
+                await _deliveryService.CreateDelivery(createDeliveryDTO);
+                return Ok(createDeliveryDTO);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message); 
+            }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult UpdateDelivery([FromBody] UpdateDeliveryDTO updateDeliveryDTO, int id)
+        [HttpPut("/updatestatus")]
+        public async Task<IActionResult> CompleteDelivery(int deliveryId, int orderId)
         {
-            _deliveryService.UpdateDelivery(updateDeliveryDTO, id);
-            return NoContent();
+            try
+            {
+                await _deliveryService.UpdateDeliveryStatus(deliveryId, orderId);
+                return Ok("Delivery status updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions appropriately (logging, returning error response, etc.)
+                return BadRequest(ex.Message);
+            }
         }
-
+        
         [HttpDelete("{id}")]
         public IActionResult DeleteDelivery(int id)
         {
             _deliveryService.DeleteDelivery(id);
             return NoContent();
+        }
+
+        [HttpGet("order")]
+        public async Task<ActionResult<List<ListOrderForDeliveryDTO>>> GetAllOrdersForDelivery()
+        {
+            try
+            {
+                var orders = await _deliveryService.GetAllOrdersAsync();
+                return Ok(orders); // Returns 200 OK with the list of orders
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                return StatusCode(500, $"Internal server error: {ex.Message}"); // Returns 500 Internal Server Error
+            }
         }
     }
 }

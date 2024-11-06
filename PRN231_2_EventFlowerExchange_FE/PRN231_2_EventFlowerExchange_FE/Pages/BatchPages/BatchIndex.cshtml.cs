@@ -56,22 +56,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
                     return Page();
                 }
             }
-            var reviewResponse = await _httpClient.PostAsync($"{_baseApiUrl}/api/Batch/CheckAndUpdateBatchStatus", null);
-            if (reviewResponse.IsSuccessStatusCode)
-            {
-                var jsonResponse = await reviewResponse.Content.ReadAsStringAsync();
-                var apiResponse = JsonSerializer.Deserialize<ApiResponse>(jsonResponse); 
-
-                if (apiResponse != null)
-                {
-                    ApiMessage = apiResponse.Message; 
-                }
-            }
-            else
-            {
-                var errorContent = await reviewResponse.Content.ReadAsStringAsync();
-                ModelState.AddModelError(string.Empty, $"Error updating batch status: {errorContent}");
-            }
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -121,11 +105,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.BatchPages
             }
 
             return Page();
-        }
-
-        public class ApiResponse
-        {
-            public string Message { get; set; }
         }
 
         private async Task<CompanyDTO> GetCompanyByUserIdAsync(string userId)

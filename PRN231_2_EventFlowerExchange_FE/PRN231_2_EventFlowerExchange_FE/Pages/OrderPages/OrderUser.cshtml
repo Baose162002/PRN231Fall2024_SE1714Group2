@@ -30,7 +30,6 @@
         </div>
     </form>
 
-
     @if (Model.Orders != null && Model.Orders.Any())
     {
         <table class="min-w-full divide-y divide-gray-300 table-auto shadow-lg">
@@ -64,9 +63,9 @@
                         </td>
 
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">
-                            @foreach (var item in order.OrderDetails)
+                            @foreach (var detail in order.OrderDetails)
                             {
-                                <p class="truncate">@item.Flower.Name</p>
+                                <p class="truncate">@detail.Flower.Name</p>
                             }
                         </td>
 

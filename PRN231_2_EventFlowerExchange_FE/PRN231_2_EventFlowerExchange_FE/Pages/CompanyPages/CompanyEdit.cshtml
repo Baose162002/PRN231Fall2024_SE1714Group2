@@ -1,55 +1,99 @@
-﻿@page
+﻿@page "/CompanyEdit/{id:int}"
 @model PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages.EditModel
-
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Company";
 }
 
-<h1>Edit</h1>
+<div class="flex overflow-hidden bg-white pt-16">
+    <div class="bg-white border rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl">
+        <h2 class="text-2xl font-medium mb-4">Edit Company</h2>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div id="successMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                <span class="block sm:inline">@TempData["SuccessMessage"]</span>
+            </div>
+        }
+        <form method="post" id="editCompanyForm">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
 
-<h4>Company</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Company.CompanyId" />
-            <div class="form-group">
-                <label asp-for="Company.CompanyName" class="control-label"></label>
-                <input asp-for="Company.CompanyName" class="form-control" />
-                <span asp-validation-for="Company.CompanyName" class="text-danger"></span>
+            <div class="flex flex-wrap -mx-2">
+                <div class="w-full px-2 mb-4">
+                    <label asp-for="UpdateCompanyDTO.CompanyName" class="block text-gray-700 font-medium mb-2">Company Name</label>
+                    <input asp-for="UpdateCompanyDTO.CompanyName" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="UpdateCompanyDTO.CompanyName" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Company.CompanyAddress" class="control-label"></label>
-                <input asp-for="Company.CompanyAddress" class="form-control" />
-                <span asp-validation-for="Company.CompanyAddress" class="text-danger"></span>
+
+            <div class="flex flex-wrap -mx-2">
+                <div class="w-full px-2 mb-4">
+                    <label asp-for="UpdateCompanyDTO.CompanyAddress" class="block text-gray-700 font-medium mb-2">Company Address</label>
+                    <input asp-for="UpdateCompanyDTO.CompanyAddress" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="UpdateCompanyDTO.CompanyAddress" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Company.CompanyDescription" class="control-label"></label>
-                <input asp-for="Company.CompanyDescription" class="form-control" />
-                <span asp-validation-for="Company.CompanyDescription" class="text-danger"></span>
+
+            <div class="flex flex-wrap -mx-2">
+                <div class="w-full px-2 mb-4">
+                    <label asp-for="UpdateCompanyDTO.CompanyDescription" class="block text-gray-700 font-medium mb-2">Description</label>
+                    <textarea asp-for="UpdateCompanyDTO.CompanyDescription" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" rows="3"></textarea>
+                    <span asp-validation-for="UpdateCompanyDTO.CompanyDescription" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Company.UserId" class="control-label"></label>
-                <select asp-for="Company.UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                <span asp-validation-for="Company.UserId" class="text-danger"></span>
+
+            <div class="flex flex-wrap -mx-2">
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="UpdateCompanyDTO.TaxNumber" class="block text-gray-700 font-medium mb-2">Tax Number</label>
+                    <input asp-for="UpdateCompanyDTO.TaxNumber" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="UpdateCompanyDTO.TaxNumber" class="text-danger"></span>
+                </div>
+
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="UpdateCompanyDTO.PostalCode" class="block text-gray-700 font-medium mb-2">Postal Code</label>
+                    <input asp-for="UpdateCompanyDTO.PostalCode" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="UpdateCompanyDTO.PostalCode" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Company.Status" class="control-label"></label>
-                <select asp-for="Company.Status" class="form-control"></select>
-                <span asp-validation-for="Company.Status" class="text-danger"></span>
+
+            <div class="flex flex-wrap -mx-2">
+                <div class="w-full px-2 mb-4">
+                    <label asp-for="UpdateCompanyDTO.City" class="block text-gray-700 font-medium mb-2">City</label>
+                    <input asp-for="UpdateCompanyDTO.City" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" />
+                    <span asp-validation-for="UpdateCompanyDTO.City" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="flex flex-wrap -mx-2">
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="UpdateCompanyDTO.UserId" class="block text-gray-700 font-medium mb-2">User ID</label>
+                    <input asp-for="UpdateCompanyDTO.UserId" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400" readonly />
+                    <span asp-validation-for="UpdateCompanyDTO.UserId" class="text-danger"></span>
+                </div>
+
+                <div class="w-full sm:w-1/2 px-2 mb-4">
+                    <label asp-for="UpdateCompanyDTO.Status" class="block text-gray-700 font-medium mb-2">Status</label>
+                    <select asp-for="UpdateCompanyDTO.Status" asp-items="Html.GetEnumSelectList<BusinessObject.Enum.EnumList.Status>()" class="border border-gray-400 p-2 w-full rounded-lg focus:outline-none focus:border-blue-400">
+                    </select>
+                    <span asp-validation-for="UpdateCompanyDTO.Status" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mt-6">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Save Changes</button>
+                <a asp-page="/Index" class="text-blue-500 hover:underline">Back to Home</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-page="./Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            // Automatically hide success message after 5 seconds
+            setTimeout(function () {
+                $('#successMessage').fadeOut('slow');
+            }, 5000);
+        });
+    </script>
 }

@@ -2,8 +2,10 @@
 using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR.Protocol;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using static PRN231_2_EventFlowerExchange_FE.Pages.BatchPages.BatchIndexModel;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages
 {
@@ -19,6 +21,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
         }
 
         public List<ListFlowerDTO> Flowers { get; set; }
+        public string ApiMessage { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -28,9 +31,24 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
+            var reviewResponse = await _httpClient.PostAsync($"{_baseApiUrl}/api/Batch/CheckAndUpdateBatchStatus", null);
+            if (reviewResponse.IsSuccessStatusCode)
+            {
+                var jsonResponse = await reviewResponse.Content.ReadAsStringAsync();
+                var apiResponse = JsonSerializer.Deserialize<ApiResponse>(jsonResponse);
 
+                if (apiResponse != null)
+                {
+                    ApiMessage = apiResponse.Message;
+                }
+            }
+            else
+            {
+                var errorContent = await reviewResponse.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, $"Error updating batch status: {errorContent}");
+            }
             // Gọi API để lấy danh sách hoa
-            var odataUrl = $"{_baseApiUrl}/odata/Flower?$filter=Status eq 'Active' and (Condition eq 'Fresh')";
+            var odataUrl = $"{_baseApiUrl}/odata/Flower?$filter=Status eq 'Active' and Condition eq 'Fresh' and FlowerStatus eq 'Available'";
             var response = await _httpClient.GetAsync(odataUrl);
             if (response.IsSuccessStatusCode)
             {
@@ -44,6 +62,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
                 Flowers = new List<ListFlowerDTO>();
                 ModelState.AddModelError(string.Empty, "Not found flower");
             }
+           
         }
 
         public class ODataResponse<T>
@@ -51,7 +70,10 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             public List<T> Value { get; set; }
         }
 
-
+        public class ApiResponse
+        {
+            public string Message { get; set; }
+        }
 
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostAddToCartAsync([FromBody] AddToCartRequest request)
@@ -90,56 +112,38 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
             var cartJson = HttpContext.Request.Cookies["cartItems"];
             List<CartItemDTO> cartItems = string.IsNullOrEmpty(cartJson)
                 ? new List<CartItemDTO>()
-                : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson);
+                : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             var existingItem = cartItems.FirstOrDefault(x => x.FlowerId == flower.FlowerId);
             if (existingItem != null)
             {
-                existingItem.Quantity += 1;
+                existingItem.Quantity += 1; // Tăng số lượng của sản phẩm đã tồn tại
             }
             else
             {
-                flower.Quantity = 1;
+                flower.Quantity = 1; // Nếu chưa có thì khởi tạo số lượng là 1
                 cartItems.Add(flower);
             }
 
             var options = new CookieOptions { Expires = DateTimeOffset.Now.AddDays(30) };
             HttpContext.Response.Cookies.Append("cartItems", JsonSerializer.Serialize(cartItems), options);
 
-            return cartItems.Sum(item => item.Quantity);
+            return cartItems.Count; // Trả về số lượng sản phẩm khác nhau trong giỏ hàng
         }
 
-        public IActionResult OnGetGetCartCount()
+
+
+        public JsonResult OnGetGetCartCount()
         {
             var cartJson = HttpContext.Request.Cookies["cartItems"];
+            List<CartItemDTO> cartItems = string.IsNullOrEmpty(cartJson)
+                ? new List<CartItemDTO>()
+                : JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            if (string.IsNullOrEmpty(cartJson))
-            {
-                // No cart items in the cookie, return a count of 0
-                return new JsonResult(new { count = 0 });
-            }
-
-            try
-            {
-                // Deserialize with case-insensitive matching for JSON properties
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-
-                // Deserialize the cookie JSON data to List<CartItemDTO>
-                var cartItems = JsonSerializer.Deserialize<List<CartItemDTO>>(cartJson, options);
-
-                // If deserialization is successful, calculate the total quantity
-                return new JsonResult(new { count = cartItems?.Sum(item => item.Quantity) ?? 0 });
-            }
-            catch (JsonException ex)
-            {
-                // Log the error (optional) and return a count of 0 if deserialization fails
-                Console.WriteLine($"Error deserializing cart items: {ex.Message}");
-                return new JsonResult(new { count = 0 });
-            }
+            int cartCount = cartItems.Sum(item => item.Quantity); // Tính tổng số lượng sản phẩm
+            return new JsonResult(new { count = cartCount });
         }
+
 
     }
 

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BusinessObject
@@ -21,7 +22,8 @@ namespace BusinessObject
         public string Address { get; set; }
         public Enum.EnumList.UserRole Role { get; set; }
         public Enum.EnumList.Status Status { get; set; }
-        
+
+        [JsonIgnore]
         public ICollection<Order> Orders { get; set; }
         public ICollection<Review> Reviews { get; set; }
         public ICollection<Delivery> Deliveries { get; set; }

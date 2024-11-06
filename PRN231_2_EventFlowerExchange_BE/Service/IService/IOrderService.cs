@@ -11,7 +11,7 @@ namespace Service.IService
 {
     public interface IOrderService
     {
-        Task<List<ListOrderDTO>> GetAllOrder();
+        Task<List<Order>> GetAllOrder();
         Task<List<ListOrderDTO>> GetAllOrdersByUserId(int id);
         Task<ListOrderDTO> GetOrderById(int id);
 
@@ -24,5 +24,6 @@ namespace Service.IService
         Task<List<Order>> SearchOrders(OrderSearchDTO searchCriteria);
         Task<int> CreateOrder(CreateOrderFlowerDTO orderDTO);
 
+        Task UpdateStatus(OrderUpdateStatusDTO order, int id);
     }
 }

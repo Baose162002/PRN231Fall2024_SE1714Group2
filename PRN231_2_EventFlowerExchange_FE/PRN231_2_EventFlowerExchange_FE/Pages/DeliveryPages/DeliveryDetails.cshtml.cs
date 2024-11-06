@@ -6,37 +6,122 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using BusinessObject;
+using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using BusinessObject.DTO.Response;
+using static BusinessObject.Enum.EnumList;
 
 namespace PRN231_2_EventFlowerExchange_FE.Pages.DeliveryPages
 {
     public class DetailsModel : PageModel
     {
-        private readonly BusinessObject.FlowerShopContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
 
-        public DetailsModel(BusinessObject.FlowerShopContext context)
+        public DetailsModel(HttpClient httpClient, IConfiguration configuration)
         {
-            _context = context;
+            _httpClient = httpClient;
+            _configuration = configuration;
         }
 
-        public Delivery Delivery { get; set; } = default!;
+        public List<ListDeliveryDTO> Deliveries { get; set; } = new List<ListDeliveryDTO>();
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null)
+            // Retrieve JWT token and UserId from session
+            var token = HttpContext.Session.GetString("JWTToken");
+            var userId = HttpContext.Session.GetString("UserId");
+            var userRole = HttpContext.Session.GetString("UserRole");
+
+            // Check for valid token and user role
+            if (string.IsNullOrEmpty(token) || userRole != "DeliveryPersonnel")
             {
-                return NotFound();
+                ModelState.AddModelError(string.Empty, "Unauthorized access. Only Delivery Personnel can view this page.");
+                return RedirectToPage("/Login/Login");
             }
 
-            var delivery = await _context.Deliveries.FirstOrDefaultAsync(m => m.DeliveryId == id);
-            if (delivery == null)
+            // Set Authorization header with Bearer token
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Construct the API URL with the UserId for filtering deliveries
+            string apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/api/Delivery/{userId}";
+            var response = await _httpClient.GetAsync(apiUrl);
+
+            // Check if the API response is successful
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                    Converters = { new DeliveryStatusConverter() } // Add the custom converter
+                };
+
+                // Deserialize the response to get the list of deliveries
+                Deliveries = await response.Content.ReadFromJsonAsync<List<ListDeliveryDTO>>(options);
             }
             else
             {
-                Delivery = delivery;
+                // Display error message if API call fails
+                var errorContent = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, $"Error fetching delivery data: {errorContent}");
+                return Page();
             }
+
             return Page();
+        }
+
+
+        public async Task<IActionResult> OnPostUpdateStatusAsync(int deliveryId, int orderId)
+        {
+            // Retrieve JWT token from session
+            var token = HttpContext.Session.GetString("JWTToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                ModelState.AddModelError(string.Empty, "Unauthorized access.");
+                return RedirectToPage("/Login/Login");
+            }
+
+            // Set Authorization header with Bearer token
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Construct the API URL
+            string apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/updatestatus?deliveryId={deliveryId}&orderId={orderId}";
+
+            // Send PUT request to the API
+            var response = await _httpClient.PutAsync(apiUrl, null); // No content needed since you're just updating status
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["SuccessMessage"] = "Status updated successfully!";
+                return RedirectToPage("/DeliveryPages/DeliveryDetails");
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, $"Error updating status: {errorContent}");
+                return Page();
+            }
+        }
+
+        public class DeliveryStatusConverter : JsonConverter<DeliveryStatus>
+        {
+            public override DeliveryStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                // Attempt to parse the enum from a string
+                if (reader.TokenType == JsonTokenType.String && Enum.TryParse(reader.GetString(), true, out DeliveryStatus status))
+                {
+                    return status;
+                }
+
+                throw new JsonException($"Unable to convert {reader.GetString()} to DeliveryStatus.");
+            }
+
+            public override void Write(Utf8JsonWriter writer, DeliveryStatus value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value.ToString());
+            }
         }
     }
 }

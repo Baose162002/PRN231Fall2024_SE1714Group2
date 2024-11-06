@@ -20,7 +20,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
 
         public List<ListUserDTO> Users { get; set; }
         public int CurrentPage { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
+        public int PageSize { get; set; } = 5;
         public int TotalCount { get; set; }
         public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
         public string SearchTerm { get; set; }
@@ -32,10 +32,13 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
         {
 
             var token = HttpContext.Session.GetString("JWTToken");
+            var userRole = HttpContext.Session.GetString("UserRole");
 
-            if (string.IsNullOrEmpty(token))
+            // Check if the user is authenticated and has the "Admin" role
+            if (string.IsNullOrEmpty(token) || userRole != "Admin")
             {
-                return RedirectToPage("/Login/Login");
+                ModelState.AddModelError(string.Empty, "Unauthorized access. Only Admins can view this page.");
+                return RedirectToPage("/Index");
             }
 
             if (pageNumber.HasValue && pageNumber > 0)

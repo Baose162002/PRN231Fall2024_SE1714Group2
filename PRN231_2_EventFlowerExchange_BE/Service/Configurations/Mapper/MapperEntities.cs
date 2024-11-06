@@ -31,9 +31,18 @@ namespace Service.Configurations.Mapper
             CreateMap<CreateFlowerDTO, Flower>();
             CreateMap<UpdateFlowerDTO, Flower>();
 
+            //Order mappings
             CreateMap<Order, CreateOrderDTO>();
+            CreateMap<Order, OrderUpdateStatusDTO>();
+            CreateMap<Order, OrderResponse>();
             CreateMap<Order, UpdateOrderDTO>()
                 .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()));
+            CreateMap<OrderUpdateStatusDTO, Order>()
+                .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.Status));
+
+            CreateMap<Order, OrderUpdateStatusDTO>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.OrderStatus.ToString()));
+
             CreateMap<UpdateOrderDTO, Order>()
                 .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
                 .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.OrderDate, "dd/MM/yyyy", CultureInfo.InvariantCulture)));

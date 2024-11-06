@@ -14,7 +14,8 @@ namespace BusinessObject.DTO.Response
         public string DeliveryAddress { get; set; }
         public DateTime DeliveryDate { get; set; }
 
-        public int CustomerId { get; set; }
+        public string OrderStatus { get; set; }
+        public ListUserDTO Customer { get; set; }
 
     }
 }

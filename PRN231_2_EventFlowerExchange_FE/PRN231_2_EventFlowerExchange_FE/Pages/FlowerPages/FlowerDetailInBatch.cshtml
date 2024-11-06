@@ -24,8 +24,7 @@
                         <th class="px-4 py-2">Price</th>
                         <th class="px-4 py-2">Remaining Quantity</th>
                         <th class="px-4 py-2">Status</th>
-                        <th class="px-4 py-2">Actions</th> 
-
+                        <th class="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,10 +49,16 @@
                                 </span>
                             </td>
                             <td class="border px-4 py-2">
-                                <a href="/FlowerPages/EditFlower?id=@flower.FlowerId" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 rounded">
+                                <a href="/FlowerPages/EditFlower?id=@flower.FlowerId"
+                                   class="bg-yellow-500 text-white font-bold py-1 px-3 rounded
+                                   @(flower.Status.ToLower() == "overdue" ? "opacity-50 cursor-not-allowed" : "hover:bg-yellow-700")"
+                                @(flower.Status.ToLower() == "overdue" ? "disabled" : "")>
                                     Edit
                                 </a>
-                                <a href="/FlowerPages/DeleteFlower?id=@flower.FlowerId" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">
+                                <a href="/FlowerPages/DeleteFlower?id=@flower.FlowerId"
+                                   class="bg-red-500 text-white font-bold py-1 px-3 rounded
+                                   @(flower.Status.ToLower() == "overdue" ? "opacity-50 cursor-not-allowed" : "hover:bg-red-700")"
+                                @(flower.Status.ToLower() == "overdue" ? "disabled" : "")>
                                     Delete
                                 </a>
                             </td>
@@ -66,17 +71,24 @@
         {
             <p>No flowers found for this batch.</p>
         }
-
-        @if (Model.Flowers != null && Model.Flowers.Any())
+        @if (Model.Batch?.Status.ToLower() == "overdue")
         {
-            <a href="/FlowerPages/CreateFlower?batchId=@Model.Flowers.First().BatchId" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <span class="bg-blue-500 text-white font-bold py-2 px-4 rounded opacity-50 cursor-not-allowed">
                 Create Flower
-            </a>
+            </span>
         }
         else
         {
-            <p>No flowers available.</p>
+            <a asp-page="/FlowerPages/CreateFlower"
+               asp-route-batchId="@Model.BatchId"
+               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Create Flower
+            </a>
         }
+
+
+
+
 
 
     </div>

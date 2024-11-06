@@ -37,6 +37,12 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                 return Page();
             }
 
+            // Default role to "Buyer" if none is provided
+            if (string.IsNullOrEmpty(RegisterRequest.Role))
+            {
+                RegisterRequest.Role = "Buyer";
+            }
+
             try
             {
                 var jsonContent = new StringContent(JsonSerializer.Serialize(RegisterRequest), Encoding.UTF8, "application/json");
@@ -45,26 +51,23 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                 if (response.IsSuccessStatusCode)
                 {
                     SuccessMessage = "Registration successful! You can now log in.";
-                    return RedirectToPage("/Index");
+                    return Page();
                 }
                 else
                 {
                     var errorMessage = await response.Content.ReadAsStringAsync();
                     var apiError = JsonSerializer.Deserialize<Dictionary<string, string>>(errorMessage);
-
-                    if (apiError != null && apiError.TryGetValue("message", out var message))
-                    {
-                        ModelState.AddModelError(string.Empty, message);
-                    }
-
-                    return RedirectToPage("/Index");
+                    ModelState.AddModelError(string.Empty, apiError?.Values.FirstOrDefault() ?? "Unknown error occurred.");
+                    return Page();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "An error occurred while processing your request.");
                 return Page();
             }
         }
+
+
     }
 }

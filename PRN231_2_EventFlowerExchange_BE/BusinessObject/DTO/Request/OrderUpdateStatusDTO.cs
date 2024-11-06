@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace BusinessObject.DTO.Request
 {
-    public class RegisterSellerDTO
+    public class OrderUpdateStatusDTO
     {
-        public CreateSellerDTO CreateCompany { get; set; }
-        public CreateUserSellerDTO CreateUserSeller { get; set; }
+        public string Status { get; set; }
     }
 }

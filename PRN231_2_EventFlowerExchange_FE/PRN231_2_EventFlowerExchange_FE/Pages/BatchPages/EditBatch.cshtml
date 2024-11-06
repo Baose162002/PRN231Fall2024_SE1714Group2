@@ -54,18 +54,12 @@
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.EventDate">Event Date</label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.EventDate" type="date">
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                           asp-for="Input.EventDate"
+                                           type="date"
+                                           min="@DateTime.Now.ToString("yyyy-MM-dd")"
+                                           required>
                                     <span asp-validation-for="Input.EventDate" class="text-red-500 text-xs italic"></span>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.BatchQuantity">Quantity</label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.BatchQuantity" type="number">
-                                    <span asp-validation-for="Input.BatchQuantity" class="text-red-500 text-xs italic"></span>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.RemainingQuantity">Remaining Quantity</label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.RemainingQuantity" type="number">
-                                    <span asp-validation-for="Input.RemainingQuantity" class="text-red-500 text-xs italic"></span>
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.EntryDate">Entry Date</label>
@@ -99,6 +93,7 @@
 </div>
 <script>
     document.querySelector("form").onsubmit = function (event) {
+        const eventDateInput = document.querySelector("#Input_EventDate");
         const entryDateInput = document.querySelector("#Input_EntryDate"); 
         const entryDate = new Date(entryDateInput.value);
         const today = new Date();

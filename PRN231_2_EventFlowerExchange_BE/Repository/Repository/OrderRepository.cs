@@ -119,7 +119,7 @@ namespace Repository.Repository
         {
             var _context = new FlowerShopContext();
             var order = _context.Orders.Find(orderId);
-            if (order == null || order.OrderStatus == OrderStatus.Delivered)
+            if (order == null || order.OrderStatus == OrderStatus.ShippingCompleted)
             {
                 return null; // Trả về null nếu không tìm thấy hoặc đã đến trạng thái cuối cùng
             }
@@ -159,6 +159,25 @@ namespace Repository.Repository
 
             return await query.ToListAsync();
         }
+
+
+
+        public async Task UpdateStatus(Order order, int id)
+        {
+            var _context = new FlowerShopContext();
+            var existing = await GetOrderById(id);
+            if (existing != null)
+            {
+                existing.OrderStatus = order.OrderStatus;
+                _context.Orders.Update(existing);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new ArgumentException("Order is not existed");
+            }
+        }
+
 
     }
 }

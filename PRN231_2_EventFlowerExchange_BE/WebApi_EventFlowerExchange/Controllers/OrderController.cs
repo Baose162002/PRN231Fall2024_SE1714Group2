@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service.IService;
 using System.Security.Claims;
-using Service.Service;
 using static BusinessObject.Enum.EnumList;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Formatter;
 
 namespace WebApi_EventFlowerExchange.Controllers
 {
@@ -31,9 +32,10 @@ namespace WebApi_EventFlowerExchange.Controllers
 
 
 
-        // GET: api/Order
+        // GET: odata/Order
         [HttpGet]
-        public async Task<IActionResult> GetAllOrders()
+        [EnableQuery]
+        public async Task<IActionResult> Get()
         {
             var orders = await _orderService.GetAllOrder();
             if (orders == null || !orders.Any())
@@ -44,19 +46,12 @@ namespace WebApi_EventFlowerExchange.Controllers
         }
 
         // Lấy Order của người dùng đó
-
         [HttpGet("user")]
+        //[EnableQuery]
         //[Authorize(Roles = "Seller, Buyer")]
         public async Task<IActionResult> GetAllOrdersByUserId(int userId)
         {
-            //string role = User.FindFirstValue(ClaimTypes.Role);
-            //if (role == null)
-            //{
-            //    return BadRequest("Please login!");
-            //}
-
-            //userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Use NameIdentifier for userId
-
+            //var orders = await _orderService.GetAllOrder();
             var orders = await _orderService.GetAllOrdersByUserId(userId);
 
             if (orders == null || !orders.Any())
@@ -176,6 +171,25 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return NotFound("Order not found or already at the last status.");
             }
             return Ok(result);
+        }
+
+        [HttpPut("update-status-vnpay/{id}")]
+        public async Task<IActionResult> UpdateStatus([FromBody] OrderUpdateStatusDTO order, int id)
+        {
+            try
+            {
+                await _orderService.UpdateStatus(order, id);
+                return Ok("Order status updated successfully");
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Log error here
+                return StatusCode(500, "An error occurred while updating the order status");
+            }
         }
 
         [HttpGet("search")]

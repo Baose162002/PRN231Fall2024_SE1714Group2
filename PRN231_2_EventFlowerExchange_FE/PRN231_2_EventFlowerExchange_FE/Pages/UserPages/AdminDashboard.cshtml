@@ -1,0 +1,142 @@
+﻿@page "/Dashboard"
+@model RBN_FE.Pages.Admin.DashboardModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    ViewData["ShowHeader"] = false;
+    ViewData["ShowFooter"] = false;
+}
+<div>
+    <partial name="_AdminHeader" />
+    <partial name="_AdminNav" />
+
+    <div class="flex overflow-hidden bg-white pt-16">
+        <div class="bg-gray-900 opacity-50 hidden fixed inset-0 z-10" id="sidebarBackdrop"></div>
+        <div id="main-content" class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
+            <main class="p-4">
+                <!-- Revenue Overview -->
+                <div class="mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h2 class="text-3xl font-bold text-gray-900">@Model.TotalRevenue.ToString("N0") VND</h2>
+                                <p class="text-gray-500">Total Revenue</p>
+                            </div>
+                            <div class="flex items-center text-green-500 font-bold">
+                                12.5%
+                                <svg class="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="h-[300px]">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold">Recent Orders</h3>
+                            <p class="text-gray-500">This week's orders</p>
+                        </div>
+                        <a href="#" class="text-blue-600 hover:underline">View all</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @foreach (var order in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-2 whitespace-nowrap">@order.OrderId</td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-gray-500">@order.OrderDate</td>
+                                        <td class="px-4 py-2 whitespace-nowrap">@order.Customer.FullName</td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs rounded-full @(order.OrderStatus == "Paid" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800")">
+                                                @order.OrderStatus
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-gray-500 text-sm">Total Users</h3>
+                        <p class="text-2xl font-bold">@Model.TotalUsers</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-gray-500 text-sm">Total Orders</h3>
+                        <p class="text-2xl font-bold">@Model.TotalOrders</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-gray-500 text-sm">Total Quantity Sold</h3>
+                        <p class="text-2xl font-bold">@Model.TotalQuantity</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Revenue Chart
+        var revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        var revenueData = @Html.Raw(Json.Serialize(Model.OrderChartData));
+
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: revenueData.map(item => item.date),
+                datasets: [{
+                    label: 'Revenue',
+                    data: revenueData.map(item => item.amount),
+                    borderColor: 'rgb(59, 130, 246)',
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return value.toLocaleString('vi-VN') + ' VND';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return new Intl.NumberFormat('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                }).format(context.parsed.y);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
