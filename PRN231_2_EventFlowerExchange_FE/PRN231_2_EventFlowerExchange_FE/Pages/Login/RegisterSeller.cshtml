@@ -48,8 +48,10 @@
                     <input asp-for="RegisterRequest.CreateUser.Password" type="password"
                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@@#%&])[A-Za-z\d@@#%&]{8,}"
                            class="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                           placeholder="Enter your password (min 8 chars, 1 uppercase, 1 number, 1 special char)" required />
+                           placeholder="Enter your password" required />
                     <span asp-validation-for="RegisterRequest.CreateUser.Password" class="text-red-500"></span>
+                                            <p class="text-xs text-red-500 mt-1">Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</p>
+
                 </div>
 
                 <h2 class="text-lg font-semibold text-gray-700 mt-4">Company Information</h2>
@@ -115,10 +117,10 @@
                 <p class="text-gray-600 mt-2">@Model.SuccessMessage</p>
             </div>
 
-            <div class="mt-6 text-center">
-                <button onclick="closeModal()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none">
-                    Đóng
-                </button>
+          <div class="mt-6 text-center">
+                <a href="/Login" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none inline-block">
+                    Login
+                </a>
             </div>
         </div>
     </div>

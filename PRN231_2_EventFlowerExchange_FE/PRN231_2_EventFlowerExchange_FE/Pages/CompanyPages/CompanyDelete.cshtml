@@ -39,7 +39,7 @@
                 </div>
             </div>
         </div>
-        <form method="post" id="deleteCompanyForm">
+        <form method="post" asp-page-handler="Delete" id="deleteCompanyForm">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Company.CompanyId" />
             <div class="flex justify-between items-center mt-6">
@@ -47,5 +47,6 @@
                 <a href="/CompanyIndex" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Back to List</a>
             </div>
         </form>
+
     </div>
 </div>

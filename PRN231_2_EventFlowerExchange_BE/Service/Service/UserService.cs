@@ -44,8 +44,21 @@ namespace Service.Service
             try
             {
                 ValidateInputs(createUserDTO);
-                if (await CheckEmailExist(createUserDTO.Email)) throw new Exception("Email exist.");
-                if (await CheckPhoneExist(createUserDTO.Phone)) throw new Exception("Phone exist.");
+
+                if (await CheckEmailExist(createUserDTO.Email))
+                    throw new Exception("Email exists.");
+
+                if (await CheckPhoneExist(createUserDTO.Phone))
+                    throw new Exception("Phone exists.");
+
+                // Map role input to enum, restrict to Buyer or Personal
+                EnumList.UserRole userRole;
+                if (createUserDTO.Role.Equals("Buyer", StringComparison.OrdinalIgnoreCase))
+                    userRole = EnumList.UserRole.Buyer;
+                else if (createUserDTO.Role.Equals("Personal", StringComparison.OrdinalIgnoreCase))
+                    userRole = EnumList.UserRole.DeliveryPersonnel; // Placeholder for Personal
+                else
+                    throw new Exception("Invalid role. Only 'Buyer' or 'Personal' roles are allowed.");
 
                 var user = new User
                 {
@@ -53,12 +66,14 @@ namespace Service.Service
                     Email = createUserDTO.Email,
                     Phone = createUserDTO.Phone,
                     Address = createUserDTO.Address,
-                    Role = EnumList.UserRole.Buyer,
+                    Role = userRole,
                     Password = createUserDTO.Password, // Ensure password hashing if needed
                     Status = EnumList.Status.Active
                 };
 
-                if (!await _userRepository.AddAsync(user)) throw new Exception("Unable to create user.");
+                if (!await _userRepository.AddAsync(user))
+                    throw new Exception("Unable to create user.");
+
                 return _mapper.Map<UserResponseDto>(user);
             }
             catch (Exception ex)
@@ -66,6 +81,7 @@ namespace Service.Service
                 throw new Exception(ex.Message);
             }
         }
+
 
         public async Task<UserResponseDto> CreateSeller(CreateSellerDTO createSellerDTO, CreateUserDTO createUserDTO)
         {
