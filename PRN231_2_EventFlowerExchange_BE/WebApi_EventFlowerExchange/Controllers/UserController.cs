@@ -58,12 +58,14 @@ namespace WebApi_EventFlowerExchange.Controllers
             }
         }
 
+
         [HttpPost("register-seller")]
         public async Task<IActionResult> RegisterSeller([FromBody] RegisterSellerDTO registerSellerDTO)
         {
             try
             {
-                var userResponse = await _userService.CreateSeller(registerSellerDTO.CreateCompany, registerSellerDTO.CreateUser);
+                // Pass the correct DTOs to the CreateSeller method
+                var userResponse = await _userService.CreateSeller(registerSellerDTO.CreateCompany, registerSellerDTO.CreateUserSeller);
                 return Ok(new
                 {
                     Status = "success",
@@ -76,6 +78,7 @@ namespace WebApi_EventFlowerExchange.Controllers
                 return BadRequest(new { message = $"An error occurred while registering the seller: {ex.Message}" });
             }
         }
+
 
 
         [HttpPut("{id}")]

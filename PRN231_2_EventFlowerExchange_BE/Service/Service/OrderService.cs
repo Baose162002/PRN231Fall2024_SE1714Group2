@@ -16,6 +16,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static BusinessObject.Enum.EnumList;
 
 namespace Service.Service
 {
@@ -52,17 +53,17 @@ namespace Service.Service
             //return ordersDTO;
         }
 
-        public async Task<List<ListOrderDTO>> GetAllOrdersByUserId(int userId)
+        public async Task<List<ListOrderDTO>> GetAllOrdersByUserId(string userRole, int userId)
         {
             // Case 1: Lấy tất cả đơn đã đặt CỦA bản thân
-            if (userId == 3)
+            if (userRole == UserRole.Buyer.ToString()) // Buyer
             {
                 var orders = await _orderRepository.GetAllOrdersByUserId(userId);
                 var ordersDTO = _mapper.Map<List<ListOrderDTO>>(orders);
                 return ordersDTO;
             }
             // Case 2: Lấy tất cả đơn đã đặt CỦA công ty đó, dựa trên BatchId
-            else if (userId == 2)
+            else if (userRole == UserRole.Seller.ToString()) // Seller
             {
                 var orders = await _orderRepository.GetOrdersBySellerBatch(userId);
                 var ordersDTO = _mapper.Map<List<ListOrderDTO>>(orders);

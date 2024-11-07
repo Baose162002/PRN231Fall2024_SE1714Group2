@@ -37,6 +37,12 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                 return Page();
             }
 
+            // Default role to "Buyer" if none is provided
+            if (string.IsNullOrEmpty(RegisterRequest.Role))
+            {
+                RegisterRequest.Role = "Buyer";
+            }
+
             try
             {
                 var jsonContent = new StringContent(JsonSerializer.Serialize(RegisterRequest), Encoding.UTF8, "application/json");
@@ -45,15 +51,12 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                 if (response.IsSuccessStatusCode)
                 {
                     SuccessMessage = "Registration successful! You can now log in.";
-                    return Page();
+                    return RedirectToPage("/Login/Register"); // Redirect lại để xóa thông báo sau khi đọc
                 }
                 else
                 {
-                    // Đọc thông báo lỗi từ phản hồi JSON
                     var errorMessage = await response.Content.ReadAsStringAsync();
                     var apiError = JsonSerializer.Deserialize<Dictionary<string, string>>(errorMessage);
-
-                    // Thêm lỗi trực tiếp vào ModelState nếu có lỗi
                     ModelState.AddModelError(string.Empty, apiError?.Values.FirstOrDefault() ?? "Unknown error occurred.");
                     return Page();
                 }
@@ -64,6 +67,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                 return Page();
             }
         }
+
 
     }
 }

@@ -5,16 +5,28 @@
     ViewData["Title"] = "Delivery Details";
 }
 
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-gray-100 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-3xl font-bold text-center text-blue-600 mb-12">Delivery Details</h1>
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Delivery Details</h1>
+            <a href="/DeliveryIndex" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
+                ← Back to Delivery Index
+            </a>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                <p class="font-bold">Success</p>
+                <p>@TempData["SuccessMessage"]</p>
+            </div>
+        }
 
         @if (Model.Deliveries.Any())
         {
             foreach (var delivery in Model.Deliveries)
             {
                 <div class="bg-white shadow-xl rounded-lg overflow-hidden mb-8">
-                    <!-- Header -->
                     <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
                         <h2 class="text-xl font-semibold text-white flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -24,7 +36,6 @@
                         </h2>
                     </div>
 
-                    <!-- Status Badges -->
                     <div class="px-6 py-4 border-b border-gray-200">
                         <div class="flex flex-wrap gap-4">
                             <span class="px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800">
@@ -36,10 +47,8 @@
                         </div>
                     </div>
 
-                    <!-- Content Grid -->
                     <div class="p-6">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <!-- Delivery Information -->
                             <div class="space-y-6">
                                 <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">
                                     Delivery Information
@@ -47,20 +56,19 @@
                                 <dl class="space-y-4">
                                     <div class="flex flex-col">
                                         <dt class="text-sm font-medium text-gray-500">Reason Note</dt>
-                                        <dd class="mt-1 text-gray-900">@delivery.ReasonNote</dd>
+                                        <dd class="mt-1 text-sm text-gray-900">@delivery.ReasonNote</dd>
                                     </div>
                                     <div class="flex flex-col">
                                         <dt class="text-sm font-medium text-gray-500">Pickup Time</dt>
-                                        <dd class="mt-1 text-gray-900">@delivery.PickupTime.ToString("yyyy-MM-dd HH:mm")</dd>
+                                        <dd class="mt-1 text-sm text-gray-900">@delivery.PickupTime.ToString("yyyy-MM-dd HH:mm")</dd>
                                     </div>
                                     <div class="flex flex-col">
                                         <dt class="text-sm font-medium text-gray-500">Delivery Time</dt>
-                                        <dd class="mt-1 text-gray-900">@delivery.DeliveryTime.ToString("yyyy-MM-dd HH:mm")</dd>
+                                        <dd class="mt-1 text-sm text-gray-900">@delivery.DeliveryTime.ToString("yyyy-MM-dd HH:mm")</dd>
                                     </div>
                                 </dl>
                             </div>
 
-                            <!-- Order Information -->
                             <div class="space-y-6">
                                 <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">
                                     Order Information
@@ -68,11 +76,11 @@
                                 <dl class="space-y-4">
                                     <div class="flex flex-col">
                                         <dt class="text-sm font-medium text-gray-500">Order ID</dt>
-                                        <dd class="mt-1 text-gray-900">#@delivery.Order.OrderId</dd>
+                                        <dd class="mt-1 text-sm text-gray-900">#@delivery.Order.OrderId</dd>
                                     </div>
                                     <div class="flex flex-col">
                                         <dt class="text-sm font-medium text-gray-500">Delivery Address</dt>
-                                        <dd class="mt-1 text-gray-900">@delivery.Order.DeliveryAddress</dd>
+                                        <dd class="mt-1 text-sm text-gray-900">@delivery.Order.DeliveryAddress</dd>
                                     </div>
                                     <div class="flex flex-col">
                                         <dt class="text-sm font-medium text-gray-500">Total Price</dt>
@@ -80,12 +88,11 @@
                                     </div>
                                     <div class="flex flex-col">
                                         <dt class="text-sm font-medium text-gray-500">Order Date</dt>
-                                        <dd class="mt-1 text-gray-900">@delivery.Order.OrderDate.ToString("yyyy-MM-dd HH:mm")</dd>
+                                        <dd class="mt-1 text-sm text-gray-900">@delivery.Order.OrderDate.ToString("yyyy-MM-dd HH:mm")</dd>
                                     </div>
                                 </dl>
                             </div>
 
-                            <!-- Customer Information -->
                             <div class="space-y-6 lg:col-span-2">
                                 <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">
                                     Customer Information
@@ -93,23 +100,25 @@
                                 <dl class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div class="flex flex-col">
                                         <dt class="text-sm font-medium text-gray-500">Customer Name</dt>
-                                        <dd class="mt-1 text-gray-900">@delivery.Order.Customer.FullName</dd>
+                                        <dd class="mt-1 text-sm text-gray-900">@delivery.Order.Customer.FullName</dd>
                                     </div>
                                     <div class="flex flex-col">
                                         <dt class="text-sm font-medium text-gray-500">Email</dt>
-                                        <dd class="mt-1 text-gray-900">@delivery.Order.Customer.Email</dd>
+                                        <dd class="mt-1 text-sm text-gray-900">@delivery.Order.Customer.Email</dd>
                                     </div>
                                     <div class="flex flex-col">
                                         <dt class="text-sm font-medium text-gray-500">Phone</dt>
-                                        <dd class="mt-1 text-gray-900">@delivery.Order.Customer.Phone</dd>
+                                        <dd class="mt-1 text-sm text-gray-900">@delivery.Order.Customer.Phone</dd>
                                     </div>
                                 </dl>
                             </div>
                         </div>
 
-                        <!-- Action Buttons -->
-                        <div class="mt-8 border-t pt-6">
-                            <form method="post" asp-page-handler="UpdateStatus" class="flex justify-end">
+                        <div class="mt-8 border-t pt-6 flex justify-between">
+                            <a href="/DeliveryIndex" class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                                ← Back
+                            </a>
+                            <form method="post" asp-page-handler="UpdateStatus">
                                 <input type="hidden" name="deliveryId" value="@delivery.DeliveryId" />
                                 <input type="hidden" name="orderId" value="@delivery.Order.OrderId" />
                                 <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
@@ -140,3 +149,15 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            // Automatically hide success or error message after 5 seconds
+            setTimeout(function () {
+                $('#successMessage, #errorMessage').fadeOut('slow');
+            }, 1000);
+        });
+    </script>
+}

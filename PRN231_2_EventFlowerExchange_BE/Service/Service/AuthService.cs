@@ -17,41 +17,47 @@ namespace Service.Service
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
+        private readonly ICompanyRepository _companyRepository;
         private readonly IConfiguration _configuration;
 
-        public AuthService(IUserRepository userRepository, IConfiguration configuration)
+        public AuthService(IUserRepository userRepository, ICompanyRepository companyRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
+            _companyRepository = companyRepository;
             _configuration = configuration;
         }
 
         public async Task<IActionResult> LoginAsync(User loginUser)
         {
-            // Retrieve user by email
             var user = await _userRepository.GetByEmailAsync(loginUser.Email);
 
-            // Check if user exists or password is incorrect
             if (user == null || user.Password != loginUser.Password)
             {
                 return new UnauthorizedObjectResult(new { Message = "Invalid email or password" });
             }
 
-            // Check if the user's status is inactive
-            if (user.Status == EnumList.Status.Inactive)  
+            if (user.Status == EnumList.Status.Inactive)
             {
                 return new UnauthorizedObjectResult(new { Message = "Account does not exist or is inactive" });
             }
 
-
             var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
-            };
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(ClaimTypes.Name, user.FullName),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
+        };
 
             var token = GenerateToken(authClaims);
+
+            // Lấy CompanyId nếu vai trò là Seller
+            int? companyId = null;
+            if (user.Role == EnumList.UserRole.Seller)
+            {
+                var company = await _companyRepository.GetCompanyByIdUser(user.UserId);
+                companyId = company?.CompanyId;
+            }
 
             return new OkObjectResult(new
             {
@@ -59,7 +65,8 @@ namespace Service.Service
                 role = user.Role,
                 expiration = token.ValidTo,
                 fullName = user.FullName,
-                userId = user.UserId
+                userId = user.UserId,
+                companyId = companyId // Trả về CompanyId nếu có
             });
         }
 
@@ -71,11 +78,12 @@ namespace Service.Service
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddDays(3), 
+                expires: DateTime.Now.AddDays(3),
                 claims: authClaims,
                 signingCredentials: signIn);
 
             return token;
         }
     }
+
 }

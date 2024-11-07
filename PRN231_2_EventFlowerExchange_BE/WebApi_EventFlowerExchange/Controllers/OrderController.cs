@@ -47,12 +47,21 @@ namespace WebApi_EventFlowerExchange.Controllers
 
         // Lấy Order của người dùng đó
         [HttpGet("user")]
-        //[EnableQuery]
-        //[Authorize(Roles = "Seller, Buyer")]
-        public async Task<IActionResult> GetAllOrdersByUserId(int userId)
+        [Authorize(Roles = "Seller, Buyer")]
+        public async Task<IActionResult> GetAllOrdersByUserId(string userRole,string userId)
         {
-            //var orders = await _orderService.GetAllOrder();
-            var orders = await _orderService.GetAllOrdersByUserId(userId);
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (role == null)
+            {
+                role = userRole;
+            }
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (id == null)
+            {
+                id = userId;
+            }
+
+            var orders = await _orderService.GetAllOrdersByUserId(userRole: role, int.Parse(id));
 
             if (orders == null || !orders.Any())
             {
@@ -105,7 +114,8 @@ namespace WebApi_EventFlowerExchange.Controllers
                     OrderId = orderId
                 };
                 return Ok(result);
-            }catch(ArgumentException e)
+            }
+            catch (ArgumentException e)
             {
                 return BadRequest(e.Message);
             }

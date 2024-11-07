@@ -2,55 +2,102 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+using System.Linq;
+using BusinessObject.DTO.Response;
 
 namespace RBN_FE.Pages.Admin
 {
     public class DashboardModel : PageModel
     {
+        private readonly HttpClient _httpClient;
+        private readonly string _baseApiUrl;
+
+        public DashboardModel(HttpClient httpClient, IConfiguration configuration)
+        {
+            _httpClient = httpClient;
+            _baseApiUrl = configuration["ApiSettings:BaseUrl"];
+        }
+
         public decimal TotalRevenue { get; set; }
         public int TotalUsers { get; set; }
-        public int TotalFlowers { get; set; }
         public int TotalOrders { get; set; }
-        public List<RecentOrder> RecentOrders { get; set; }
-        public int TotalBatches { get; set; }
+        public int TotalQuantity { get; set; }
+        public List<OrderChartData> OrderChartData { get; set; }
+        public List<UserChartData> UserChartData { get; set; }
+        public List<ListOrderDTO> RecentOrders { get; set; }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
-            var token = HttpContext.Session.GetString("JWTToken");
-            var userRole = HttpContext.Session.GetString("UserRole");
-
-            if (string.IsNullOrEmpty(token) || userRole != "Admin")
+            try
             {
-                ModelState.AddModelError(string.Empty, "Unauthorized access. Only Admins can view this page.");
-                return RedirectToPage("/Index");
+                // Fetch orders
+                var ordersResponse = await _httpClient.GetAsync($"{_baseApiUrl}/api/order");
+                if (ordersResponse.IsSuccessStatusCode)
+                {
+                    var orders = await ordersResponse.Content.ReadFromJsonAsync<List<ListOrderDTO>>();
+                    OrderChartData = ProcessOrdersForChart(orders);
+                    RecentOrders = orders.OrderByDescending(o => DateTime.Parse(o.OrderDate)).Take(5).ToList();
+                    TotalOrders = orders.Count;
+                    TotalRevenue = orders.Sum(o => o.TotalPrice);
+                    TotalQuantity = (int)orders.Sum(o => o.TotalQuantity);
+                }
+
+                // Fetch users
+                var usersResponse = await _httpClient.GetAsync($"{_baseApiUrl}/api/user");
+                if (usersResponse.IsSuccessStatusCode)
+                {
+                    var users = await usersResponse.Content.ReadFromJsonAsync<List<ListUserDTO>>();
+                    TotalUsers = users.Count;
+                    UserChartData = ProcessUsersForChart(users);
+                }
+
+                return Page();
             }
-
-            // Mock data for flower shop
-            TotalRevenue = 150000000; // 150M VND
-            TotalUsers = 100;
-            TotalFlowers = 50;
-            TotalOrders = 200;
-            TotalBatches = 15;
-
-            RecentOrders = new List<RecentOrder>
+            catch (Exception ex)
             {
-                new RecentOrder { Id = 1, Date = DateTime.Now.AddHours(-2), Price = 850000, CustomerName = "Nguyễn Văn A", FlowerName = "Hoa Hồng Đỏ" },
-                new RecentOrder { Id = 2, Date = DateTime.Now.AddHours(-4), Price = 1200000, CustomerName = "Trần Thị B", FlowerName = "Hoa Lan Trắng" },
-                new RecentOrder { Id = 3, Date = DateTime.Now.AddHours(-8), Price = 750000, CustomerName = "Lê Văn C", FlowerName = "Hoa Cúc Vàng" },
-                new RecentOrder { Id = 4, Date = DateTime.Now.AddDays(-1), Price = 2500000, CustomerName = "Phạm Thị D", FlowerName = "Bó Hoa Sinh Nhật" },
-                new RecentOrder { Id = 5, Date = DateTime.Now.AddDays(-1), Price = 1500000, CustomerName = "Hoàng Văn E", FlowerName = "Hoa Ly Trắng" }
-            };
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                return Page();
+            }
+        }
 
-            return Page();
+        private List<OrderChartData> ProcessOrdersForChart(List<ListOrderDTO> orders)
+        {
+            return orders
+                .GroupBy(o => DateTime.Parse(o.OrderDate).Date)
+                .Select(g => new OrderChartData
+                {
+                    Date = g.Key.ToString("yyyy-MM-dd"),
+                    Amount = g.Sum(o => o.TotalPrice)
+                })
+                .OrderBy(d => d.Date)
+                .ToList();
+        }
+
+        private List<UserChartData> ProcessUsersForChart(List<ListUserDTO> users)
+        {
+            return users
+                .GroupBy(u => u.Role)
+                .Select(g => new UserChartData
+                {
+                    Role = g.Key,
+                    Count = g.Count()
+                })
+                .ToList();
         }
     }
 
-    public class RecentOrder
+    public class OrderChartData
     {
-        public int Id { get; set; }
-        public DateTime Date { get; set; }
-        public decimal Price { get; set; }
-        public string CustomerName { get; set; }
-        public string FlowerName { get; set; }
+        public string Date { get; set; }
+        public decimal Amount { get; set; }
+    }
+
+    public class UserChartData
+    {
+        public string Role { get; set; }
+        public int Count { get; set; }
     }
 }
