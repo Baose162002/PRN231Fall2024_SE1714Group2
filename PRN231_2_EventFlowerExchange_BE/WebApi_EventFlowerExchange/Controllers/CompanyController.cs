@@ -70,8 +70,8 @@ namespace WebApi_EventFlowerExchange.Controllers
         {
             try
             {
-                await _companyService.Update(id, createCompanyDTO);
-                return Ok("Update successfullt");
+                await _companyService.UpdateCompany(id, createCompanyDTO);
+                return Ok("Update successfull");
             }
             catch (Exception ex)
             {

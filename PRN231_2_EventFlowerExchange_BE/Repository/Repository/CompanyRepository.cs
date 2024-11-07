@@ -13,12 +13,13 @@ namespace Repository.Repository
     public class CompanyRepository : ICompanyRepository
     {
         private readonly FlowerShopContext flowerShopContext;
+        private readonly FlowerShopContext _context;
 
         public CompanyRepository()
         {
             this.flowerShopContext ??= new FlowerShopContext();
+            _context = new FlowerShopContext();
         }
-
         public async Task<bool> AddNew(Company company)
         {
             await flowerShopContext.Companies.AddAsync(company);
@@ -68,8 +69,14 @@ namespace Repository.Repository
         {
             var user = await flowerShopContext.Companies.Include(x => x.Batches).FirstOrDefaultAsync(x => x.UserId == id);
             return user;
-        } 
+        }
 
 
+        public async Task<bool> UpdateAsync(Company company)
+        {
+            _context.Companies.Update(company);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
+        }
     }
 }
