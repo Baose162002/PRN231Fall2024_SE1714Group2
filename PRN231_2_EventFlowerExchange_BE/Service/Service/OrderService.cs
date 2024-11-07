@@ -365,7 +365,7 @@ namespace Service.Service
             // Tạo đối tượng Order
             var newOrder = new Order
             {
-                OrderStatus = EnumList.OrderStatus.Paid,
+                OrderStatus = EnumList.OrderStatus.Pending,
                 OrderDate = orderDTO.OrderDate,
                 DeliveryAddress = orderDTO.DeliveryAddress,
                 DeliveryDate = orderDTO.DeliveryDate,

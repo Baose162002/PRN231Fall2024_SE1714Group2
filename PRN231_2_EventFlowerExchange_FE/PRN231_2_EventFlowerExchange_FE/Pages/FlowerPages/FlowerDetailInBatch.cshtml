@@ -12,6 +12,11 @@
 <body>
     <div class="container mx-auto px-4 py-6">
         <h2 class="text-3xl font-bold text-black mb-8">Flowers in Batch</h2>
+        <a href="/BatchIndex"
+           class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">
+            Back to Batches
+        </a>
+
         @if (Model.Flowers != null && Model.Flowers.Any())
         {
             <table class="w-full table-auto border-collapse border border-gray-200">
