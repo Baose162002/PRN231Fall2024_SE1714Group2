@@ -12,7 +12,7 @@ namespace Service.IService
     public interface IOrderService
     {
         Task<List<Order>> GetAllOrder();
-        Task<List<ListOrderDTO>> GetAllOrdersByUserId(int id);
+        Task<List<ListOrderDTO>> GetAllOrdersByUserId(string userRole, int userId);
         Task<ListOrderDTO> GetOrderById(int id);
 
         Task Create(CreateOrderDTO order);
