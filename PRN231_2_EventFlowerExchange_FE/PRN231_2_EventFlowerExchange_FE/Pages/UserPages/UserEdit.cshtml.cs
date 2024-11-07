@@ -1,6 +1,5 @@
 ﻿using BusinessObject.Dto.Response;
 using BusinessObject.DTO.Request;
-using BusinessObject.DTO.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net;
@@ -26,13 +25,16 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var token = HttpContext.Session.GetString("JWTToken");
-
             if (string.IsNullOrEmpty(token))
             {
                 return RedirectToPage("/Login/Login");
             }
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            // Set authorization header if not already set
+            if (_httpClient.DefaultRequestHeaders.Authorization == null)
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
 
             var response = await _httpClient.GetAsync($"{_baseApiUrl}/api/user/{id}");
 
@@ -50,12 +52,12 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
+                TempData["ErrorMessage"] = "Token is invalid or has expired.";
                 return RedirectToPage("/Login/Login");
             }
             else
             {
-                ModelState.AddModelError(string.Empty, $"Error loading user: {response.ReasonPhrase}");
+                TempData["ErrorMessage"] = $"Error loading user: {response.ReasonPhrase}";
                 return RedirectToPage("/UserPages/UserIndex");
             }
 
@@ -70,13 +72,15 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
             }
 
             var token = HttpContext.Session.GetString("JWTToken");
-
             if (string.IsNullOrEmpty(token))
             {
                 return RedirectToPage("/Login/Login");
             }
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (_httpClient.DefaultRequestHeaders.Authorization == null)
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
 
             try
             {
@@ -89,15 +93,13 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
+                    TempData["ErrorMessage"] = "Token is invalid or has expired.";
                     return RedirectToPage("/Login/Login");
                 }
                 else
                 {
-                    // Check if response content is JSON before parsing
                     var responseContent = await response.Content.ReadAsStringAsync();
 
-                    // Attempt to parse JSON only if it starts with '{' or '['
                     if (!string.IsNullOrEmpty(responseContent) &&
                         (responseContent.Trim().StartsWith("{") || responseContent.Trim().StartsWith("[")))
                     {
@@ -113,7 +115,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.UserPages
                     }
                     else
                     {
-                        // Fallback if response is not JSON
                         ModelState.AddModelError(string.Empty, $"Error: {responseContent}");
                     }
 

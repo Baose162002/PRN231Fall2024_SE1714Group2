@@ -51,7 +51,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                 if (response.IsSuccessStatusCode)
                 {
                     SuccessMessage = "Registration successful! You can now log in.";
-                    return Page();
+                    return RedirectToPage("/Login/Register"); // Redirect lại để xóa thông báo sau khi đọc
                 }
                 else
                 {

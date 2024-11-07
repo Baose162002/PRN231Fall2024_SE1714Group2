@@ -45,7 +45,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                 if (response.IsSuccessStatusCode)
                 {
                     SuccessMessage = "Seller registration successful! You can now log in.";
-                    return Page();
+                    return RedirectToPage("/Login/Register");
                 }
                 else
                 {
@@ -53,7 +53,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.Register
                     var errorMessage = await response.Content.ReadAsStringAsync();
                     var apiError = JsonSerializer.Deserialize<Dictionary<string, string>>(errorMessage);
 
-                    // Thêm lỗi trực tiếp vào ModelState nếu có lỗi
                     ModelState.AddModelError(string.Empty, apiError?.Values.FirstOrDefault() ?? "Unknown error occurred.");
                     return Page();
                 }

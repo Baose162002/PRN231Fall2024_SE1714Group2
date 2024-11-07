@@ -19,14 +19,16 @@ namespace Service.Service
         private readonly IReviewRepository _reviewRepository;
         private readonly IFlowerRepository _flowerRepository; 
         private readonly IBatchRepository _batchRepository; 
+        private readonly ICompanyRepository _companyRepository; 
 
         private readonly IMapper _mapper;
 
-        public ReviewService(IReviewRepository reviewRepository, IFlowerRepository flowerRepository, IBatchRepository batchRepository, IMapper mapper)
+        public ReviewService(IReviewRepository reviewRepository, IFlowerRepository flowerRepository, IBatchRepository batchRepository, ICompanyRepository companyRepository, IMapper mapper)
         {
             _reviewRepository = reviewRepository;
             _flowerRepository = flowerRepository;
             _batchRepository = batchRepository;
+            _companyRepository = companyRepository;
             _mapper = mapper;
         }
 
@@ -56,33 +58,42 @@ namespace Service.Service
 
         public async Task CreateReview(CreateReviewDTO createReviewDTO)
         {
-            // Lấy thông tin về loại hoa
+            // Retrieve the flower based on the provided FlowerId
             var flower = await _flowerRepository.GetFlowerById(createReviewDTO.FlowerId);
             if (flower == null)
             {
                 throw new ArgumentException("Flower not found");
             }
 
-            // Lấy thông tin batch liên quan đến hoa
+            // Retrieve the batch associated with the flower
             var batch = await _batchRepository.GetBatchById(flower.BatchId);
             if (batch == null)
             {
                 throw new ArgumentException("Batch not found");
             }
 
-            // Kiểm tra nếu user đang tạo review chính là người tạo ra batch này
-            if (batch.CompanyId == createReviewDTO.CustomerId)
+            // Retrieve the company associated with the batch
+            var company = await _companyRepository.GetCompanyByID(batch.CompanyId);
+            if (company == null)
+            {
+                throw new ArgumentException("Company not found");
+            }
+
+            // Check if the user creating the review is the owner of the company
+            if (company.UserId == createReviewDTO.CustomerId)
             {
                 throw new ArgumentException("You cannot review a flower from your own batch");
             }
 
-            // Tạo review 
+            // Create the review
             var review = _mapper.Map<Review>(createReviewDTO);
             review.ReviewDate = DateTime.Now;
             review.Status = EnumList.Status.Active;
 
             await _reviewRepository.Create(review);
         }
+
+
 
         public async Task UpdateReview(int id, UpdateReviewDTO updateReviewDTO)
         {
