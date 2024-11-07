@@ -14,7 +14,7 @@ namespace BusinessObject.Enum
             Paid = 2,
             InTransit = 3,
             ShippingCompleted = 4,
-                            Cancel = 5,
+            Cancel = 5,
         }
 
         public enum PaymentStatus

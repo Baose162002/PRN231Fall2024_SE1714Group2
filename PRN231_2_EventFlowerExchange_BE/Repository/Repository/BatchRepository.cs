@@ -226,7 +226,7 @@ namespace Repository.Repository
                     var flowersInBatch = await _context.Flowers.Where(f => f.BatchId == batch.BatchId).ToListAsync();
 
                     // Kiểm tra nếu batch đã quá hạn (lớn hơn 1 ngày)
-                    if ((DateTime.Now - batch.EntryDate).TotalDays > 1)
+                    if ((DateTime.Now - batch.EntryDate).TotalDays > 4)
                     {
                         bool hasAvailableFlowers = flowersInBatch.Any(f => f.RemainingQuantity > 0);
 
