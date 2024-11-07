@@ -15,10 +15,12 @@ namespace Service.IService
         Task<List<ListBatchDTO>> GetAvailableBatchesByFlowerId(int id);
 
         Task<ListBatchDTO> GetBatchById(int id);
-        Task Create(CreateBatchDTO batch);
+        Task<ListBatchDTO> Create(CreateBatchDTO batch);
         Task Update(UpdateBatchDTO updateBatchDTO, int id);
         Task Delete(int id);
         Task CheckAndUpdateBatchStatus();
+
+        Task<ListBatchDTO> CreateBatchAndFlowersAsync(CreateBatchAndFlowerDTO batchAndFlowerDTO);
 
     }
 }

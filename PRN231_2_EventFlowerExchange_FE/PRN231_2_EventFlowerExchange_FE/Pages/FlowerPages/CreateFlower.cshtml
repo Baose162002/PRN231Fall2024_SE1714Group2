@@ -7,6 +7,11 @@
             <div class="bg-gray-100 px-6 py-4 border-b border-gray-200">
                 <h2 class="text-2xl font-bold text-center text-gray-800">Create Flower</h2>
             </div>
+            <div class="mb-4">
+                <a asp-page="/FlowerPages/FlowerDetailInBatch" asp-route-batchId="@Model.FlowerInput.BatchId" class="flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    Back to Flower Details
+                </a>
+            </div>
             <div class="p-6">
                 <div class="text-red-600">
                     @if (!ViewData.ModelState.IsValid)
@@ -21,7 +26,7 @@
                         @Html.ValidationSummary(false, "", new { @class = "text-red-500" })
                     </div>
                 </div>
-
+             
                 <form method="post" enctype="multipart/form-data" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -32,7 +37,8 @@
                         <!-- Type Selection -->
                         <div>
                             <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
-                            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="type" asp-for="FlowerInput.Type" required>
+                            <select onchange="loadFlower(this.value)" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="type" asp-for="FlowerInput.Type" required>
+                                <option value="" disabled selected>Select Type</option>
                                 <option value="Rose">Rose</option>
                                 <option value="Tulip">Tulip</option>
                                 <option value="Lily">Lily</option>
@@ -107,3 +113,76 @@
         </div>
     </div>
 </div>
+
+<script>
+    const flowerData = {
+        "Rose": {
+            colors: ["Red", "Pink", "White", "Yellow", "Orange"],
+            origins: ["Đà Lạt", "Hà Nội", "Lâm Đồng"],
+            priceRange: { min: 10000, max: 50000 },
+            description: "Hoa hồng tượng trưng cho tình yêu và sự lãng mạn"
+        },
+        "Tulip": {
+            colors: ["Red", "Yellow", "Pink", "Purple", "White"],
+            origins: ["Đà Lạt", "Lâm Đồng"],
+            priceRange: { min: 15000, max: 60000 },
+            description: "Hoa tulip tượng trưng cho sự hoàn hảo và sang trọng"
+        },
+        "Lily": {
+            colors: ["White", "Pink", "Yellow", "Orange"],
+            origins: ["Đà Lạt", "Hà Nội", "Lào Cai"],
+            priceRange: { min: 20000, max: 70000 },
+            description: "Hoa ly tượng trưng cho sự thuần khiết"
+        },
+        "Daisy": {
+            colors: ["White", "Yellow", "Pink"],
+            origins: ["Đà Lạt", "Hải Phòng"],
+            priceRange: { min: 8000, max: 30000 },
+            description: "Hoa cúc tượng trưng cho niềm vui và tình bạn"
+        },
+        "Sunflower": {
+            colors: ["Yellow"],
+            origins: ["Quảng Nam", "Đà Lạt"],
+            priceRange: { min: 12000, max: 35000 },
+            description: "Hoa hướng dương tượng trưng cho niềm vui và sức sống"
+        }
+    };
+
+    function loadFlower(flowerName) {
+        const flower = flowerData[flowerName];
+        if (!flower) return;
+
+        // Set the name and type
+        document.getElementById("name").value = flowerName;
+        document.getElementById("type").value = flowerName;
+
+        // Set the description
+        document.getElementById("description").value = flower.description;
+
+        // Populate colors dropdown
+        const colorSelect = document.getElementById("color");
+        colorSelect.innerHTML = "";
+        flower.colors.forEach(color => {
+            const option = document.createElement("option");
+            option.value = color;
+            option.textContent = color;
+            colorSelect.appendChild(option);
+        });
+
+        // Populate origins dropdown
+        const originSelect = document.getElementById("origin");
+        originSelect.innerHTML = "";
+        flower.origins.forEach(origin => {
+            const option = document.createElement("option");
+            option.value = origin;
+            option.textContent = origin;
+            originSelect.appendChild(option);
+        });
+
+        // Suggest a price within the flower's price range
+        const priceInput = document.getElementById("pricePerUnit");
+        priceInput.placeholder = `Suggested: ${flower.priceRange.min} - ${flower.priceRange.max}`;
+    }
+
+
+</script>

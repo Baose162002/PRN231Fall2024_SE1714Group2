@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.DTO.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Repository.IRepository
         Task Update(Batch batch, int id);
         Task Delete(int id);
         Task<Flower> GetFlowerById(int id);
-
+        Task CreateBatchAndFlowerAsync(CreateBatchAndFlowerDTO batchAndFlower);
         Task<List<Flower>> GetFlowersBySimilarTypeAndColorAndEarliestBatch(int flowerId);
         Task UpdateBatch(Batch batch);
         Task CheckAndUpdateBatchStatus();
