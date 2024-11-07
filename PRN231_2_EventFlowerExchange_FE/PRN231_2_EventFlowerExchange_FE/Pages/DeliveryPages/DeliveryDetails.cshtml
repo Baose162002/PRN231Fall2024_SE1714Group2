@@ -149,3 +149,15 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            // Automatically hide success or error message after 5 seconds
+            setTimeout(function () {
+                $('#successMessage, #errorMessage').fadeOut('slow');
+            }, 1000);
+        });
+    </script>
+}

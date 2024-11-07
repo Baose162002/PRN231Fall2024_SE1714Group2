@@ -94,7 +94,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.DeliveryPages
             if (response.IsSuccessStatusCode)
             {
                 TempData["SuccessMessage"] = "Status updated successfully!";
-                return RedirectToPage("/DeliveryPages/DeliveryDetail");
+                return RedirectToPage("/DeliveryPages/DeliveryDetails");
             }
             else
             {

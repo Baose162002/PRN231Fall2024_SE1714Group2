@@ -131,6 +131,8 @@
 
 <!-- Review Section -->
 <div class="bg-gray-100 p-6 max-w-4xl mx-auto">
+
+
     <div class="flex flex-col justify-start items-start w-full space-y-8">
         <div class="flex justify-between items-center w-full">
             <p class="text-3xl lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800">Reviews</p>
@@ -224,6 +226,15 @@
         }
 
         <!-- New Review Form -->
+        @if (!ModelState.IsValid)
+        {
+            <div class="text-red-500">
+                @foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
         @if (Model?.Flower != null && Model.Flower.Batch != null && Model.Flower.Batch.CompanyId != currentUserId)
         {
             <div class="w-full bg-gray-50 p-8">

@@ -29,7 +29,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.DeliveryPages
         public IList<ListOrderForDeliveryDTO> Deliveries { get; set; } = new List<ListOrderForDeliveryDTO>();
 
         [BindProperty]
-        public CreateDeliveryDTO CreateDeliveryDTO { get; set; } // Add this property to bind the form
+        public CreateDeliveryDTO CreateDeliveryDTO { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -68,7 +68,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.DeliveryPages
 
         public async Task<IActionResult> OnPostStartDeliveryAsync(int orderId)
         {
-            // Implementation to handle starting delivery
             var token = HttpContext.Session.GetString("JWTToken");
             var UserId = HttpContext.Session.GetString("UserId");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -82,21 +81,20 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.DeliveryPages
                 DeliveryTime = DateTime.UtcNow
             };
 
-            string apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/api/Delivery"; // Adjust the URL if needed
+            string apiUrl = $"{_configuration["ApiSettings:BaseUrl"]}/api/Delivery";
             var response = await _httpClient.PostAsJsonAsync(apiUrl, createDeliveryDTO);
 
             if (response.IsSuccessStatusCode)
             {
-                // Optionally, you can redirect to a success page or refresh the deliveries
-                return RedirectToPage(); // Refresh the page to see updated deliveries
+                TempData["SuccessMessage"] = $"Delivery for Order #{orderId} has been started successfully.";
+                return RedirectToPage();
             }
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 ModelState.AddModelError(string.Empty, $"Failed to start delivery: {errorContent}");
-                return Page(); // Stay on the same page to show the error
+                return Page();
             }
         }
-
     }
 }

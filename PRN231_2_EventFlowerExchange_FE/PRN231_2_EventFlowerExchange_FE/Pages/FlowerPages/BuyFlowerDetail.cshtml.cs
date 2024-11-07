@@ -48,26 +48,22 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
                 return Page();
             }
 
-            // Only fetch reviews if we successfully got the flower
+            // Fetch reviews
             if (Flower != null)
             {
-                // Fetch reviews
                 var reviewResponse = await _httpClient.GetAsync($"{baseApiUrl}/api/review/flower/{id}");
                 if (reviewResponse.IsSuccessStatusCode)
                 {
                     var jsonContent = await reviewResponse.Content.ReadAsStringAsync();
                     Reviews = JsonSerializer.Deserialize<List<ListReviewDTO>>(jsonContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Failed to load review data.");
-                }
+               
             }
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostSubmitReviewAsync(int id) 
+        public async Task<IActionResult> OnPostSubmitReviewAsync(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -84,7 +80,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Failed to load flower data.");
+               
                 return Page();
             }
 
@@ -110,10 +106,13 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Failed to submit review.");
+                // Extract error message from the response content
+                var errorContent = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, $"Failed to submit review. Error: {errorContent}");
                 return Page();
             }
         }
+
 
         public async Task<IActionResult> OnPostUpdateReviewAsync(int reviewId, int flowerId)
         {
