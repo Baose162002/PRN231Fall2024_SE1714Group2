@@ -73,6 +73,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages
         {
             if (!ModelState.IsValid)
             {
+                TempData["ErrorMessage"] = "Please correct the errors in the form.";
                 return Page();
             }
 
@@ -80,6 +81,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages
 
             if (string.IsNullOrEmpty(token))
             {
+                TempData["ErrorMessage"] = "Session has expired. Please log in again.";
                 return RedirectToPage("/Login/Login");
             }
 
@@ -96,7 +98,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    ModelState.AddModelError(string.Empty, "Token is invalid or has expired.");
+                    TempData["ErrorMessage"] = "Token is invalid or has expired.";
                     return RedirectToPage("/Login/Login");
                 }
                 else
@@ -109,16 +111,16 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages
                         var jsonDocument = JsonDocument.Parse(responseContent);
                         if (jsonDocument.RootElement.TryGetProperty("message", out var messageElement))
                         {
-                            ModelState.AddModelError(string.Empty, messageElement.GetString());
+                            TempData["ErrorMessage"] = messageElement.GetString();
                         }
                         else
                         {
-                            ModelState.AddModelError(string.Empty, "An error occurred while updating the company.");
+                            TempData["ErrorMessage"] = "An error occurred while updating the company.";
                         }
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, $"Error: {responseContent}");
+                        TempData["ErrorMessage"] = $"Error: {responseContent}";
                     }
 
                     return Page();
@@ -126,7 +128,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CompanyPages
             }
             catch (HttpRequestException e)
             {
-                ModelState.AddModelError(string.Empty, $"Error connecting to the server: {e.Message}");
+                TempData["ErrorMessage"] = $"Error connecting to the server: {e.Message}";
                 return Page();
             }
         }

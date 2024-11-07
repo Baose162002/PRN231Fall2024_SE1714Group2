@@ -72,7 +72,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.DeliveryPages
             return Page();
         }
 
-
         public async Task<IActionResult> OnPostUpdateStatusAsync(int deliveryId, int orderId)
         {
             // Retrieve JWT token from session
@@ -95,7 +94,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.DeliveryPages
             if (response.IsSuccessStatusCode)
             {
                 TempData["SuccessMessage"] = "Status updated successfully!";
-                return RedirectToPage("/DeliveryPages/DeliveryDetails");
+                return RedirectToPage("/DeliveryPages/DeliveryDetail");
             }
             else
             {
