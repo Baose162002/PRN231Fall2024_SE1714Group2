@@ -67,28 +67,27 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
         {
             if (!ModelState.IsValid)
             {
+                TempData["ErrorMessage"] = "Invalid data. Please check your input.";
                 return Page();
             }
 
             // Fetch the flower details again for the POST request
             var baseApiUrl = _configuration["ApiSettings:BaseUrl"];
             var flowerResponse = await _httpClient.GetAsync($"{baseApiUrl}/api/flower/getby/{id}");
-            if (flowerResponse.IsSuccessStatusCode)
+            if (!flowerResponse.IsSuccessStatusCode)
             {
-                var jsonContent = await flowerResponse.Content.ReadAsStringAsync();
-                Flower = JsonSerializer.Deserialize<ListFlowerDTO>(jsonContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
-            else
-            {
-               
+                TempData["ErrorMessage"] = "Failed to load flower data.";
                 return Page();
             }
+
+            var jsonContent = await flowerResponse.Content.ReadAsStringAsync();
+            Flower = JsonSerializer.Deserialize<ListFlowerDTO>(jsonContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             // Set the flower ID and customer ID
             var userIdString = HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userIdString))
             {
-                ModelState.AddModelError(string.Empty, "You must be logged in to submit a review.");
+                TempData["ErrorMessage"] = "You must be logged in to submit a review.";
                 return Page();
             }
 
@@ -98,20 +97,22 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
             // Send the review to the backend API
             var jsonContentReview = JsonSerializer.Serialize(NewReview);
             var content = new StringContent(jsonContentReview, System.Text.Encoding.UTF8, "application/json");
-
             var response = await _httpClient.PostAsync($"{baseApiUrl}/api/review", content);
+
             if (response.IsSuccessStatusCode)
             {
+                TempData["SuccessMessage"] = "Review submitted successfully.";
                 return RedirectToPage(new { id = Flower.FlowerId });
             }
             else
             {
-                // Extract error message from the response content
                 var errorContent = await response.Content.ReadAsStringAsync();
-                ModelState.AddModelError(string.Empty, $"Failed to submit review. Error: {errorContent}");
+                TempData["ErrorMessage"] = $"Failed to submit review. Error: {errorContent}";
                 return Page();
             }
         }
+
+        // Các phương thức OnPost khác như OnPostUpdateReviewAsync và OnPostDeleteReviewAsync tương tự
 
 
         public async Task<IActionResult> OnPostUpdateReviewAsync(int reviewId, int flowerId)
@@ -143,7 +144,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
 
             if (response.IsSuccessStatusCode)
             {
-                // Chuyển hướng sau khi cập nhật thành công
+                TempData["SuccessMessage"] = "Review updated successfully.";
                 return RedirectToPage(new { id = flowerId });
             }
             else
@@ -163,7 +164,7 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
 
             if (response.IsSuccessStatusCode)
             {
-                // Lấy lại thông tin của Flower để đảm bảo không bị null
+                TempData["SuccessMessage"] = "Review deleted successfully.";
                 var flowerResponse = await _httpClient.GetAsync($"{baseApiUrl}/api/flower/getby/{flowerId}");
                 if (flowerResponse.IsSuccessStatusCode)
                 {
