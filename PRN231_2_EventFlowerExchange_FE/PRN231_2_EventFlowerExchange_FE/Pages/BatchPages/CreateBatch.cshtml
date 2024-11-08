@@ -15,9 +15,26 @@
         <div id="main-content" class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
             <main class="py-10 px-4">
                 <div class="max-w-7xl mx-auto">
+                    <a href="/BatchIndex" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Back Batch
+                    </a>
                     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <h1 class="text-2xl font-bold mb-6">Create New Batch</h1>
-
+                    
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                                <ul>
+                                    @foreach (var modelState in ViewData.ModelState.Values)
+                                    {
+                                        foreach (var error in modelState.Errors)
+                                        {
+                                            <li>@error.ErrorMessage</li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        }
                         <!-- Form to create batch -->
                         <form method="post" enctype="multipart/form-data" id="createBatchForm">
                             <!-- Existing batch fields remain unchanged -->
@@ -42,14 +59,15 @@
                                 <!-- Event Date Input -->
                                 <div class="mb-4">
                                     <label class="block text-gray-700 text-sm font-bold mb-2">Event Date</label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    <input id="eventDate"
+                                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                            asp-for="Input.EventDate" type="datetime-local" required>
                                 </div>
-
                                 <!-- Entry Date Input -->
                                 <div class="mb-4">
                                     <label class="block text-gray-700 text-sm font-bold mb-2">Entry Date</label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    <input id="entryDate"
+                                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                            asp-for="Input.EntryDate" type="datetime-local" required>
                                 </div>
                             </div>
@@ -460,7 +478,26 @@
     }
 
 
+    document.addEventListener("DOMContentLoaded", function () {
+        const currentDate = new Date();
 
+        // Format current date to YYYY-MM-DDTHH:MM for datetime-local
+        function formatDateForInput(date) {
+            return date.toISOString().slice(0, 16);
+        }
+
+        // Set the default value for Entry Date (current date)
+        const entryDateInput = document.getElementById("entryDate");
+        entryDateInput.value = formatDateForInput(currentDate);
+        entryDateInput.min = formatDateForInput(currentDate); // Only current date and future dates
+
+        // Set the min date for Event Date (one month before) and default to current date
+        const eventDateInput = document.getElementById("eventDate");
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(currentDate.getMonth() - 1);
+        eventDateInput.min = formatDateForInput(oneMonthAgo); // One month ago
+        eventDateInput.value = formatDateForInput(currentDate); // Default to current date
+    });
 
 
     function updateFlowerAttributes(flower) {

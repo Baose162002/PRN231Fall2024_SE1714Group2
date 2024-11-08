@@ -49,7 +49,12 @@
 
             <div class="mb-4">
                 <label for="PricePerUnit" class="block text-gray-700 font-bold mb-2">Price per unit:</label>
-                <input type="number" id="PricePerUnit" name="Flower.PricePerUnit" value="@Model.Flower.PricePerUnit" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+                <input type="number"
+                       id="PricePerUnit"
+                       name="Flower.PricePerUnit"
+                       value="@Model.Flower.PricePerUnit"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                <div class="text-red-500 text-sm mt-1" id="priceError"></div>
             </div>
 
             <div class="mb-4">
@@ -87,7 +92,12 @@
 
             <div class="mb-4">
                 <label for="RemainingQuantity" class="block text-gray-700 font-bold mb-2">Remaining Quantity:</label>
-                <input type="number" id="RemainingQuantity" name="Flower.RemainingQuantity" value="@Model.Flower.RemainingQuantity" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+                <input type="number"
+                       id="RemainingQuantity"
+                       name="Flower.RemainingQuantity"
+                       value="@Model.Flower.RemainingQuantity"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                <div class="text-red-500 text-sm mt-1" id="quantityError"></div>
             </div>
 
             <input type="hidden" asp-for="Flower.BatchId" />
@@ -110,5 +120,84 @@
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form");
+            const quantityInput = document.getElementById("RemainingQuantity");
+            const priceInput = document.getElementById("PricePerUnit");
+
+            // Constants for validation
+            const CONSTRAINTS = {
+                quantity: { min: 1, message: 'Remaining Quantity must be at least 1' },
+                price: {
+                    min: 10000,
+                    max: 100000,
+                    message: 'Price per Unit must be between 10,000 and 100,000'
+                }
+            };
+
+            // Validate single input
+            function validateInput(input, type) {
+                const value = parseFloat(input.value);
+                const constraint = CONSTRAINTS[type];
+                let isValid = true;
+
+                if (type === 'quantity') {
+                    if (isNaN(value) || value < constraint.min) {
+                        isValid = false;
+                        input.classList.add("border-red-500");
+                        input.setCustomValidity(constraint.message);
+                    }
+                } else if (type === 'price') {
+                    if (isNaN(value) || value < constraint.min || value > constraint.max) {
+                        isValid = false;
+                        input.classList.add("border-red-500");
+                        input.setCustomValidity(constraint.message);
+                    }
+                }
+
+                if (isValid) {
+                    input.classList.remove("border-red-500");
+                    input.setCustomValidity("");
+                }
+
+                return isValid;
+            }
+
+            // Add input event listeners for real-time validation
+            quantityInput.addEventListener("input", function () {
+                validateInput(this, 'quantity');
+            });
+
+            priceInput.addEventListener("input", function () {
+                validateInput(this, 'price');
+            });
+
+            // Form submit validation
+            form.addEventListener("submit", function (event) {
+                let isFormValid = true;
+                let errorMessages = [];
+
+                // Validate quantity
+                if (!validateInput(quantityInput, 'quantity')) {
+                    isFormValid = false;
+                    errorMessages.push(CONSTRAINTS.quantity.message);
+                }
+
+                // Validate price
+                if (!validateInput(priceInput, 'price')) {
+                    isFormValid = false;
+                    errorMessages.push(CONSTRAINTS.price.message);
+                }
+
+                if (!isFormValid) {
+                    event.preventDefault();
+                    alert(errorMessages.join('\n'));
+                }
+            });
+        });
+    </script>
+
+
 </body>
 </html>

@@ -169,10 +169,11 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.CartPages
             };
 
             var paymentUrl = _paymentService.GeneratePaymentUrl(HttpContext, paymentRequest);
-            HttpContext.Response.Cookies.Append("CartItems", cartJson, new CookieOptions
+            HttpContext.Response.Cookies.Append("cartItems", cartJson, new CookieOptions
             {
-                Expires = DateTimeOffset.UtcNow.AddMinutes(5) // Lưu thông tin giỏ hàng trong thời gian ngắn
+                Expires = DateTimeOffset.UtcNow.AddMinutes(5)
             });
+
 
             return new JsonResult(new { success = true, paymentUrl });
         }
