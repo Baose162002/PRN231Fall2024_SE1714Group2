@@ -23,8 +23,12 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages
         public List<ListFlowerDTO> Flowers { get; set; }
         public string ApiMessage { get; set; }
 
+        public string UserRole { get; set; }
+
         public async Task OnGetAsync()
         {
+            UserRole = HttpContext.Session.GetString("UserRole"); // Default to "Customer" if role is not set
+
             // Lấy token từ session (nếu cần)
             var token = HttpContext.Session.GetString("JWTToken");
             if (!string.IsNullOrEmpty(token))

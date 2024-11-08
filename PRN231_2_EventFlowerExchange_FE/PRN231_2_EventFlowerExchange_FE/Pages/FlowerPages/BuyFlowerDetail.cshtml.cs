@@ -29,9 +29,13 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.FlowerPages
         [BindProperty]
         public CreateReviewDTO NewReview { get; set; }
 
+        public string UserRole { get; set; }
+
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            UserRole = HttpContext.Session.GetString("UserRole");
+
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer");
             var baseApiUrl = _configuration["ApiSettings:BaseUrl"];
 

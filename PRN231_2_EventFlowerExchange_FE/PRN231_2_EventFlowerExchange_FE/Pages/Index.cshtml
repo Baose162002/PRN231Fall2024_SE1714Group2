@@ -46,10 +46,14 @@
                                     <form id="antiforgeryform">
                                         @Html.AntiForgeryToken()
                                     </form>
-                                    <button onclick="addToCart('@flower.FlowerId')"
-                                            class="px-4 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-200">
-                                        Add to cart
-                                    </button>
+                                    @* Render Add to Cart button only if the user role is not Seller *@
+                                    @if (Model.UserRole != "Seller")
+                                    {
+                                        <button onclick="addToCart('@flower.FlowerId')"
+                                                class="px-4 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition duration-200">
+                                            Add to cart
+                                        </button>
+                                    }
                                 </div>
                                 <p><strong>Origin:</strong> @flower.Origin</p>
                                 <p><strong>Color:</strong> @flower.Color</p>
