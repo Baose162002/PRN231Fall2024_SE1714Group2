@@ -80,27 +80,32 @@
                         }
 
                         <!-- Action Buttons -->
-                        <div class="mt-8 flex gap-4">
-                            <form method="post" asp-page-handler="GeneratePaymentUrl">
-                                <button type="submit"
-                                        class="inline-flex items-center px-6 py-3 border border-transparent rounded-full
-                                               text-base font-medium text-white bg-green-600 hover:bg-green-700
-                                               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                    Buy Now
-                                </button>
-                                <input type="hidden" name="flowerId" value="@Model.Flower.FlowerId" />
-                            </form>
+                        @* Render Add to Cart button only if the user role is not Seller *@
+                        @if (Model.UserRole != "Seller")
+                        {
+                          <div class="mt-8 flex gap-4">
+                              <form method="post" asp-page-handler="GeneratePaymentUrl">
+                                  <button type="submit"
+                                          class="inline-flex items-center px-6 py-3 border border-transparent rounded-full
+                                                 text-base font-medium text-white bg-green-600 hover:bg-green-700
+                                                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                      Buy Now
+                                  </button>
+                                  <input type="hidden" name="flowerId" value="@Model.Flower.FlowerId" />
+                              </form>
 
-                            <form id="antiforgeryform" onsubmit="return false;">
-                                @Html.AntiForgeryToken()
-                                <button onclick="addToCart('@Model.Flower.FlowerId', '@Model.Flower.Name', '@Model.Flower.PricePerUnit')"
-                                        class="inline-flex items-center px-6 py-3 border border-transparent rounded-full
-                                               text-base font-medium text-white bg-blue-600 hover:bg-blue-700
-                                               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Add to Cart
-                                </button>
-                            </form>
-                        </div>
+                              <form id="antiforgeryform" onsubmit="return false;">
+                                  @Html.AntiForgeryToken()
+                                  <button onclick="addToCart('@Model.Flower.FlowerId', '@Model.Flower.Name', '@Model.Flower.PricePerUnit')"
+                                          class="inline-flex items-center px-6 py-3 border border-transparent rounded-full
+                                                 text-base font-medium text-white bg-blue-600 hover:bg-blue-700
+                                                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                      Add to Cart
+                                  </button>
+                              </form>
+                          </div>
+                        }
+
                     </div>
                 </div>
             </div>
