@@ -98,7 +98,8 @@
                 }
 
                 <!-- Cart icon, only visible if user is not DeliveryPersonnel -->
-                @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") != "DeliveryPersonnel")
+                @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") != "DeliveryPersonnel" 
+                || HttpContextAccessor.HttpContext.Session.GetString("UserRole") != "Seller")
                 {
                     <div class="hidden md:flex items-center space-x-4">
                         <a href="/Cart" class="relative">
