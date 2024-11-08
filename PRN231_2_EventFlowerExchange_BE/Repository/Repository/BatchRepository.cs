@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.DTO.Request;
 using BusinessObject.Enum;
 using Microsoft.EntityFrameworkCore;
 using Repository.IRepository;
@@ -40,6 +41,63 @@ namespace Repository.Repository
             var _context = new FlowerShopContext();
             _context.Batches.Add(batch);
             await _context.SaveChangesAsync();
+        }
+        public async Task CreateBatchAndFlowerAsync(CreateBatchAndFlowerDTO batchAndFlower)
+        {
+            var _context = new FlowerShopContext();
+            var batch = new Batch
+            {
+                BatchName = batchAndFlower.BatchName,
+                EventName = batchAndFlower.EventName,
+                EventDate = batchAndFlower.EventDate,
+                BatchQuantity = 0, // You can calculate later based on Flower quantity
+                RemainingQuantity = 0, // Calculate based on Flower quantity
+                Description = batchAndFlower.Description,
+                EntryDate = batchAndFlower.EntryDate,
+                CompanyId = batchAndFlower.CompanyId,
+                Status = EnumList.Status.Active
+            };
+
+            _context.Batches.Add(batch);
+            await _context.SaveChangesAsync(); // Save the batch to get BatchId
+
+            // Group flowers by Type, Color, and Origin, summing RemainingQuantity for duplicates
+            var groupedFlowers = batchAndFlower.Flowers
+                .GroupBy(f => new { f.Type, f.Color, f.Origin })
+                .Select(g => new
+                {
+                    Type = g.Key.Type,
+                    Color = g.Key.Color,
+                    Origin = g.Key.Origin,
+                    Name = g.First().Name, // Take the first name (assuming it’s the same for duplicates)
+                    Image = g.First().Image, // Take the first image (or handle images differently if needed)
+                    PricePerUnit = g.First().PricePerUnit, // Take the first price (assuming it’s the same for duplicates)
+                    Description = g.First().Description, // Take the first description (assuming it’s the same for duplicates)
+                    TotalQuantity = g.Sum(f => f.RemainingQuantity) // Sum RemainingQuantity
+                });
+
+            // Create flower entities for each unique combination of Type, Color, and Origin
+            foreach (var flower in groupedFlowers)
+            {
+                var flowerEntity = new Flower
+                {
+                    BatchId = batch.BatchId,
+                    Name = flower.Name,
+                    Type = flower.Type,
+                    Color = flower.Color,
+                    Origin = flower.Origin,
+                    Image = flower.Image,
+                    PricePerUnit = flower.PricePerUnit,
+                    RemainingQuantity = flower.TotalQuantity,
+                    Description = flower.Description,
+                    FlowerStatus = EnumList.FlowerStatus.Available,
+                    Status = EnumList.Status.Active,
+                    Condition = EnumList.FlowerCondition.Fresh
+                };
+                _context.Flowers.Add(flowerEntity);
+            }
+
+            await _context.SaveChangesAsync(); // Save flowers after batch
         }
 
         public async Task Update(Batch batch, int id)
@@ -168,7 +226,7 @@ namespace Repository.Repository
                     var flowersInBatch = await _context.Flowers.Where(f => f.BatchId == batch.BatchId).ToListAsync();
 
                     // Kiểm tra nếu batch đã quá hạn (lớn hơn 1 ngày)
-                    if ((DateTime.Now - batch.EntryDate).TotalDays > 1)
+                    if ((DateTime.Now - batch.EntryDate).TotalDays > 4)
                     {
                         bool hasAvailableFlowers = flowersInBatch.Any(f => f.RemainingQuantity > 0);
 

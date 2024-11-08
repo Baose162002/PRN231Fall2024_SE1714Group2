@@ -135,8 +135,13 @@ namespace Service.Service
             var existingUser = await _userRepository.GetUserById(id);
             if (existingUser == null) throw new ArgumentException("User does not exist.");
 
+            // Check if the email has changed and if the new email already exists
             if (existingUser.Email != updateUserDTO.Email && await CheckEmailExist(updateUserDTO.Email))
                 throw new Exception("The email already exists. Please use a different email.");
+
+            // Check if the phone has changed and if the new phone already exists
+            if (existingUser.Phone != updateUserDTO.Phone && await CheckPhoneExist(updateUserDTO.Phone))
+                throw new Exception("The phone number already exists. Please use a different phone number.");
 
             existingUser.FullName = updateUserDTO.FullName;
             existingUser.Email = updateUserDTO.Email;
@@ -148,11 +153,15 @@ namespace Service.Service
             return await _userRepository.UpdateAsync(existingUser);
         }
 
+
         public async Task<bool> DeleteUser(int id)
         {
             return await _userRepository.DeleteAsync(id);
         }
 
+
+
+        //VALIDATE PART
         private EnumList.UserRole GetUserRole(string role)
         {
             return role.Equals("Buyer", StringComparison.OrdinalIgnoreCase)
@@ -160,8 +169,6 @@ namespace Service.Service
                 : role.Equals("Personal", StringComparison.OrdinalIgnoreCase)
                     ? EnumList.UserRole.DeliveryPersonnel
                     : throw new Exception("Invalid role. Only 'Buyer' or 'Personal' roles are allowed.");
-
-
         }
 
         private async Task<bool> CheckEmailExist(string email)

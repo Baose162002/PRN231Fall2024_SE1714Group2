@@ -1,14 +1,14 @@
 ﻿@page
 @model PRN231_2_EventFlowerExchange_FE.Pages.BatchPages.CreateBatchModel
+
 @{
-    ViewData["Title"] = "Create New Batch";
-    ViewData["ShowHeader"] = false;
-    ViewData["ShowFooter"] = false;
+    ViewData["Title"] = "Create Batch";
 }
 
 <div class="bg-gray-100 min-h-screen">
-    <partial name="_AdminHeader" />
+    <!-- Header -->
 
+    <!-- Main content area -->
     <div class="flex overflow-hidden bg-white pt-16">
         <partial name="_AdminNav" />
 
@@ -18,59 +18,77 @@
                     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <h1 class="text-2xl font-bold mb-6">Create New Batch</h1>
 
-                        @if (!string.IsNullOrEmpty(TempData["SuccessMessage"] as string))
-                        {
-                            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                                <span class="block sm:inline">@TempData["SuccessMessage"]</span>
-                            </div>
-                        }
-
-                        @if (!ViewData.ModelState.IsValid)
-                        {
-                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                                <ul>
-                                    @foreach (var modelState in ViewData.ModelState.Values)
-                                    {
-                                        foreach (var error in modelState.Errors)
-                                        {
-                                            <li>@error.ErrorMessage</li>
-                                        }
-                                    }
-                                </ul>
-                            </div>
-                        }
-
-                        <form method="post" enctype="multipart/form-data">
+                        <!-- Form to create batch -->
+                        <form method="post" enctype="multipart/form-data" id="createBatchForm">
+                            <!-- Existing batch fields remain unchanged -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Batch Name Input -->
                                 <div class="mb-4">
-                                    <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.BatchName">Batch Name</label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.BatchName" type="text" placeholder="Batch Name">
-                                    <span asp-validation-for="Input.BatchName" class="text-red-500 text-xs italic"></span>
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Batch Name</label>
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                           asp-for="Input.BatchName" type="text" required>
                                 </div>
+
+                                <!-- Event Name Input -->
                                 <div class="mb-4">
-                                    <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.EventName">Event Name</label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.EventName" type="text" placeholder="Event Name">
-                                    <span asp-validation-for="Input.EventName" class="text-red-500 text-xs italic"></span>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.EventDate">Event Date</label>
-                                    <input id="eventDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.EventDate" type="date">
-                                    <span asp-validation-for="Input.EventDate" class="text-red-500 text-xs italic"></span>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.EntryDate">Entry Date</label>
-                                    <input id="entryDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.EntryDate" type="date">
-                                    <span asp-validation-for="Input.EntryDate" class="text-red-500 text-xs italic"></span>
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Event Name</label>
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                           asp-for="Input.EventName" type="text" required>
                                 </div>
                             </div>
+
+                            <!-- Date Inputs -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Event Date Input -->
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Event Date</label>
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                           asp-for="Input.EventDate" type="datetime-local" required>
+                                </div>
+
+                                <!-- Entry Date Input -->
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Entry Date</label>
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                           asp-for="Input.EntryDate" type="datetime-local" required>
+                                </div>
+                            </div>
+
+                            <!-- Description Input -->
                             <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.Description">Description</label>
-                                <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.Description" rows="3" placeholder="Describe the batch"></textarea>
-                                <span asp-validation-for="Input.Description" class="text-red-500 text-xs italic"></span>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                                <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                          asp-for="Input.Description" required></textarea>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Create</button>
-                                <a href="/BatchIndex" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Cancel</a>
+
+                            <!-- Dropdown for Companies (Admin Role) -->
+                            @if (Model.Companies.Any())
+                            {
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Select Company</label>
+                                    <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                            asp-for="Input.CompanyId">
+                                        <option value="">Select a Company</option>
+                                        @foreach (var company in Model.Companies)
+                                        {
+                                            <option value="@company.CompanyId">@company.CompanyName</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+
+                            <!-- Flower Information Section -->
+                            <h2 class="text-xl font-semibold mt-6 mb-4">Flowers</h2>
+                            <div id="flowersContainer">
+                               
+                            </div>
+
+                            <!-- Add Flower Button -->
+                            <button type="button" id="addFlowerBtn" class="bg-green-500 text-white px-4 py-2 rounded mt-4">Add Flower</button>
+
+                            <!-- Submit Button -->
+                            <div class="mt-6">
+                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Create Batch</button>
                             </div>
                         </form>
                     </div>
@@ -79,14 +97,440 @@
         </div>
     </div>
 </div>
+
+<!-- Flower Modal -->
+<div id="flowerModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                    Add Flower
+                </h3>
+                <div class="mt-2">
+                    <div class="mb-4">
+                        <label for="flowerName" class="block text-sm font-medium text-gray-700">Flower Name</label>
+                        <input type="text" id="flowerName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="flowerType" class="block text-sm font-medium text-gray-700">Type</label>
+                        <select id="flowerType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                            <option value="">Select Type</option>
+                            <option value="Rose">Rose</option>
+                            <option value="Tulip">Tulip</option>
+                            <option value="Lily">Lily</option>
+                            <option value="Daisy">Daisy</option>
+                            <option value="Orchid">Orchid</option>
+                            <option value="Sunflower">Sunflower</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="flowerOrigin" class="block text-sm font-medium text-gray-700">Origin</label>
+                        <select id="flowerOrigin" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                            <option value="">-- Select Province --</option>
+                            <option value="Đà Lạt">Đà Lạt</option>
+                            <option value="Hà Nội">Hà Nội</option>
+                            <option value="Lào Cai">Lào Cai</option>
+                            <option value="Hải Phòng">Hải Phòng</option>
+                            <option value="Đà Nẵng">Đà Nẵng</option>
+                            <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="flowerColor" class="block text-sm font-medium text-gray-700">Color</label>
+                        <select id="flowerColor" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                            <option value="">Select Color</option>
+                            <option value="Red">Red</option>
+                            <option value="Yellow">Yellow</option>
+                            <option value="White">White</option>
+                            <option value="Pink">Pink</option>
+                            <option value="Purple">Purple</option>
+                            <option value="Orange">Orange</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="flowerPrice" class="block text-sm font-medium text-gray-700">Price Per Unit</label>
+                        <input type="number" id="flowerPrice" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="flowerQuantity" class="block text-sm font-medium text-gray-700">Remaining Quantity</label>
+                        <input type="number" id="flowerQuantity" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="flowerDescription" class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea id="flowerDescription" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="flowerImage" class="block text-sm font-medium text-gray-700">Flower Image</label>
+                        <input type="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" id="flowerImage" name="flowerImage" accept="image/*" multiple required />
+                    </div>
+
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" id="saveFlowerBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Save Flower
+                </button>
+                <button type="button" id="closeModalBtn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const today = new Date().toISOString().split("T")[0];
+    let flowerIndex = 0;
+    const flowerModal = document.getElementById('flowerModal');
+    const addFlowerBtn = document.getElementById('addFlowerBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const saveFlowerBtn = document.getElementById('saveFlowerBtn');
+    const flowersContainer = document.getElementById('flowersContainer');
+    let currentEditIndex = null;
 
-        document.getElementById("eventDate").value = today;
-        document.getElementById("eventDate").setAttribute("min", today);
+    // Flower data (for validation)
+    const flowerData = {
+        "Rose": {
+            colors: ["Red", "Pink", "White", "Yellow", "Orange"],
+            origins: ["Đà Lạt", "Hà Nội", "Lâm Đồng"],
+            priceRange: { min: 10000, max: 50000 },
+            description: "Hoa hồng tượng trưng cho tình yêu và sự lãng mạn"
+        },
+        "Tulip": {
+            colors: ["Red", "Yellow", "Pink", "Purple", "White"],
+            origins: ["Đà Lạt", "Lâm Đồng"],
+            priceRange: { min: 15000, max: 60000 },
+            description: "Hoa tulip tượng trưng cho sự hoàn hảo và sang trọng"
+        },
+        "Lily": {
+            colors: ["White", "Pink", "Yellow", "Orange"],
+            origins: ["Đà Lạt", "Hà Nội", "Lào Cai"],
+            priceRange: { min: 20000, max: 70000 },
+            description: "Hoa ly tượng trưng cho sự thuần khiết"
+        },
+        "Daisy": {
+            colors: ["White", "Yellow", "Pink"],
+            origins: ["Đà Lạt", "Hải Phòng"],
+            priceRange: { min: 8000, max: 30000 },
+            description: "Hoa cúc tượng trưng cho sự trong sáng"
+        },
+        "Orchid": {
+            colors: ["Purple", "White", "Pink", "Yellow"],
+            origins: ["Đà Lạt", "Lâm Đồng", "Hồ Chí Minh"],
+            priceRange: { min: 25000, max: 100000 },
+            description: "Hoa lan tượng trưng cho sự quý phái"
+        },
+        "Sunflower": {
+            colors: ["Yellow", "Orange"],
+            origins: ["Đà Lạt", "Lâm Đồng", "Tây Nguyên"],
+            priceRange: { min: 12000, max: 40000 },
+            description: "Hoa hướng dương tượng trưng cho sự rạng rỡ"
+        }
+    };
 
-        document.getElementById("entryDate").value = today;
-        document.getElementById("entryDate").setAttribute("min", today);
+    // Open modal for adding new flower
+    addFlowerBtn.addEventListener('click', () => {
+        openModal();
     });
+
+    // Close modal
+    closeModalBtn.addEventListener('click', () => {
+        closeModal();
+    });
+
+    // Save flower (new or edit)
+    saveFlowerBtn.addEventListener('click', () => {
+        const flowerDataFromForm = getFlowerDataFromForm();
+        const validation = validateFlowerForm(flowerDataFromForm);
+        if (validation.isValid) {
+            if (currentEditIndex !== null) {
+                updateFlowerCard(currentEditIndex, flowerDataFromForm);
+            } else {
+                createFlowerCard(flowerDataFromForm);
+            }
+            closeModal();
+        } else {
+            alert(validation.message);
+        }
+    });
+
+    // Flower type change event to update colors, origins, and price
+    document.getElementById('flowerType').addEventListener('change', (e) => {
+        const selectedType = e.target.value;
+        if (flowerData[selectedType]) {
+            updateFlowerAttributes(flowerData[selectedType]);
+        }
+    });
+
+    // Edit flower
+    flowersContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('editFlowerBtn')) {
+            const card = e.target.closest('.flower-entry');
+            currentEditIndex = card.dataset.index;
+            openModal(card);
+        }
+    });
+
+    // Delete flower
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('deleteFlowerBtn')) {
+            const card = e.target.closest('.flower-entry');
+            deleteFlowerCard(card);
+        }
+    });
+
+    function openModal(card = null) {
+        if (card) {
+            // Editing existing flower
+            const inputs = card.querySelectorAll('input[type="hidden"]');
+            document.getElementById('flowerName').value = inputs[0].value;
+            document.getElementById('flowerType').value = inputs[1].value;
+            document.getElementById('flowerOrigin').value = inputs[2].value;
+            document.getElementById('flowerColor').value = inputs[3].value;
+            document.getElementById('flowerPrice').value = inputs[4].value;
+            document.getElementById('flowerQuantity').value = inputs[5].value;
+            document.getElementById('flowerDescription').value = inputs[6].value;
+        } else {
+            // Adding new flower
+            currentEditIndex = null;
+            document.getElementById('flowerForm').reset();
+            const hiddenInputs = flowerModal.querySelectorAll('input[type="hidden"]');
+            hiddenInputs.forEach(input => input.value = '');
+        }
+        flowerModal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+        flowerModal.classList.add('hidden');
+        currentEditIndex = null;
+    }
+
+    function getFlowerDataFromForm() {
+        const imageFile = document.getElementById('flowerImage').files[0]; // Lấy ảnh từ input file
+        const prices = document.getElementById('flowerPrice').value;
+        const quantities = document.getElementById('flowerQuantity').value;
+
+        return {
+            name: document.getElementById('flowerName').value,
+            type: document.getElementById('flowerType').value,
+            origin: document.getElementById('flowerOrigin').value,
+            color: document.getElementById('flowerColor').value,
+            price: prices,
+            quantity: quantities,
+            description: document.getElementById('flowerDescription').value,
+            image: imageFile // Gửi ảnh vào đây
+        };
+    }
+    document.getElementById("saveFlowerBtn").addEventListener("click", function () {
+        // Lấy thông tin từ các input khác
+        const flowerName = document.getElementById("flowerName").value;
+        const flowerType = document.getElementById("flowerType").value;
+        const flowerOrigin = document.getElementById("flowerOrigin").value;
+        const flowerColor = document.getElementById("flowerColor").value;
+        const flowerPrice = document.getElementById("flowerPrice").value;
+        const flowerQuantity = document.getElementById("flowerQuantity").value;
+        const flowerDescription = document.getElementById("flowerDescription").value;
+
+        // Lấy hình ảnh từ input
+        const flowerImage = document.getElementById("flowerImage").files;
+
+        if (flowerImage.length > 0) {
+            const formData = new FormData();
+
+            // Thêm thông tin flower vào FormData
+            formData.append("flowerName", flowerName);
+            formData.append("flowerType", flowerType);
+            formData.append("flowerOrigin", flowerOrigin);
+            formData.append("flowerColor", flowerColor);
+            formData.append("flowerPrice", flowerPrice);
+            formData.append("flowerQuantity", flowerQuantity);
+            formData.append("flowerDescription", flowerDescription);
+
+            // Thêm hình ảnh vào FormData
+            for (let i = 0; i < flowerImage.length; i++) {
+                formData.append("flowerImage", flowerImage[i]);
+            }
+        } else {
+            alert('Please select an image!');
+        }
+    });
+
+
+    function validateFlowerForm(data) {
+        const { name, type, origin, color, price, quantity, description, image } = data;
+        if (!name || !type || !origin || !color || !price || !quantity || !description) {
+            return { isValid: false, message: "Please fill in all the fields." };
+        }
+
+        // Validate price range based on flower type
+        const flower = flowerData[type];
+        if (price < flower.priceRange.min || price > flower.priceRange.max) {
+            return { isValid: false, message: `Price must be between ${flower.priceRange.min} and ${flower.priceRange.max} for ${type}.` };
+        }
+        if (quantity <= 0) {
+            return { isValid: false, message: "Quantity must be greater than 0." };
+        }
+
+
+        if (!image) {
+            return { isValid: false, message: "Please select an image file." };
+        }
+        if (!isValidImage(image)) {
+            return { isValid: false, message: "Please select a valid image file (PNG, JPG, JPEG)." };
+        }
+
+        return { isValid: true, message: "" };
+    }
+    function isValidImage(image) {
+        const validTypes = ['image/jpeg', 'image/png'];
+        return validTypes.includes(image.type);
+    }
+
+    function createFlowerCard(data) {
+        const card = document.createElement('div');
+        card.className = 'flower-entry p-4 mb-4 border rounded-lg shadow-sm';
+        card.dataset.index = flowerIndex;
+        card.innerHTML = generateFlowerCardHTML(data, flowerIndex);
+        flowersContainer.appendChild(card);
+        flowerIndex++;
+    }
+
+    function updateFlowerCard(index, data) {
+        const card = flowersContainer.querySelector(`[data-index="${index}"]`);
+        card.innerHTML = generateFlowerCardHTML(data, index);
+    }
+
+    function deleteFlowerCard(card) {
+        if (confirm('Bạn có chắc chắn muốn xóa mục này không?')) {
+            card.remove();
+        }
+    }
+
+    function convertFileToBase64(file, callback) {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+            callback(reader.result); // Base64 string
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function generateFlowerCardHTML(data, index) {
+        const imageURL = data.image && data.image instanceof Blob ? URL.createObjectURL(data.image) : data.image || 'path/to/default-image.jpg';
+
+        let base64Image = data.image;
+        // Kiểm tra nếu image là một File (và không phải Blob)
+        if (data.image && data.image instanceof File) {
+            convertFileToBase64(data.image, (base64) => {
+                base64Image = base64;  // Lấy Base64 string để lưu vào input hidden
+                // Cập nhật lại UI hoặc xử lý sau khi chuyển đổi
+                document.getElementById(`imageInput${index}`).value = base64Image;
+            });
+        }
+        console.log("Pricessss:", data.price); // Kiểm tra giá trị của price
+        console.log("Quantityssss:", data.quantity); 
+        return `
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">${data.name}</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <p><span class="font-medium">Type:</span> ${data.type}</p>
+                        <p><span class="font-medium">Origin:</span> ${data.origin}</p>
+                        <p><span class="font-medium">Color:</span> ${data.color}</p>
+                        <p><span class="font-medium">Price:</span> $${data.price}</p>
+                        <p><span class="font-medium">Quantity:</span> ${data.quantity}</p>
+                    </div>
+                    <p class="mt-2"><span class="font-medium">Description:</span> ${data.description}</p>
+                    <p class="mt-2"><span class="font-medium">Image:</span><br><img src="${imageURL}" alt="Flower image" style="max-width: 100px;"></p>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" class="editFlowerBtn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</button>
+                    <button type="button" class="deleteFlowerBtn bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
+                </div>
+            </div>
+            <input type="hidden" name="flowers[${index}].name" value="${data.name}">
+            <input type="hidden" name="flowers[${index}].type" value="${data.type}">
+            <input type="hidden" name="flowers[${index}].origin" value="${data.origin}">
+            <input type="hidden" name="flowers[${index}].color" value="${data.color}">
+            <input type="hidden" name="flowers[${index}].price" value="${data.price}">
+            <input type="hidden" name="flowers[${index}].quantity" value="${data.quantity}">
+            <input type="hidden" name="flowers[${index}].description" value="${data.description}">
+            <input type="hidden" id="imageInput${index}" name="flowers[${index}].image" value="${base64Image}">
+        `;
+    }
+
+
+
+
+
+    function updateFlowerAttributes(flower) {
+        const colorSelect = document.getElementById('flowerColor');
+        const originSelect = document.getElementById('flowerOrigin');
+        const priceInput = document.getElementById('flowerPrice');
+        const descriptionInput = document.getElementById('flowerDescription');
+
+        // Update color options
+        colorSelect.innerHTML = flower.colors.map(color => `<option value="${color}">${color}</option>`).join('');
+        // Update origin options
+        originSelect.innerHTML = flower.origins.map(origin => `<option value="${origin}">${origin}</option>`).join('');
+        // Update price range
+        priceInput.setAttribute('min', flower.priceRange.min);
+        priceInput.setAttribute('max', flower.priceRange.max);
+        // Update description
+        descriptionInput.value = flower.description;
+    }
 </script>
+
+<div id="flowerModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="relative p-4 w-full max-w-md">
+        <div class="bg-white rounded-lg shadow dark:bg-gray-700">
+            <div class="flex justify-between items-center p-5 border-b rounded-t">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white" id="modal-title">Add Flower</h3>
+                <button type="button" id="closeModalBtn" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="flowerModal">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                </button>
+            </div>
+            <form id="flowerForm" method="post" enctype="multipart/form-data">
+                <div class="p-6 space-y-6">
+                    <div>
+                        <label for="flowerName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Flower Name</label>
+                        <input type="text" id="flowerName" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="flowerType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Flower Type</label>
+                        <select id="flowerType" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        </select>
+                    </div>
+                    <div>
+                        <label for="flowerOrigin" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Origin</label>
+                        <input type="text" id="flowerOrigin" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="flowerColor" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Color</label>
+                        <input type="text" id="flowerColor" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="flowerPrice" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
+                        <input type="number" id="flowerPrice" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="flowerQuantity" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Quantity</label>
+                        <input type="number" id="flowerQuantity" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="flowerDescription" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                        <textarea id="flowerDescription" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required></textarea>
+                    </div>
+                    <div>
+                        <label for="flowerImage" class="block text-sm font-medium text-gray-700">Flower Image</label>
+                        <input type="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" id="flowerImage" name="flowerImage" accept="image/*" multiple required />
+                    </div>
+                </div>
+                <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+                    <button type="button" id="saveFlowerBtn" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>
+                    <button type="button" id="closeModalBtn" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

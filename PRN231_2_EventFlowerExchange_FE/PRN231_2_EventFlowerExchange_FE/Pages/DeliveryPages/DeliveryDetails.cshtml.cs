@@ -72,7 +72,6 @@ namespace PRN231_2_EventFlowerExchange_FE.Pages.DeliveryPages
             return Page();
         }
 
-
         public async Task<IActionResult> OnPostUpdateStatusAsync(int deliveryId, int orderId)
         {
             // Retrieve JWT token from session

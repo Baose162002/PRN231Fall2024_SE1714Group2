@@ -45,12 +45,27 @@ namespace WebApi_EventFlowerExchange.Controllers
         {
             try
             {
-                await _batchService.Create(createBatchDTO);
-                return Ok("Add batch successfully");
+                var batchDto = await _batchService.Create(createBatchDTO);
+
+                return Ok(batchDto); 
             }
-            catch(ArgumentException e)
+            catch (ArgumentException e)
             {
                 return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateBatchAndFlowers([FromBody] CreateBatchAndFlowerDTO batchAndFlowerDTO)
+        {
+            try
+            {
+                var result = await _batchService.CreateBatchAndFlowersAsync(batchAndFlowerDTO);
+                return Ok (result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 

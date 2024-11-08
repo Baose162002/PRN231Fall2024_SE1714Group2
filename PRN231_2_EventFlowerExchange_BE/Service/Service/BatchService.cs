@@ -46,7 +46,7 @@ namespace Service.Service
             return batchDTO;
         }
 
-        public async Task Create(CreateBatchDTO batch)
+        public async Task<ListBatchDTO> Create(CreateBatchDTO batch)
         {
             if (batch == null || string.IsNullOrWhiteSpace(batch.BatchName)
               || string.IsNullOrWhiteSpace(batch.Description)
@@ -69,6 +69,16 @@ namespace Service.Service
                 Status = EnumList.Status.Active
             };
             await _batchRepository.Create(_mapper.Map<Batch>(batches));
+            return new ListBatchDTO
+            {
+                BatchId = batches.BatchId,  // BatchId đã được tự động gán sau khi lưu vào DB
+                BatchName = batches.BatchName,
+                EventName = batches.EventName,
+                EventDate = batches.EventDate,
+                Description = batches.Description,
+                EntryDate = batches.EntryDate,
+                CompanyId = batches.CompanyId
+            };  
         }
 
         public async Task Update(UpdateBatchDTO updateBatchDTO, int id)
@@ -99,5 +109,29 @@ namespace Service.Service
             await _batchRepository.CheckAndUpdateBatchStatus();
         }
 
+
+        public async Task<ListBatchDTO> CreateBatchAndFlowersAsync(CreateBatchAndFlowerDTO batchAndFlowerDTO)
+        {
+            if (batchAndFlowerDTO == null || string.IsNullOrWhiteSpace(batchAndFlowerDTO.BatchName)
+                || string.IsNullOrWhiteSpace(batchAndFlowerDTO.Description)
+                || batchAndFlowerDTO.CompanyId == null
+                || batchAndFlowerDTO.Flowers == null || batchAndFlowerDTO.Flowers.Count == 0)
+            {
+                throw new ArgumentException("All fields must be filled and at least one flower must be provided.");
+            }
+
+            // Create Batch and Flowers in repository
+            await _batchRepository.CreateBatchAndFlowerAsync(batchAndFlowerDTO);
+
+            return new ListBatchDTO
+            {
+                BatchName = batchAndFlowerDTO.BatchName,
+                EventName = batchAndFlowerDTO.EventName,
+                EventDate = batchAndFlowerDTO.EventDate,
+                EntryDate = batchAndFlowerDTO.EntryDate,
+                Description = batchAndFlowerDTO.Description,
+                CompanyId = batchAndFlowerDTO.CompanyId
+            };
+        }
     }
 }
