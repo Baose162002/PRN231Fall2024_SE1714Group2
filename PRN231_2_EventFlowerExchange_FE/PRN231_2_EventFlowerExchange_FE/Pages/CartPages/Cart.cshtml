@@ -41,8 +41,9 @@
                                            onchange="updateQuantity('@item.FlowerId', this.value, @item.PricePerUnit)"
                                            class="w-16 text-center">
                                 </td>
-                                <td class="border px-4 py-2">$@item.PricePerUnit.ToString("F2")</td>
-                                <td class="border px-4 py-2 item-total">$@totalPrice.ToString("F2")</td>
+                                <td class="border px-4 py-2">@item.PricePerUnit.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
+                                <td class="border px-4 py-2 item-total">@totalPrice.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
+
                                 <td class="border px-4 py-2">
                                     <button onclick="deleteItem('@item.FlowerId')" class="text-red-600 hover:text-red-800">
                                         Delete
@@ -78,17 +79,26 @@
         let cartItems = @Html.Raw(Json.Serialize(Model.CartItems));
 
         // Calculate and update cart total
+
         function updateCartTotal() {
             const totals = document.querySelectorAll('.item-total');
             let cartTotal = 0;
 
             totals.forEach(total => {
-                const amount = parseFloat(total.textContent.replace('$', ''));
+                // Loại bỏ ký hiệu tiền tệ và dấu phẩy, sau đó chuyển đổi thành số
+                const amount = parseInt(total.textContent.replace('₫', '').replace(/\./g, ''), 10);
                 cartTotal += amount;
             });
 
-            document.getElementById('cart-total').textContent = `$${cartTotal.toFixed(2)}`;
+            // Định dạng lại tổng giỏ hàng và hiển thị với ký hiệu "₫"
+            document.getElementById('cart-total').textContent = new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(cartTotal);
         }
+
 
         // Initialize cart total on page load
         document.addEventListener('DOMContentLoaded', function () {
@@ -106,33 +116,33 @@
                 },
                 body: JSON.stringify({ flowerId, quantity })
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(updatedCart => {
-                    console.log('Updated cart received:', updatedCart);
-
                     if (updatedCart) {
                         cartItems = updatedCart;
 
                         const row = document.querySelector(`tr[data-flower-id="${flowerId}"]`);
                         const totalCell = row.querySelector('.item-total');
-                        const newTotal = (quantity * pricePerUnit).toFixed(2);
-                        totalCell.textContent = `$${newTotal}`;
+                        const newTotal = quantity * pricePerUnit;
+
+                        // Hiển thị tổng mới với ký hiệu "₫"
+                        totalCell.textContent = new Intl.NumberFormat('vi-VN', {
+                            style: 'currency',
+                            currency: 'VND',
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                        }).format(newTotal);
 
                         updateCartTotal();
                         saveCartItemsToCookie(cartItems);
-                    } else {
-                        console.error('Updated cart is null or undefined');
                     }
                 })
                 .catch(error => {
                     console.error('Error updating quantity:', error);
                 });
         }
+
+
 
         function saveCartItemsToCookie(cartItems) {
             // Check if cartItems is not null or undefined
