@@ -129,11 +129,11 @@
                 <div class="mt-2">
                     <div class="mb-4">
                         <label for="flowerName" class="block text-sm font-medium text-gray-700">Flower Name</label>
-                        <input type="text" id="flowerName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        <input type="text" id="flowerName" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
                     </div>
                     <div class="mb-4">
                         <label for="flowerType" class="block text-sm font-medium text-gray-700">Type</label>
-                        <select id="flowerType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        <select id="flowerType" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
                             <option value="">Select Type</option>
                             <option value="Rose">Rose</option>
                             <option value="Tulip">Tulip</option>
@@ -145,7 +145,7 @@
                     </div>
                     <div class="mb-4">
                         <label for="flowerOrigin" class="block text-sm font-medium text-gray-700">Origin</label>
-                        <select id="flowerOrigin" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        <select id="flowerOrigin" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
                             <option value="">-- Select Province --</option>
                             <option value="Đà Lạt">Đà Lạt</option>
                             <option value="Hà Nội">Hà Nội</option>
@@ -157,7 +157,7 @@
                     </div>
                     <div class="mb-4">
                         <label for="flowerColor" class="block text-sm font-medium text-gray-700">Color</label>
-                        <select id="flowerColor" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        <select id="flowerColor" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
                             <option value="">Select Color</option>
                             <option value="Red">Red</option>
                             <option value="Yellow">Yellow</option>
@@ -169,15 +169,15 @@
                     </div>
                     <div class="mb-4">
                         <label for="flowerPrice" class="block text-sm font-medium text-gray-700">Price Per Unit</label>
-                        <input type="number" id="flowerPrice" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        <input type="number" id="flowerPrice" step="0.01" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
                     </div>
                     <div class="mb-4">
                         <label for="flowerQuantity" class="block text-sm font-medium text-gray-700">Remaining Quantity</label>
-                        <input type="number" id="flowerQuantity" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        <input type="number" id="flowerQuantity" name="flowerQuantity" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
                     </div>
                     <div class="mb-4">
                         <label for="flowerDescription" class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea id="flowerDescription" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required></textarea>
+                        <textarea id="flowerDescription" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required></textarea>
                     </div>
                     <div class="mb-4">
                         <label for="flowerImage" class="block text-sm font-medium text-gray-700">Flower Image</label>
@@ -246,7 +246,7 @@
             description: "Hoa hướng dương tượng trưng cho sự rạng rỡ"
         }
     };
-
+   
     // Open modal for adding new flower
     addFlowerBtn.addEventListener('click', () => {
         openModal();
@@ -386,10 +386,10 @@
         if (price < flower.priceRange.min || price > flower.priceRange.max) {
             return { isValid: false, message: `Price must be between ${flower.priceRange.min} and ${flower.priceRange.max} for ${type}.` };
         }
-        if (quantity <= 0) {
-            return { isValid: false, message: "Quantity must be greater than 0." };
+        
+        if (!Number.isInteger(Number(quantity)) || quantity < 1 || quantity > 500) {
+            return { isValid: false, message: "Quantity must be an integer between 1 and 500." };
         }
-
 
         if (!image) {
             return { isValid: false, message: "Please select an image file." };
@@ -420,7 +420,7 @@
     }
 
     function deleteFlowerCard(card) {
-        if (confirm('Bạn có chắc chắn muốn xóa mục này không?')) {
+        if (confirm('Are you sure you want to delete this item?')) {
             card.remove();
         }
     }
@@ -515,6 +515,14 @@
         priceInput.setAttribute('max', flower.priceRange.max);
         // Update description
         descriptionInput.value = flower.description;
+        if (flower.quantityRange) {
+            quantityInput.setAttribute('min', flower.quantityRange.min);
+            quantityInput.setAttribute('max', flower.quantityRange.max);
+        } else {
+            // Mặc định từ 1 đến 500
+            quantityInput.setAttribute('min', 1);
+            quantityInput.setAttribute('max', 500);
+        }
     }
 </script>
 
@@ -552,7 +560,7 @@
                     </div>
                     <div>
                         <label for="flowerQuantity" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Quantity</label>
-                        <input type="number" id="flowerQuantity" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                        <input type="number" id="flowerQuantity" name="flowerQuantity" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
                     </div>
                     <div>
                         <label for="flowerDescription" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>

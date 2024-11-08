@@ -46,12 +46,12 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="mb-4">
                                     <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.BatchName">Batch Name</label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.BatchName" type="text">
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.BatchName" type="text" required>
                                     <span asp-validation-for="Input.BatchName" class="text-red-500 text-xs italic"></span>
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.EventName">Event Name</label>
-                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.EventName" type="text">
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.EventName" type="text" required>
                                     <span asp-validation-for="Input.EventName" class="text-red-500 text-xs italic"></span>
                                 </div>
                                 <div class="mb-4">
@@ -76,7 +76,7 @@
                             </div>
                             <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2" asp-for="Input.Description">Description</label>
-                                <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.Description" rows="3"></textarea>
+                                <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" asp-for="Input.Description" rows="3" required></textarea>
                                 <span asp-validation-for="Input.Description" class="text-red-500 text-xs italic"></span>
                             </div>
                             <div class="flex items-center justify-between mt-6">
